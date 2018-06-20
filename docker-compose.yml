@@ -1,14 +1,42 @@
 version: "3"
 services:
 
-  # podverse_db_prod:
-  #   image: postgres
+  podverse_db_prod:
+    image: postgres
+    env_file:
+      - ./config/podverse-db-prod.env
+    # volumes:
+    #    - db-data:/mnt/podversedbvolume1
+    ports:
+      - '5432:5432'
+
+  podcast_db_prod:
+    # image: podverse/podcast_db
+    image: podcast_db
+    env_file:
+      - ./config/podcast-db-prod.env
+    depends_on:
+      - podverse_db_prod
+    command: npm run migrate
+
+  podverse_web_prod:
+    # image: podverse/podverse-web
+    image: podverse_web
+    ports: 
+      - 8765:8080
+    env_file:
+      - ./config/podverse-web-prod.env
+    depends_on: 
+      - podverse_db_prod
+    command: /tmp/scripts/docker_entry_point.sh
+
+  # podverse_admin_prod:
+  #   image: podverse/podverse_admin
+  #   ports: 8000:8000
   #   env_file:
-  #     - ./config/podverse-db-prod.env
-  #   volumes:
-  #      - db-data:/mnt/podversedbvolume1
-  #   ports:
-  #     - '5432:5432'
+  #     - podverse-admin-variables.env
+
+
 
   # podverse_db_local:
   #   image: postgres
@@ -16,22 +44,6 @@ services:
   #     - ./config/podverse-db-local.env
   #   ports:
   #     - '5432:5432'
-
-  podverse_db_test:
-    image: postgres
-    env_file:
-      - ./config/podverse-db-test.env
-    ports:
-      - '4443:5432'
-
-  # podcast_db_prod:
-  #   # image: podverse/podcast_db
-  #   image: podcast_db
-  #   env_file:
-  #     - ./config/podcast-db-prod.env
-  #   depends_on:
-  #     - podverse_db_prod
-  #   command: npm run migrate
 
   # podcast_db_local:
   #   # image: podverse/podcast_db
@@ -41,26 +53,6 @@ services:
   #   depends_on:
   #     - podverse_db_local
   #   command: npm run migrate
-
-  podcast_db_test:
-    # image: podverse/podcast_db
-    image: podcast_db
-    env_file:
-      - ./config/podcast-db-test.env
-    depends_on:
-      - podverse_db_test
-    command: /tmp/scripts/test.js
-
-  # podverse_web_prod:
-  #   # image: podverse/podverse-web
-  #   image: podverse_web
-  #   ports: 
-  #     - 8765:8080
-  #   env_file:
-  #     - ./config/podverse-web-prod.env
-  #   depends_on: 
-  #     - podverse_db_prod
-  #   command: /tmp/scripts/docker_entry_point.sh
 
   # podverse_web_local:
   #   # image: podverse/podverse-web
@@ -73,19 +65,33 @@ services:
   #     - podcast_db_local
   #   command: /tmp/scripts/docker_entry_point.sh
 
-  podverse_web_test:
-    # image: podverse/podverse-web
-    image: podverse_web
-    ports: 
-      - 8765:8080
-    env_file:
-      - ./config/podverse-web-test.env
-    depends_on: 
-      - podcast_db_test
-    command: /tmp/scripts/test.js
 
-  # podverse_admin:
-  #   image: podverse/podverse_admin
-  #   ports: 8000:8000
+
+  # podverse_db_test:
+  #   image: postgres
   #   env_file:
-  #     - podverse-admin-variables.env
+  #     - ./config/podverse-db-test.env
+  #   ports:
+  #     - '4443:4443'
+  #   command: -p 4443
+
+  # podcast_db_test:
+  #   # image: podverse/podcast_db
+  #   image: podcast_db
+  #   env_file:
+  #     - ./config/podcast-db-test.env
+  #   depends_on:
+  #     - podverse_db_test
+  #   command: /tmp/scripts/test.js
+
+  # podverse_web_test:
+  #   # image: podverse/podverse-web
+  #   image: podverse_web
+  #   ports: 
+  #     - 8765:8080
+  #   env_file:
+  #     - ./config/podverse-web-test.env
+  #   depends_on: 
+  #     - podcast_db_test
+  #   command: /tmp/scripts/test.js
+
