@@ -42,6 +42,7 @@ services:
 
   podverse_db_test:
     image: postgres
-    command: -p 4443
     env_file:
-      - ./config/podverse-db-test.env  
+      - ./config/podverse-db-test.env
+    ports:
+      - '4443:5432'
