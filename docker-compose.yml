@@ -12,7 +12,6 @@ services:
 
   podcast_db_prod:
     image: podverse/podcast_db
-    image: podcast_db
     env_file:
       - ./config/podcast-db-prod.env
     depends_on:
