@@ -19,7 +19,7 @@ services:
     command: npm run migrate
 
   podverse_web_prod:
-    image: podverse/podverse-web
+    image: podverse/podverse_web
     ports:
       - 8765:8080
     env_file:
