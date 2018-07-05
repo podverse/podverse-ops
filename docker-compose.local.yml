@@ -25,6 +25,7 @@ services:
     image: podverse/podcast_db
     env_file:
       - ./config/podcast-db-local.env
+    command: node /tmp/scripts/parseNextFeed.js
 
   podverse_web_local:
     # image: podverse/podverse-web
