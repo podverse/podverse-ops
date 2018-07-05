@@ -22,6 +22,11 @@ services:
       - podverse_db_prod
     command: npm run migrate
 
+  podcast_db_worker_prod:
+    image: podverse/podcast_db
+    env_file:
+      - ./config/podcast-db-prod.env
+
   podverse_web_prod:
     image: podverse/podverse_web
     ports:

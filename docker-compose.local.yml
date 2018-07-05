@@ -21,6 +21,11 @@ services:
       - podverse_db_local
     command: npm run migrate
 
+  podcast_db_worker_local:
+    image: podverse/podcast_db
+    env_file:
+      - ./config/podcast-db-local.env
+
   podverse_web_local:
     # image: podverse/podverse-web
     image: podverse_web
