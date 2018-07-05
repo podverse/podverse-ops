@@ -1,8 +1,5 @@
 version: "2"
 
-volumes:
-  db-data: 
-
 services:
 
   podverse_db_local:
@@ -37,8 +34,8 @@ services:
     depends_on: 
       - podcast_db_local
     command: npm run start
-  volumes:
-    - ./config/googleapi.jwt.keys.json:/tmp/src/services/googleapi/jwt.keys.json
+    volumes:
+      - ./config/googleapi.jwt.keys.json:/tmp/src/services/googleapi/jwt.keys.json
 
   podverse_db_admin_local:
     # image: podverse/podverse_db_admin
