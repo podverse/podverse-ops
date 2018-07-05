@@ -1,0 +1,4 @@
+0 0,12 * * * docker-compose -f /path/to/podverse-ops/docker-compose.prod.yml run --rm podcast_db_worker_prod node /tmp/scripts/addFeedsToBeParsedForMaxEpisodes.js
+5,35 * * * * docker-compose -f /path/to/podverse-ops/docker-compose.prod.yml down
+7,37 * * * * docker network create podverseops_default
+8,38 * * * * docker-compose -f /path/to/podverse-ops/docker-compose.prod.yml scale podcast_db_worker_prod=10
