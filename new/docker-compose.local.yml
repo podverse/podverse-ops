@@ -16,3 +16,8 @@ services:
       - ./config/podverse-api-local.env
     depends_on:
       - podverse_db_local
+    ports:
+      - '3000:3000'
+    command: npm run watch-server
+    volumes:
+      - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
