@@ -1,0 +1,18 @@
+version: "2"
+
+services:
+
+  podverse_db_local:
+    image: postgres
+    env_file:
+      - ./config/podverse-db-local.env
+    ports:
+      - '5432:5432'
+
+  podverse_api_local:
+    # image: podverse/podverse_api
+    image: podverse_api
+    env_file:
+      - ./config/podverse-api-local.env
+    depends_on:
+      - podverse_db_local
