@@ -1,3 +1,5 @@
+node_modules
+
 config/podverse-api.env
 config/podverse-db.env
 config/podverse-web.env

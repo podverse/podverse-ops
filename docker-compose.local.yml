@@ -13,6 +13,8 @@ services:
     image: podverse_api
     env_file:
       - ./config/podverse-api.env
+    environment: 
+      - DEV_USE_LIVE_ASSETS=true
     depends_on:
       - podverse_db
     command: npm run seeds:sampleEntities
