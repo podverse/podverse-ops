@@ -1,0 +1,47 @@
+version: "2"
+
+services:
+
+  podverse_db:
+    image: postgres
+    env_file:
+      - ./config/podverse-db.env
+    ports:
+      - '5432:5432'
+
+  # podverse_api_seed_db:
+  #   image: podverse/podverse_api
+  #   env_file:
+  #     - ./config/podverse-api.env
+  #   depends_on:
+  #     - podverse_db
+  #   command: npm run seeds:sampleEntities
+
+  podverse_api:
+    image: podverse/podverse_api
+    env_file:
+      - ./config/podverse-api.env
+    depends_on:
+      - podverse_db
+    ports:
+      - '1234:1234'
+    command: npm start
+    volumes:
+      - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
+      - ./config/bitpay/api.key:/tmp/src/config/bitpay/api.key
+
+  podverse_web:
+    image: podverse/podverse_web
+    build: .
+    env_file:
+      - ./config/podverse-web.env
+    depends_on:
+      - podverse_db
+      - podverse_api
+    ports:
+      - '8765:8765'
+    command: npm start
+
+networks:
+  default:
+    driver: bridge
