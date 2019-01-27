@@ -6,9 +6,9 @@ Deployment scripts for the podverse ecosystem.
 
 ### Prod vs Local
 
-For local development, use the docker-compose.local.yml.
+For local development, use the docker-compose.local.yml file.
 
-For production deployment, use the docker-compose.prod.yml.
+For production deployment, use the docker-compose.prod.yml file.
 
 ### Setup environment variables
 
