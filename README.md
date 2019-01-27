@@ -2,7 +2,7 @@
 
 Deployment scripts for the podverse ecosystem.
 
-## How to deploy the Podverse API and Web app
+## How to deploy podverse-api and podverse-web
 
 ### Prod vs Local
 
