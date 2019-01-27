@@ -4,6 +4,8 @@ Deployment scripts for the podverse ecosystem.
 
 ## How to deploy the Podverse API and Web app
 
+### Prod vs Local
+
 For local development, use the docker-compose.local.yml.
 
 For production deployment, use the docker-compose.prod.yml.
@@ -39,4 +41,3 @@ docker-compose -f docker-compose.local.yml up -d podverse_api
 ```
 docker-compose -f docker-compose.local.yml up -d podverse_web
 ```
-
