@@ -4,9 +4,11 @@ Deployment scripts for the podverse ecosystem.
 
 ## How to deploy the Podverse API and Web app
 
-### Local
+For local development, use the docker-compose.local.yml.
 
-#### Setup environment variables
+For production deployment, use the docker-compose.prod.yml.
+
+### Setup environment variables
 
 Duplicate the config/podverse-web-local.example.env, rename it to config/podverse-web-local.env, and update the environment variables within the file for your environment.
 
@@ -14,28 +16,27 @@ Add your BitPay API key file to config/bitpay/api.key.
 
 Add your Google API key file to config/google/jwt.keys.json.
 
-#### Start a Postgres instance
+### Start a Postgres instance
 
 ```
 docker-compose -f docker-compose.local.yml up -d podverse_db
 ```
 
-#### Seed with sample data
+### Seed with sample data
 
 ```
 docker-compose -f docker-compose.local.yml up -d podverse_api_seed_db
 ```
 
-#### Start podverse-api
+### Start podverse-api
 
 ```
 docker-compose -f docker-compose.local.yml up -d podverse_api
 ```
 
-#### Start podverse-web
+### Start podverse-web
 
 ```
 docker-compose -f docker-compose.local.yml up -d podverse_web
 ```
 
-### Prod
