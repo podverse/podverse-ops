@@ -1,0 +1,13 @@
+Get your Google API credentials.
+
+- Go to https://console.cloud.google.com/projectselector/iam-admin/serviceaccounts
+
+- Create a sevice account.
+
+- Go to https://console.developers.google.com/apis/credentials
+
+- Create credentials > Service account key
+
+- Select the service account you created in the previous step, and JSON, then press Create.
+
+- Copy the private key that is downloaded to your computer, rename and paste it to config/google/jwt.keys.json
