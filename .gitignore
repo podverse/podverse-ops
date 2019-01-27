@@ -1,0 +1,5 @@
+config/podverse-api.env
+config/podverse-db.env
+config/podverse-web.env
+config/bitpay/api.key
+config/google/jwt.keys.json
