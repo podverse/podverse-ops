@@ -2,6 +2,14 @@ version: "2"
 
 services:
 
+  podverse_nginx_proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
   podverse_db:
     image: postgres
     env_file:
@@ -44,4 +52,5 @@ services:
 
 networks:
   default:
-    driver: bridge
+    external:
+      name: nginx-proxy
