@@ -1,10 +1,10 @@
-version: "2"
+version: "3"
 
 services:
 
   podverse_nginx_proxy:
     image: jwilder/nginx-proxy
-    container_name: nginx-proxy
+    container_name: podverse_nginx_proxy
     ports:
       - "80:80"
     volumes:
@@ -12,42 +12,51 @@ services:
 
   podverse_db:
     image: postgres
+    container_name: podverse_db
     env_file:
       - ./config/podverse-db.env
     ports:
       - '5432:5432'
 
-  # podverse_api_seed_db:
-  #   image: podverse/podverse_api
-  #   env_file:
-  #     - ./config/podverse-api.env
-  #   depends_on:
-  #     - podverse_db
-  #   command: npm run seeds:sampleEntities
-
-  podverse_api:
+  podverse_api_seed_db:
     image: podverse/podverse_api
     env_file:
       - ./config/podverse-api.env
     depends_on:
       - podverse_db
+    command: npm run seeds:categories | npm run seeds:podcasts
+
+  podverse_api:
+    image: podverse/podverse_api:1.0.0
+    container_name: podverse_api
+    env_file:
+      - ./config/podverse-api.env
+    environment:
+      VIRTUAL_HOST: stage.api.podverse.fm
+    depends_on:
+      - podverse_db
     ports:
-      - '1234:1234'
+      - '1234:80'
     command: npm start
     volumes:
       - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
       - ./config/bitpay/api.key:/tmp/src/config/bitpay/api.key
 
   podverse_web:
-    image: podverse/podverse_web
+    image: podverse/podverse_web:2.0.0
+    container_name: podverse_web
     build: .
     env_file:
       - ./config/podverse-web.env
+    environment:
+      VIRTUAL_HOST: stage.podverse.fm
     depends_on:
       - podverse_db
       - podverse_api
+    expose:
+      - 80
     ports:
-      - '8765:8765'
+      - '8765:80'
     command: npm start
 
 networks:
