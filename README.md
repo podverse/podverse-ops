@@ -8,11 +8,11 @@ Deployment scripts for the podverse ecosystem.
 
 To test the Docker containers locally, use the docker-compose.local.yml file.
 
-For stage deployment, use the docker-compose.stage.yml file.
+For stage deployment, use the docker-compose.stage.yml file, and replace _local
+in commands with _stage.
 
-For prod deployment, use the docker-compose.prod.yml file.
-
-Each of these yml files are identical, except they use different container names.
+For prod deployment, use the docker-compose.prod.yml file, and replace _local
+in commands with _prod.
 
 #### Setup environment variables
 
@@ -21,6 +21,12 @@ Duplicate the config/podverse-web-local.example.env file, rename it to config/po
 Add your BitPay API key file at config/bitpay/api.key. Look in the config/bitpay/api.key.example for more info about this process.
 
 Add your Google API key file to config/google/jwt.keys.json. Look in the config/google/jwt.keys.json.example for more info about this process.
+
+### Stage/Prod only: create and start Nginx container
+
+```
+docker-compose -f docker-compose.stage.yml up -d podverse_nginx_proxy
+```
 
 #### Start a Postgres instance
 
@@ -37,19 +43,19 @@ docker-compose -f docker-compose.local.yml up -d podverse_api podverse_web
 #### Run the podverse_api application
 
 ```
-docker exec -it local_podverse_api npm start --prefix /tmp
+docker exec -d podverse_api_local npm --prefix /tmp start
 ```
 
 #### Run the podverse_web application
 
 ```
-docker exec -it local_podverse_web npm start --prefix /tmp
+docker exec -d podverse_web_local npm --prefix /tmp start
 ```
 
 #### Add categories to the database
 
 ```
-docker exec -it local_podverse_api npm --prefix /tmp run seeds:categories
+docker exec -d podverse_api_local npm --prefix /tmp run seeds:categories
 ```
 
 #### Add feed urls to the database
@@ -65,14 +71,19 @@ A list of sample podcast feed urls can be found at
 (https://github.com/podverse/podverse-api/tree/deploy/docs/sampleFeedUrls.txt).
 
 ```
-docker exec -it local_podverse_api npm --prefix /tmp run scripts:addFeedUrls
+docker exec podverse_api_local npm --prefix /tmp run scripts:addFeedUrls
 ```
 
 #### Parse feed urls to add podcasts and episodes to the database
 
 ```
-docker exec -it local_podverse_api npm --prefix /tmp run scripts:parseOrphanFeedUrls
+docker exec podverse_api_local npm --prefix /tmp run scripts:parseOrphanFeedUrls
 ```
 
 "Orphan" feed urls do not have a podcast associated with them.
 
+To parse all non-orphan and public feed urls, you can run:
+
+```
+docker exec podverse_api_local npm --prefix /tmp run scripts:parsePublicFeedUrls
+```
