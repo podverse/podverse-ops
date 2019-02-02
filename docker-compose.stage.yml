@@ -4,7 +4,7 @@ services:
 
   podverse_nginx_proxy:
     image: jwilder/nginx-proxy
-    container_name: podverse_nginx_proxy
+    container_name: podverse_nginx_proxy_stage
     ports:
       - "80:80"
     volumes:
@@ -12,23 +12,17 @@ services:
 
   podverse_db:
     image: postgres
-    container_name: podverse_db
+    container_name: podverse_db_stage
     env_file:
       - ./config/podverse-db.env
     ports:
       - '5432:5432'
 
-  podverse_api_seed_db:
+  podverse_api:
     image: podverse/podverse_api
-    env_file:
-      - ./config/podverse-api.env
+    container_name: podverse_api_stage
     depends_on:
       - podverse_db
-    command: npm run seeds:categories | npm run seeds:podcasts
-
-  podverse_api:
-    image: podverse/podverse_api:1.0.0
-    container_name: podverse_api
     env_file:
       - ./config/podverse-api.env
     environment:
@@ -37,17 +31,17 @@ services:
     expose:
       - 80
       - 1234
-    depends_on:
-      - podverse_db
-    command: npm start
     volumes:
       - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
       - ./config/bitpay/api.key:/tmp/src/config/bitpay/api.key
+    command: tail -f /dev/null
 
   podverse_web:
     image: podverse/podverse_web:2.0.0
-    container_name: podverse_web
-    build: .
+    container_name: podverse_web_stage
+    depends_on:
+      - podverse_db
+      - podverse_api
     env_file:
       - ./config/podverse-web.env
     environment:
@@ -56,10 +50,7 @@ services:
     expose:
       - 80
       - 8765
-    depends_on:
-      - podverse_db
-      - podverse_api
-    command: npm start
+    command: tail -f /dev/null
 
 networks:
   default:
