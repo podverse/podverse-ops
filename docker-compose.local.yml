@@ -8,16 +8,7 @@ services:
       - ./config/podverse-db.env
     ports:
       - '5432:5432'
-
-  podverse_api_seed_db:
-    image: podverse_api
-    env_file:
-      - ./config/podverse-api.env
-    environment: 
-      - DEV_USE_LIVE_ASSETS=true
-    depends_on:
-      - podverse_db
-    command: npm run seeds:sampleEntities
+    container_name: local_podverse_db
 
   podverse_api:
     image: podverse_api
@@ -27,10 +18,11 @@ services:
       - podverse_db
     ports:
       - '1234:1234'
-    command: npm start
     volumes:
-      - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
       - ./config/bitpay/api.key:/tmp/src/config/bitpay/api.key
+      - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
+    container_name: local_podverse_api
+    command: tail -f /dev/null
 
   podverse_web:
     image: podverse_web
@@ -42,7 +34,8 @@ services:
       - podverse_api
     ports:
       - '8765:8765'
-    command: npm start
+    container_name: local_podverse_web
+    command: tail -f /dev/null
 
 networks:
   default:

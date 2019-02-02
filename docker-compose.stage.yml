@@ -18,13 +18,13 @@ services:
     ports:
       - '5432:5432'
 
-  # podverse_api_seed_db:
-  #   image: podverse/podverse_api
-  #   env_file:
-  #     - ./config/podverse-api.env
-  #   depends_on:
-  #     - podverse_db
-  #   command: npm run seeds:categories | npm run seeds:podcasts
+  podverse_api_seed_db:
+    image: podverse/podverse_api
+    env_file:
+      - ./config/podverse-api.env
+    depends_on:
+      - podverse_db
+    command: npm run seeds:categories | npm run seeds:podcasts
 
   podverse_api:
     image: podverse/podverse_api:1.0.0
@@ -37,8 +37,6 @@ services:
     expose:
       - 80
       - 1234
-    ports:
-      - '1234:80'
     depends_on:
       - podverse_db
     command: npm start
@@ -58,8 +56,6 @@ services:
     expose:
       - 80
       - 8765
-    ports:
-      - '8765:80'
     depends_on:
       - podverse_db
       - podverse_api
