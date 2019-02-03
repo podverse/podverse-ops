@@ -58,8 +58,6 @@ services:
   podverse_api_parser_worker:
     image: podverse/podverse_api
     container_name: podverse_api_parser_worker_stage
-    depends_on:
-      - podverse_db
     env_file:
       - ./config/podverse-api-stage.env
 
