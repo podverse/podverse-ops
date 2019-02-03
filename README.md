@@ -30,8 +30,7 @@ starts it requests SSL certificates from letsencrypt, and if you reach that limi
 you won't be able to request new SSL certificates for a week.
 
 ```
-docker-compose -f docker-compose.local.yml up -d podverse_nginx_proxy 
-podverse_letsencrypt_nginx podverse_db podverse_api podverse_web
+docker-compose -f docker-compose.local.yml up -d podverse_nginx_proxy podverse_letsencrypt_nginx podverse_db podverse_api podverse_web
 ```
 
 or simply:
