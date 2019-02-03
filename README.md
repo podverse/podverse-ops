@@ -1,6 +1,6 @@
 # podverse-ops
 
-Deployment scripts for the podverse ecosystem.
+Deployment scripts for the podverse ecosystem
 
 ## Getting started
 
