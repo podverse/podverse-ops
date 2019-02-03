@@ -8,7 +8,18 @@ services:
     ports:
       - "80:80"
     volumes:
+      - /etc/nginx/certs
+      - /etc/nginx/vhost.d
+      - /etc/share/nginx/html
       - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  podverse_letsencrypt_nginx_proxy_companion:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: podverse_letsencrypt_nginx_proxy_companion
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    volumes_from: 
+      - nginx-proxy
 
   podverse_db:
     image: postgres
@@ -31,6 +42,8 @@ services:
     environment:
       VIRTUAL_HOST: api.stage.podverse.fm
       VIRTUAL_PORT: 1234
+      LETSENCRYPT_HOST: api.stage.podverse.fm
+      LETSENCRYPT_EMAIL:
     expose:
       - 80
       - 1234
@@ -51,6 +64,8 @@ services:
     environment:
       VIRTUAL_HOST: stage.podverse.fm
       VIRTUAL_PORT: 8765
+      LETSENCRYPT_HOST: stage.podverse.fm
+      LETSENCRYPT_EMAIL:
     expose:
       - 80
       - 8765
