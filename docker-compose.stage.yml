@@ -29,7 +29,6 @@ services:
     container_name: podverse_db_stage
     depends_on:
       - podverse_nginx_proxy
-      - podverse_letsencrypt_nginx
     env_file:
       - ./config/podverse-db-stage.env
     ports:
@@ -40,7 +39,6 @@ services:
     container_name: podverse_api_stage
     depends_on:
       - podverse_nginx_proxy
-      - podverse_letsencrypt_nginx
       - podverse_db
     env_file:
       - ./config/podverse-api-stage.env
@@ -70,7 +68,6 @@ services:
     container_name: podverse_web_stage
     depends_on:
       - podverse_nginx_proxy
-      - podverse_letsencrypt_nginx
       - podverse_db
       - podverse_api
     env_file:
