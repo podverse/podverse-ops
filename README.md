@@ -18,11 +18,11 @@ in commands with _prod.
 
 Duplicate the config/podverse-web-local.example.env file, rename it to config/podverse-web-local.env, and update all of the environment variables to match what is needed for your environment.
 
-Add your BitPay API key file at config/bitpay/api.key. Look in the config/bitpay/api.key.example for more info about this process.
+Add your BitPay API key file to config/bitpay/api.key. Look in the config/bitpay/api.key.example for more info.
 
-Add your Google API key file to config/google/jwt.keys.json. Look in the config/google/jwt.keys.json.example for more info about this process.
+Add your Google API key file to config/google/jwt.keys.json. Look in the config/google/jwt.keys.json.example for more info.
 
-### Stage/Prod only: create and start Nginx container
+### Create and start Nginx container
 
 ```
 docker-compose -f docker-compose.stage.yml up -d podverse_nginx_proxy

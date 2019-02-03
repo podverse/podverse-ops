@@ -14,7 +14,7 @@ services:
     image: postgres
     container_name: podverse_db_stage
     env_file:
-      - ./config/podverse-db.env
+      - ./config/podverse-db-stage.env
     ports:
       - '5432:5432'
 
@@ -24,7 +24,7 @@ services:
     depends_on:
       - podverse_db
     env_file:
-      - ./config/podverse-api.env
+      - ./config/podverse-api-stage.env
     environment:
       VIRTUAL_HOST: api.stage.podverse.fm
       VIRTUAL_PORT: 1234
@@ -43,7 +43,7 @@ services:
       - podverse_db
       - podverse_api
     env_file:
-      - ./config/podverse-web.env
+      - ./config/podverse-web-stage.env
     environment:
       VIRTUAL_HOST: stage.podverse.fm
       VIRTUAL_PORT: 8765
