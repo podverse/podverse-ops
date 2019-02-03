@@ -73,3 +73,27 @@ To parse all non-orphan and public feed urls, you can run:
 ```
 docker exec podverse_api_local npm --prefix /tmp run scripts:parsePublicFeedUrls
 ```
+
+### Use SQS to add feed urls to a queue, then parse them
+
+This project uses AWS SQS for its remote queue. There are 5 possible queues,
+each with a different priority number 1-5. Only podcasts that match the priority argument you provide will be included with each command.
+
+To add all orphan feeds to the queue:
+
+```
+docker exec podverse_api_local npm --prefix /tmp run scripts:addAllOrphanFeedUrlsToQueue -- <priority>
+```
+
+To add all non-orphan, public feeds to the queue:
+
+```
+docker exec podverse_api_local npm --prefix /tmp run scripts:addAllPublicFeedUrlsToQueue -- <priority>
+```
+
+After you have added feed urls to a queue, you can retrieve and then parse
+the feed urls by running:
+
+```
+docker-compose run --rm podverse_api_parser_worker -c "cd /tmp && npm run scripts/parseFeedUrlsFromQueue -- <priority>"
+```
