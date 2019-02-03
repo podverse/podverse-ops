@@ -58,7 +58,7 @@ services:
     command: npm start
 
   podverse_api_parser_worker:
-    image: podverse_api
+    image: podverse/podverse_api
     container_name: podverse_api_parser_worker_stage
     depends_on:
       - podverse_db
