@@ -33,8 +33,6 @@ you won't be able to request new SSL certificates for a week.
 docker-compose -f docker-compose.local.yml up -d
 ```
 
-
-
 #### Add categories to the database
 
 ```
