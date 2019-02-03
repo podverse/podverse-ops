@@ -22,35 +22,18 @@ Add your BitPay API key file to config/bitpay/api.key. Look in the config/bitpay
 
 Add your Google API key file to config/google/jwt.keys.json. Look in the config/google/jwt.keys.json.example for more info.
 
-### Create and start Nginx container
+### Create and start all containers
+
+WARNING: If you use the letsencrypt for SSL on stage or prod, be careful
+not to run the letsencrypt container too many times. Every time the container
+starts it requests SSL certificates from letsencrypt, and if you reach that limit,
+you won't be able to request new SSL certificates for a week.
 
 ```
-docker-compose -f docker-compose.stage.yml up -d podverse_nginx_proxy
+docker-compose -f docker-compose.local.yml up -d
 ```
 
-#### Start a Postgres instance
 
-```
-docker-compose -f docker-compose.local.yml up -d podverse_db
-```
-
-#### Create and start the podverse_api and podverse_web containers
-
-```
-docker-compose -f docker-compose.local.yml up -d podverse_api podverse_web
-```
-
-#### Run the podverse_api application
-
-```
-docker exec -d podverse_api_local npm --prefix /tmp start
-```
-
-#### Run the podverse_web application
-
-```
-docker exec -d podverse_web_local npm --prefix /tmp start
-```
 
 #### Add categories to the database
 
@@ -71,16 +54,16 @@ A list of sample podcast feed urls can be found at
 (https://github.com/podverse/podverse-api/tree/deploy/docs/sampleFeedUrls.txt).
 
 ```
-docker exec podverse_api_local npm --prefix /tmp run scripts:addFeedUrls
+docker exec podverse_api_local npm --prefix /tmp run scripts:addFeedUrls <feed urls>
 ```
 
 #### Parse feed urls to add podcasts and episodes to the database
 
+"Orphan" feed urls are feed urls that do not have a podcast associated with them.
+
 ```
 docker exec podverse_api_local npm --prefix /tmp run scripts:parseOrphanFeedUrls
 ```
-
-"Orphan" feed urls do not have a podcast associated with them.
 
 To parse all non-orphan and public feed urls, you can run:
 
