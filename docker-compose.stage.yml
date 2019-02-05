@@ -62,7 +62,7 @@ services:
       - ./config/podverse-api-stage.env
 
   podverse_api_stats:
-    image: podverse_api
+    image: podverse/podverse_api
     container_name: podverse_api_stats_stage
     depends_on:
       - podverse_db
