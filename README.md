@@ -8,7 +8,7 @@ Deployment scripts for the podverse ecosystem
 
 To test the Docker containers locally, use the docker-compose.local.yml file.
 
-For stage deployment, use the docker-compose.stage.yml file, and replace "local"
+For stage deployment, use the docker-compose.local.yml file, and replace "local"
 in commands and filenames with "stage".
 
 For prod deployment, use the docker-compose.prod.yml file, and replace "local"
@@ -27,8 +27,8 @@ Add your Google API key file to config/google/jwt.keys.json. Look in the config/
 WARNING: If you use the letsencrypt for SSL on stage or prod, be careful
 not to run the letsencrypt container too many times. Every time the container
 starts it requests SSL certificates from letsencrypt, and if you reach that limit,
-you won't be able to request new SSL certificates for a week. You may want to remove
-podverse_letsencrypt_nginx from the following command while you're testing.
+you won't be able to request new SSL certificates for a week. For that reason you may
+want to remove podverse_letsencrypt_nginx from the following command while you're testing.
 
 ```
 docker-compose -f docker-compose.local.yml up -d podverse_nginx_proxy podverse_letsencrypt_nginx podverse_db podverse_api podverse_web
@@ -108,11 +108,11 @@ times. The sample executes parsing with the following frequencies:
 The jobs are staggered by 12 minutes so they don't start at the same time. The containers are removed immediately after they finish running.
 
 ```
-48 */12 * * * docker-compose -f /path/to/podverse-ops/docker-compose.stage.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue -- 1
-36 */6  * * * docker-compose -f /path/to/podverse-ops/docker-compose.stage.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue -- 2
-24 */4  * * * docker-compose -f /path/to/podverse-ops/docker-compose.stage.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue -- 3
-12 */2  * * * docker-compose -f /path/to/podverse-ops/docker-compose.stage.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue -- 4
-0  *    * * * docker-compose -f /path/to/podverse-ops/docker-compose.stage.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue -- 5
+48 */12 * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue -- 1
+36 */6  * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue -- 2
+24 */4  * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue -- 3
+12 */2  * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue -- 4
+0  *    * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue -- 5
 ```
 
 Feed parsing happens in worker containers that run continuously, and after the worker
@@ -124,9 +124,38 @@ In the sample below, a feed parser worker is started for each priority queue wit
 hour, while priority queue 5 retries every 15 minutes.
 
 ```
-docker-compose -f /path/to/podverse-ops/docker-compose.stage.yml run -d --name podverse_api_parser_worker_1 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1 3600000
-docker-compose -f /path/to/podverse-ops/docker-compose.stage.yml run -d --name podverse_api_parser_worker_1 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 2 3600000
-docker-compose -f /path/to/podverse-ops/docker-compose.stage.yml run -d --name podverse_api_parser_worker_1 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 3 3600000
-docker-compose -f /path/to/podverse-ops/docker-compose.stage.yml run -d --name podverse_api_parser_worker_1 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 4 3600000
-docker-compose -f /path/to/podverse-ops/docker-compose.stage.yml run -d --name podverse_api_parser_worker_1 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 5 900000
+docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run -d --name podverse_api_parser_worker_1 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1 3600000
+docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run -d --name podverse_api_parser_worker_2 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 2 3600000
+docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run -d --name podverse_api_parser_worker_3 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 3 3600000
+docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run -d --name podverse_api_parser_worker_4 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 4 3600000
+docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run -d --name podverse_api_parser_worker_5 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 5 900000
+```
+
+### Schedule Google Analytics pageview data requests with cron
+
+Below is a sample cron config for requesting unique pageview data from Google Analytics,
+which is used throughout the site for sorting by popularity (not a great/accurate system
+for popularity sorting...).
+
+```
+0  * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/clips' 'pastHourTotalUniquePageviews'
+10 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/clips' 'pastDayTotalUniquePageviews'
+20 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/clips' 'pastWeekTotalUniquePageviews'
+30 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/clips' 'pastMonthTotalUniquePageviews'
+40 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/clips' 'pastYearTotalUniquePageviews'
+50 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/clips' 'pastAllTimeTotalUniquePageviews'
+
+3  * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/episodes' 'pastHourTotalUniquePageviews'
+13 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/episodes' 'pastDayTotalUniquePageviews'
+23 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/episodes' 'pastWeekTotalUniquePageviews'
+33 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/episodes' 'pastMonthTotalUniquePageviews'
+43 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/episodes' 'pastYearTotalUniquePageviews'
+53 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/episodes' 'pastAllTimeTotalUniquePageviews'
+
+7  * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/podcasts' 'pastHourTotalUniquePageviews'
+17 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/podcasts' 'pastDayTotalUniquePageviews'
+27 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/podcasts' 'pastWeekTotalUniquePageviews'
+37 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/podcasts' 'pastMonthTotalUniquePageviews'
+47 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/podcasts' 'pastYearTotalUniquePageviews'
+57 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/podcasts' 'pastAllTimeTotalUniquePageviews'
 ```

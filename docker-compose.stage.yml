@@ -61,6 +61,16 @@ services:
     env_file:
       - ./config/podverse-api-stage.env
 
+  podverse_api_stats:
+    image: podverse_api
+    container_name: podverse_api_stats_local
+    depends_on:
+      - podverse_db
+    env_file:
+      - ./config/podverse-api-local.env
+    volumes:
+      - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
+
   podverse_web:
     image: podverse/podverse_web:2.0.0
     container_name: podverse_web_stage
