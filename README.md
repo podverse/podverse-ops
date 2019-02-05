@@ -133,29 +133,29 @@ docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run -d --nam
 
 ### Schedule Google Analytics pageview data requests with cron
 
-Below is a sample cron config for requesting unique pageview data from Google Analytics,
-which is used throughout the site for sorting by popularity (not a great/accurate system
-for popularity sorting...).
+Below is a sample cron config for requesting unique pageview data from Google
+Analytics, which is used throughout the site for sorting by popularity (not a foolproof
+system for popularity sorting...).
 
 ```
-0  * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/clips' 'pastHourTotalUniquePageviews'
-10 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/clips' 'pastDayTotalUniquePageviews'
-20 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/clips' 'pastWeekTotalUniquePageviews'
-30 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/clips' 'pastMonthTotalUniquePageviews'
-40 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/clips' 'pastYearTotalUniquePageviews'
-50 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/clips' 'pastAllTimeTotalUniquePageviews'
+0  * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- clips hour
+10 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- clips day
+20 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- clips week
+30 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- clips month
+40 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- clips year
+50 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- clips allTime
 
-3  * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/episodes' 'pastHourTotalUniquePageviews'
-13 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/episodes' 'pastDayTotalUniquePageviews'
-23 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/episodes' 'pastWeekTotalUniquePageviews'
-33 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/episodes' 'pastMonthTotalUniquePageviews'
-43 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/episodes' 'pastYearTotalUniquePageviews'
-53 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/episodes' 'pastAllTimeTotalUniquePageviews'
+3  * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- episodes hour
+13 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- episodes day
+23 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- episodes week
+33 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- episodes month
+43 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- episodes year
+53 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- episodes allTime
 
-7  * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/podcasts' 'pastHourTotalUniquePageviews'
-17 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/podcasts' 'pastDayTotalUniquePageviews'
-27 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/podcasts' 'pastWeekTotalUniquePageviews'
-37 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/podcasts' 'pastMonthTotalUniquePageviews'
-47 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/podcasts' 'pastYearTotalUniquePageviews'
-57 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- '~/podcasts' 'pastAllTimeTotalUniquePageviews'
+7  * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- podcasts hour
+17 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- podcasts day
+27 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- podcasts week
+37 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- podcasts month
+47 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- podcasts year
+57 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- podcasts allTime
 ```
