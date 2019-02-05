@@ -131,11 +131,11 @@ docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run -d --nam
 docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run -d --name podverse_api_parser_worker_5 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 5 900000
 ```
 
-### Schedule Google Analytics pageview data requests with cron
+### Request Google Analytics pageview data and save to database with cron
 
 Below is a sample cron config for requesting unique pageview data from Google
-Analytics, which is used throughout the site for sorting by popularity (not a foolproof
-system for popularity sorting...).
+Analytics, which is used throughout the site for sorting by popularity (not a
+great/accurate system for popularity sorting...).
 
 ```
 0  * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.local.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- clips hour
