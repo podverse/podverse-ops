@@ -92,7 +92,7 @@ After you have added feed urls to a queue, you can retrieve and then parse
 the feed urls by running:
 
 ```
-docker-compose run --rm podverse_api_parser_worker -c "cd /tmp && npm run scripts/parseFeedUrlsFromQueue -- <priority>"
+docker-compose -f docker-compose.stage.yml run podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- <priority> <retryTimeMS>
 ```
 
 ### Schedule parsing with cron
@@ -101,7 +101,8 @@ Below is a sample cron file for adding feeds to queues then parsing them at sche
 times. The sample executes parsing with the following frequencies:
 
 | Priority | Frequency per day |
-|-1--------|-2-----------------|
+|----------|-------------------|
+| 1        | 2                 |
 | 2        | 4                 |
 | 3        | 6                 |
 | 4        | 12                |
