@@ -20,6 +20,10 @@ Add your BitPay API key file to config/bitpay/api.key. Look in the config/bitpay
 
 Add your Google API key file to config/google/jwt.keys.json. Look in the config/google/jwt.keys.json.example for more info.
 
+### SSL Setup (Stage/Prod)
+
+Replace the LETSENCRYPT_HOST and LETSENCRYPT_EMAIL environment variables in the docker-compose.###.yml file.
+
 ### Create and start all containers
 
 WARNING: If you use the letsencrypt for SSL on stage or prod, be careful
