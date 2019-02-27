@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 
 services:
 
@@ -6,13 +6,19 @@ services:
     image: jwilder/nginx-proxy
     container_name: podverse_nginx_proxy_stage
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /etc/nginx/certs
-      - /etc/nginx/vhost.d
-      - /usr/share/nginx/html
+      - 80:80
+      - 443:443
+    volumes:      
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /home/user/tools/nginx_webproxy/certificats:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
+    labels:
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
+    networks:
+      - nginx-proxy
+    environment:
+      ENABLE_IPV6: "true"
 
   podverse_letsencrypt_nginx:
     image: jrcs/letsencrypt-nginx-proxy-companion
@@ -20,9 +26,12 @@ services:
     depends_on: 
       - podverse_nginx_proxy
     volumes:
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /home/user/tools/nginx_webproxy/certificats:/etc/nginx/certs:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    volumes_from: 
-      - podverse_nginx_proxy
+    networks:
+      - nginx-proxy
 
   podverse_db:
     image: postgres
@@ -33,6 +42,8 @@ services:
       - ./config/podverse-db-stage.env
     ports:
       - '5432:5432'
+    networks:
+      - nginx-proxy
 
   podverse_api:
     image: podverse/podverse_api
@@ -46,7 +57,7 @@ services:
       VIRTUAL_HOST: api.stage.podverse.fm
       VIRTUAL_PORT: 1234
       LETSENCRYPT_HOST: api.stage.podverse.fm
-      LETSENCRYPT_EMAIL:
+      LETSENCRYPT_EMAIL: dev@podverse.fm
     expose:
       - 80
       - 1234
@@ -54,12 +65,16 @@ services:
       - ./config/bitpay/api.key:/tmp/src/config/bitpay/api.key
       - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
     command: npm start
+    networks:
+      - nginx-proxy
 
   podverse_api_parser_worker:
     image: podverse/podverse_api
     container_name: podverse_api_parser_worker_stage
     env_file:
       - ./config/podverse-api-stage.env
+    networks:
+      - nginx-proxy
 
   podverse_api_stats:
     image: podverse/podverse_api
@@ -70,6 +85,8 @@ services:
       - ./config/podverse-api-stage.env
     volumes:
       - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
+    networks:
+      - nginx-proxy
 
   podverse_web:
     image: podverse/podverse_web
@@ -84,13 +101,18 @@ services:
       VIRTUAL_HOST: stage.podverse.fm
       VIRTUAL_PORT: 8765
       LETSENCRYPT_HOST: stage.podverse.fm
-      LETSENCRYPT_EMAIL:
+      LETSENCRYPT_EMAIL: dev@podverse.fm
     expose:
       - 80
       - 8765
     command: npm start
+    networks:
+      - nginx-proxy
 
 networks:
-  default:
-    external:
-      name: nginx-proxy
+  nginx-proxy:
+    external: true
+
+volumes:
+  vhost:
+  html:
