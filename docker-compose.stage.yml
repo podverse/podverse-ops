@@ -13,6 +13,7 @@ services:
       - html:/usr/share/nginx/html
       - /home/user/tools/nginx_webproxy/certificats:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./stage-proxy.conf:/etc/nginx/vhost.d/default_location:ro
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
     networks:
