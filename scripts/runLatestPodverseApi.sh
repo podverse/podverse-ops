@@ -1,4 +1,5 @@
 docker rm $(docker stop $(docker ps -a -q --filter ancestor=podverse/podverse_api))
+docker image rm podverse/podverse_api
 docker-compose -f /home/mitch/podverse-ops/docker-compose.stage.yml up -d podverse_api
 docker-compose -f /home/mitch/podverse-ops/docker-compose.stage.yml run -d --name podverse_api_parser_worker_5 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 5 900000
 docker-compose -f /home/mitch/podverse-ops/docker-compose.stage.yml run -d --name podverse_api_parser_worker_4 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 4 3600000
