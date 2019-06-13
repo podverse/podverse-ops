@@ -112,7 +112,7 @@ services:
       - nginx-proxy
 
   podverse_admin:
-    image: podverse_admin
+    image: podverse/podverse_admin
     container_name: podverse_admin_stage
     depends_on:
       - podverse_db
