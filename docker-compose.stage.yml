@@ -45,6 +45,7 @@ services:
       - '5432:5432'
     networks:
       - nginx-proxy
+    restart: always
 
   podverse_api:
     image: podverse/podverse_api
@@ -107,6 +108,27 @@ services:
       - 80
       - 8765
     command: npm start
+    networks:
+      - nginx-proxy
+
+  podverse_admin:
+    image: podverse_admin
+    container_name: podverse_admin_stage
+    depends_on:
+      - podverse_db
+    env_file:
+      - ./config/podverse-admin-stage.env
+    environment:
+      VIRTUAL_HOST: admin.stage.podverse.fm
+      VIRTUAL_PORT: 8000
+      LETSENCRYPT_HOST: admin.stage.podverse.fm
+      LETSENCRYPT_EMAIL: dev@podverse.fm
+    expose:
+      - 80
+      - 8000
+    ports:
+      - '8000:8000'
+    command: python manage.py runserver 0.0.0.0:8000
     networks:
       - nginx-proxy
 
