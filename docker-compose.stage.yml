@@ -118,6 +118,8 @@ services:
       - podverse_db
     env_file:
       - ./config/podverse-admin-stage.env
+    volumes:
+      - static:/tmp/static
     environment:
       VIRTUAL_HOST: admin.stage.podverse.fm
       VIRTUAL_PORT: 8000
@@ -139,3 +141,4 @@ networks:
 volumes:
   vhost:
   html:
+  static:
