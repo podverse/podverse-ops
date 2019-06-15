@@ -100,6 +100,8 @@ services:
       - podverse_api
     env_file:
       - ./config/podverse-web-stage.env
+    volumes:
+      - static:/tmp/static
     environment:
       VIRTUAL_HOST: stage.podverse.fm
       VIRTUAL_PORT: 8765
