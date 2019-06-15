@@ -162,3 +162,19 @@ great/accurate system for popularity sorting...).
 47 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.###.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- podcasts year
 57 * * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.###.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- podcasts allTime
 ```
+
+### Setup podverse-admin
+
+After you start the podverse_admin container for the first time, you will need to run the following commands:
+
+#### run migrations
+
+`docker exec -it podverse_admin_stage python manage.py migrate`
+
+#### create permissions and groups
+
+`docker exec -it podverse_admin_stage python manage.py create_permissions_and_groups`
+
+#### create a superuser
+
+`docker exec -it podverse_admin_stage python manage.py createsuperuser`
