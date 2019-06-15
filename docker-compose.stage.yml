@@ -14,7 +14,7 @@ services:
       - /home/user/tools/nginx_webproxy/certificats:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./stage-proxy.conf:/etc/nginx/vhost.d/default_location:ro
-      - static:/tmp/static
+      - static-admin:/tmp/static-admin
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
     networks:
@@ -100,8 +100,6 @@ services:
       - podverse_api
     env_file:
       - ./config/podverse-web-stage.env
-    volumes:
-      - static:/tmp/static
     environment:
       VIRTUAL_HOST: stage.podverse.fm
       VIRTUAL_PORT: 8765
@@ -122,7 +120,7 @@ services:
     env_file:
       - ./config/podverse-admin-stage.env
     volumes:
-      - static:/tmp/static
+      - static-admin:/tmp/static-admin
     environment:
       VIRTUAL_HOST: admin.stage.podverse.fm
       VIRTUAL_PORT: 8000
@@ -144,4 +142,4 @@ networks:
 volumes:
   vhost:
   html:
-  static:
+  static-admin:
