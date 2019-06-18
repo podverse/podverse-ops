@@ -169,12 +169,12 @@ After you start the podverse_admin container for the first time, you will need t
 
 #### run migrations
 
-`docker exec -it podverse_admin_stage python manage.py migrate`
+`docker exec -it podverse_admin_### python manage.py migrate`
 
 #### create permissions and groups
 
-`docker exec -it podverse_admin_stage python manage.py create_permissions_and_groups`
+`docker exec -it podverse_admin_### python manage.py create_permissions_and_groups`
 
 #### create a superuser
 
-`docker exec -it podverse_admin_stage python manage.py createsuperuser`
+`docker exec -it podverse_admin_### python manage.py createsuperuser`
