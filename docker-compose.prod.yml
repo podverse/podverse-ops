@@ -1,0 +1,145 @@
+version: "3"
+
+services:
+
+  podverse_nginx_proxy:
+    image: jwilder/nginx-proxy
+    container_name: podverse_nginx_proxy_prod
+    ports:
+      - 80:80
+      - 443:443
+    volumes:      
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /home/user/tools/nginx_webproxy/certificats:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./prod-proxy.conf:/etc/nginx/vhost.d/default_location:ro
+      - static-admin:/tmp/static-admin
+    labels:
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
+    networks:
+      - nginx-proxy
+    environment:
+      ENABLE_IPV6: "true"
+
+  podverse_letsencrypt_nginx:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: podverse_letsencrypt_nginx_prod
+    depends_on: 
+      - podverse_nginx_proxy
+    volumes:
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /home/user/tools/nginx_webproxy/certificats:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - nginx-proxy
+
+  podverse_db:
+    image: postgres
+    container_name: podverse_db_prod
+    depends_on:
+      - podverse_nginx_proxy
+    env_file:
+      - ./config/podverse-db-prod.env
+    ports:
+      - '5432:5432'
+    networks:
+      - nginx-proxy
+    restart: always
+
+  podverse_api:
+    image: podverse/podverse_api
+    container_name: podverse_api_prod
+    depends_on:
+      - podverse_nginx_proxy
+      - podverse_db
+    env_file:
+      - ./config/podverse-api-prod.env
+    environment:
+      VIRTUAL_HOST: api.podverse.fm
+      VIRTUAL_PORT: 1234
+      LETSENCRYPT_HOST: api.podverse.fm
+      LETSENCRYPT_EMAIL: dev@podverse.fm
+    expose:
+      - 80
+      - 1234
+    volumes:
+      - ./config/bitpay/api.key:/tmp/src/config/bitpay/api.key
+      - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
+    command: npm start
+    networks:
+      - nginx-proxy
+
+  podverse_api_parser_worker:
+    image: podverse/podverse_api
+    container_name: podverse_api_parser_worker_prod
+    env_file:
+      - ./config/podverse-api-prod.env
+    networks:
+      - nginx-proxy
+
+  podverse_api_stats:
+    image: podverse/podverse_api
+    container_name: podverse_api_stats_prod
+    depends_on:
+      - podverse_db
+    env_file:
+      - ./config/podverse-api-prod.env
+    volumes:
+      - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
+    networks:
+      - nginx-proxy
+
+  podverse_web:
+    image: podverse/podverse_web
+    container_name: podverse_web_prod
+    depends_on:
+      - podverse_nginx_proxy
+      - podverse_db
+      - podverse_api
+    env_file:
+      - ./config/podverse-web-prod.env
+    environment:
+      VIRTUAL_HOST: podverse.fm
+      VIRTUAL_PORT: 8765
+      LETSENCRYPT_HOST: podverse.fm
+      LETSENCRYPT_EMAIL: dev@podverse.fm
+    expose:
+      - 80
+      - 8765
+    command: npm start
+    networks:
+      - nginx-proxy
+
+  podverse_admin:
+    image: podverse/podverse_admin
+    container_name: podverse_admin_prod
+    depends_on:
+      - podverse_db
+    env_file:
+      - ./config/podverse-admin-prod.env
+    volumes:
+      - static-admin:/tmp/static-admin
+    environment:
+      VIRTUAL_HOST: admin.podverse.fm
+      VIRTUAL_PORT: 8000
+      LETSENCRYPT_HOST: admin.podverse.fm
+      LETSENCRYPT_EMAIL: dev@podverse.fm
+    expose:
+      - 80
+      - 8000
+    ports:
+      - '8000:8000'
+    command: python manage.py runserver 0.0.0.0:8000
+    networks:
+      - nginx-proxy
+
+networks:
+  nginx-proxy:
+    external: true
+
+volumes:
+  vhost:
+  html:
+  static-admin:
