@@ -57,10 +57,10 @@ services:
     env_file:
       - ./config/podverse-api-prod.env
     environment:
-      VIRTUAL_HOST:
+      VIRTUAL_HOST: api.podverse.fm
       VIRTUAL_PORT: 1234
-      LETSENCRYPT_HOST:
-      LETSENCRYPT_EMAIL:
+      LETSENCRYPT_HOST: api.podverse.fm
+      LETSENCRYPT_EMAIL: dev@podverse.fm
     expose:
       - 80
       - 1234
@@ -101,10 +101,10 @@ services:
     env_file:
       - ./config/podverse-web-prod.env
     environment:
-      VIRTUAL_HOST:
+      VIRTUAL_HOST: podverse.fm
       VIRTUAL_PORT: 8765
-      LETSENCRYPT_HOST:
-      LETSENCRYPT_EMAIL:
+      LETSENCRYPT_HOST: podverse.fm
+      LETSENCRYPT_EMAIL: dev@podverse.fm
     expose:
       - 80
       - 8765
@@ -122,10 +122,10 @@ services:
     volumes:
       - static-admin:/tmp/static-admin
     environment:
-      VIRTUAL_HOST:
+      VIRTUAL_HOST: admin.podverse.fm
       VIRTUAL_PORT: 8000
-      LETSENCRYPT_HOST:
-      LETSENCRYPT_EMAIL:
+      LETSENCRYPT_HOST: admin.podverse.fm
+      LETSENCRYPT_EMAIL: dev@podverse.fm
     expose:
       - 80
       - 8000
