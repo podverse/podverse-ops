@@ -99,7 +99,7 @@ After you have added feed urls to a queue, you can retrieve and then parse
 the feed urls by running:
 
 ```
-docker-compose -f docker-compose.stage.yml run podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- <priority> <retryTimeMS>
+docker-compose -f docker-compose.###.yml run podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- <priority> <retryTimeMS>
 ```
 
 ### Schedule parsing with cron
