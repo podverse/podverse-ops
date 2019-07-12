@@ -188,7 +188,7 @@ After you start the podverse_admin container for the first time, you will need t
 
 ### Automated Database Backup
 
-You can run the `scripts/db_backup.sh` file with cron to automatically backup the database. Follow the steps in [this tutorial by Pranav Prakash](https://pranavprakash.net/2017/05/16/automated-postgresql-backups/) to set it up.
+You can run the `scripts/db_backup.sh` file with cron to automatically backup the database. Follow steps 1 and 2 in [this tutorial by Rahul Kumar](https://tecadmin.net/install-postgresql-server-on-ubuntu/) to install pg_dump, and follow [this tutorial by Pranav Prakash](https://pranavprakash.net/2017/05/16/automated-postgresql-backups/) to configure the script.
 
 Sample cron command:
 
