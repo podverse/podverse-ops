@@ -28,16 +28,12 @@ services:
   podverse_api_parser_worker:
     image: podverse_api
     container_name: podverse_api_parser_worker_local
-    depends_on:
-      - podverse_db
     env_file:
       - ./config/podverse-api-local.env
 
   podverse_api_stats:
     image: podverse_api
     container_name: podverse_api_stats_local
-    depends_on:
-      - podverse_db
     env_file:
       - ./config/podverse-api-local.env
     volumes:
