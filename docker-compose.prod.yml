@@ -77,8 +77,6 @@ services:
     container_name: podverse_api_parser_worker_prod
     env_file:
       - ./config/podverse-api-prod.env
-    networks:
-      - nginx-proxy
 
   podverse_api_stats:
     image: podverse/podverse_api
