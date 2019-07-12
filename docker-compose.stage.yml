@@ -80,14 +80,10 @@ services:
   podverse_api_stats:
     image: podverse/podverse_api
     container_name: podverse_api_stats_stage
-    depends_on:
-      - podverse_db
     env_file:
       - ./config/podverse-api-stage.env
     volumes:
       - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
-    networks:
-      - nginx-proxy
 
   podverse_web:
     image: podverse/podverse_web
