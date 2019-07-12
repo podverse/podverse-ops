@@ -185,3 +185,13 @@ After you start the podverse_admin container for the first time, you will need t
 #### create a superuser
 
 `docker exec -it podverse_admin_### python manage.py createsuperuser`
+
+### Automated Database Backup
+
+You can run the `scripts/db_backup.sh` file with cron to automatically backup the database. Follow the steps in [this tutorial by Pranav Prakash](https://pranavprakash.net/2017/05/16/automated-postgresql-backups/) to set it up.
+
+Sample cron command:
+
+```
+0 0 * * * /home/mitch/podverse-ops/scripts/db_backup.sh
+```
