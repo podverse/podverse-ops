@@ -46,6 +46,7 @@ services:
       - '5432:5432'
     networks:
       - nginx-proxy
+    command: postgres -c superuser_reserved_connections=20
     restart: always
 
   podverse_api:
