@@ -9,7 +9,7 @@ services:
       - ./config/podverse-db-local.env
     ports:
       - '5432:5432'
-    command: postgres -c superuser_reserved_connections=20
+    command: postgres -c superuser_reserved_connections=100
     restart: always
 
   podverse_api:
