@@ -33,7 +33,7 @@ you won't be able to request new SSL certificates for a week. For that reason yo
 want to remove podverse_letsencrypt_nginx from the following command while you're testing.
 
 ```
-docker-compose -f docker-compose.###.yml up -d podverse_nginx_proxy podverse_letsencrypt_nginx podverse_db podverse_api podverse_web
+docker-compose -f docker-compose.###.yml up -d podverse_nginx_proxy podverse_letsencrypt_nginx podverse_db podverse_api podverse_web podverse_admin
 ```
 
 ### Add podcast categories to the database
