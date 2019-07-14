@@ -1,7 +1,12 @@
 docker rm $(docker stop $(docker ps -a -q --filter ancestor=podverse/podverse_api))
 docker image rm podverse/podverse_api
-docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_1e podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1 3600000 e
-docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_1d podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1 3600000 d
-docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_1c podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1 3600000 c
-docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_1b podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1 3600000 b
-docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_1a podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1 3600000 a
+docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_0 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1800000
+docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_1 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1800000
+docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_2 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1800000
+docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_3 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1800000
+docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_4 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1800000
+docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_5 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1800000
+docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_6 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1800000
+docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_7 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1800000
+docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_8 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1800000
+docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_9 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1800000
