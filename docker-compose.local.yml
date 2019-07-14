@@ -15,8 +15,6 @@ services:
   podverse_api:
     image: podverse_api
     container_name: podverse_api_local
-    depends_on:
-      - podverse_db
     env_file:
       - ./config/podverse-api-local.env
     ports:
@@ -43,9 +41,6 @@ services:
   podverse_web:
     image: podverse_web
     container_name: podverse_web_local
-    depends_on:
-      - podverse_db
-      - podverse_api
     env_file:
       - ./config/podverse-web-local.env
     ports:
@@ -55,8 +50,6 @@ services:
   podverse_admin:
     image: podverse_admin
     container_name: podverse_admin_local
-    depends_on:
-      - podverse_db
     env_file:
       - ./config/podverse-admin-local.env
     ports:

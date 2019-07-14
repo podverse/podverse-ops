@@ -32,6 +32,14 @@ starts it requests SSL certificates from letsencrypt, and if you reach that limi
 you won't be able to request new SSL certificates for a week. For that reason you may
 want to remove podverse_letsencrypt_nginx from the following command while you're testing.
 
+First you'll need to create the nginx-proxy network:
+
+```
+docker network create nginx-proxy
+```
+
+Then run the application containers:
+
 ```
 docker-compose -f docker-compose.###.yml up -d podverse_nginx_proxy podverse_letsencrypt_nginx podverse_db podverse_api podverse_web podverse_admin
 ```

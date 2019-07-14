@@ -54,7 +54,6 @@ services:
     container_name: podverse_api_stage
     depends_on:
       - podverse_nginx_proxy
-      - podverse_db
     env_file:
       - ./config/podverse-api-stage.env
     environment:
@@ -91,8 +90,6 @@ services:
     container_name: podverse_web_stage
     depends_on:
       - podverse_nginx_proxy
-      - podverse_db
-      - podverse_api
     env_file:
       - ./config/podverse-web-stage.env
     environment:
@@ -110,8 +107,6 @@ services:
   podverse_admin:
     image: podverse/podverse_admin
     container_name: podverse_admin_stage
-    depends_on:
-      - podverse_db
     env_file:
       - ./config/podverse-admin-stage.env
     volumes:
