@@ -88,65 +88,41 @@ docker exec podverse_api_### npm --prefix /tmp run scripts:parsePublicFeedUrls
 
 ### Use SQS to add feed urls to a queue, then parse them
 
-This project uses AWS SQS for its remote queue. There are 5 possible queues,
-each with a different priority number 1-5. Only podcasts that match the priority argument you provide will be included with each command.
+This project uses AWS SQS for its remote queue.
 
 To add all orphan feeds to the queue:
 
 ```
-docker exec podverse_api_### npm --prefix /tmp run scripts:addAllOrphanFeedUrlsToQueue -- <priority>
+docker exec podverse_api_### npm --prefix /tmp run scripts:addAllOrphanFeedUrlsToQueue
 ```
 
 To add all non-orphan, public feeds to the queue:
 
 ```
-docker exec podverse_api_### npm --prefix /tmp run scripts:addAllPublicFeedUrlsToQueue -- <priority>
+docker exec podverse_api_### npm --prefix /tmp run scripts:addAllPublicFeedUrlsToQueue
 ```
 
 After you have added feed urls to a queue, you can retrieve and then parse
 the feed urls by running:
 
 ```
-docker-compose -f docker-compose.###.yml run podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- <priority> <retryTimeMS>
+docker-compose -f docker-compose.###.yml run podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- <retryTimeMS>
 ```
 
 ### Schedule parsing with cron
 
-Below is a sample cron file for adding feeds to queues then parsing them at scheduled
-times. The sample executes parsing with the following frequencies:
-
-| Priority | Frequency per day |
-|----------|-------------------|
-| 1        | 2                 |
-| 2        | 4                 |
-| 3        | 6                 |
-| 4        | 12                |
-| 5        | 24                |
-
-The jobs are staggered by 12 minutes so they don't start at the same time. The containers are removed immediately after they finish running.
+Below is a sample cron command for adding feeds to queues.
 
 ```
-48 */12 * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.###.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue -- 1
-36 */6  * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.###.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue -- 2
-24 */4  * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.###.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue -- 3
-12 */2  * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.###.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue -- 4
-0  *    * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.###.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue -- 5
+0 */6 * * * docker-compose -f /home/mitch/podverse-ops/docker-compose.###.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue
 ```
 
 Feed parsing happens in worker containers that run continuously, and after the worker
 receives a "No messages found" response from the queue, the worker waits for a
-timeout period before making another message request to the queue. (This isn't very
-efficient. Can we replace it with a webhook?)
-
-In the sample below, a feed parser worker is started for each priority queue with a different timeout value for retrying the message request. Priority queues 1-4 retry once per
-hour, while priority queue 5 retries every 15 minutes.
+timeout period before making another message request to the queue.
 
 ```
-docker-compose -f /home/mitch/podverse-ops/docker-compose.###.yml run -d --name podverse_api_parser_worker_1 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1 3600000
-docker-compose -f /home/mitch/podverse-ops/docker-compose.###.yml run -d --name podverse_api_parser_worker_2 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 2 3600000
-docker-compose -f /home/mitch/podverse-ops/docker-compose.###.yml run -d --name podverse_api_parser_worker_3 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 3 3600000
-docker-compose -f /home/mitch/podverse-ops/docker-compose.###.yml run -d --name podverse_api_parser_worker_4 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 4 3600000
-docker-compose -f /home/mitch/podverse-ops/docker-compose.###.yml run -d --name podverse_api_parser_worker_5 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 5 900000
+docker-compose -f /home/mitch/podverse-ops/docker-compose.###.yml run -d --name podverse_api_parser_worker podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1800000
 ```
 
 ### Request Google Analytics pageview data and save to database with cron
