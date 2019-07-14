@@ -9,7 +9,7 @@ services:
       - ./config/podverse-db-local.env
     ports:
       - '5432:5432'
-    command: postgres -c max_connections=300 -c superuser_reserved_connections=100
+    command: postgres -c max_connections=200 -c superuser_reserved_connections=20 -c shared_buffers=2GB -c effective_cache_size=6GB -c maintenance_work_mem=512MB -c checkpoint_completion_target=0.7 -c wal_buffers=16MB -c default_statistics_target=100 -c random_page_cost=1.1 -c effective_io_concurrency=200 -c work_mem=5242kB -c min_wal_size=1GB -c max_wal_size=2GB -c max_worker_processes=4 -c max_parallel_workers_per_gather=2 -c max_parallel_workers=4
     restart: always
 
   podverse_api:
