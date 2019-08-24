@@ -21,6 +21,11 @@ services:
       - nginx-proxy
     environment:
       ENABLE_IPV6: "true"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 1
+        max-size: 50m
 
   podverse_letsencrypt_nginx:
     image: jrcs/letsencrypt-nginx-proxy-companion
@@ -34,6 +39,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - nginx-proxy
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 1
+        max-size: 50m
 
   podverse_db:
     image: postgres
@@ -48,6 +58,11 @@ services:
       - nginx-proxy
     command: postgres -c max_connections=200 -c superuser_reserved_connections=20 -c shared_buffers=512MB -c effective_cache_size=1536MB -c maintenance_work_mem=128MB -c checkpoint_completion_target=0.7 -c wal_buffers=16MB -c default_statistics_target=100 -c random_page_cost=1.1 -c effective_io_concurrency=200 -c work_mem=1310kB -c min_wal_size=1GB -c max_wal_size=2GB
     restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 1
+        max-size: 50m
 
   podverse_api:
     image: podverse/podverse_api
@@ -70,12 +85,22 @@ services:
     command: npm start
     networks:
       - nginx-proxy
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 1
+        max-size: 50m
 
   podverse_api_parser_worker:
     image: podverse/podverse_api
     container_name: podverse_api_parser_worker_stage
     env_file:
       - ./config/podverse-api-stage.env
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 1
+        max-size: 50m
 
   podverse_api_stats:
     image: podverse/podverse_api
@@ -84,6 +109,11 @@ services:
       - ./config/podverse-api-stage.env
     volumes:
       - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 1
+        max-size: 50m
 
   podverse_web:
     image: podverse/podverse_web
@@ -103,6 +133,11 @@ services:
     command: npm start
     networks:
       - nginx-proxy
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 1
+        max-size: 50m
 
   podverse_admin:
     image: podverse/podverse_admin
@@ -124,6 +159,11 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
     networks:
       - nginx-proxy
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 1
+        max-size: 50m
 
 networks:
   nginx-proxy:
