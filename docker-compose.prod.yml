@@ -24,8 +24,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 1
-        max-size: 50m
+        max-file: "1"
+        max-size: "50m"
 
   podverse_letsencrypt_nginx:
     image: jrcs/letsencrypt-nginx-proxy-companion
@@ -42,8 +42,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 1
-        max-size: 50m
+        max-file: "1"
+        max-size: "50m"
 
   podverse_db:
     image: postgres
@@ -61,8 +61,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 1
-        max-size: 50m
+        max-file: "1"
+        max-size: "50m"
 
   podverse_api:
     image: podverse/podverse_api
@@ -89,8 +89,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 1
-        max-size: 50m
+        max-file: "1"
+        max-size: "50m"
 
   podverse_api_parser_worker:
     image: podverse/podverse_api
@@ -100,8 +100,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 1
-        max-size: 50m
+        max-file: "1"
+        max-size: "50m"
 
   podverse_api_stats:
     image: podverse/podverse_api
@@ -113,8 +113,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 1
-        max-size: 50m
+        max-file: "1"
+        max-size: "50m"
 
   podverse_web:
     image: podverse/podverse_web
@@ -137,8 +137,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 1
-        max-size: 50m
+        max-file: "1"
+        max-size: "50m"
 
   podverse_admin:
     image: podverse/podverse_admin
@@ -163,8 +163,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 1
-        max-size: 50m
+        max-file: "1"
+        max-size: "50m"
 
 networks:
   nginx-proxy:
