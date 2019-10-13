@@ -46,7 +46,7 @@ services:
         max-size: "50m"
 
   podverse_db:
-    image: postgres
+    image: postgres:11.5
     container_name: podverse_db_prod
     depends_on:
       - podverse_nginx_proxy

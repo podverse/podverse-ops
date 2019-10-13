@@ -3,7 +3,7 @@ version: "2"
 services:
 
   podverse_db:
-    image: postgres
+    image: postgres:11.5
     container_name: podverse_db_local
     env_file:
       - ./config/podverse-db-local.env
