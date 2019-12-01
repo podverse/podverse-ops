@@ -80,7 +80,6 @@ services:
       - 80
       - 1234
     volumes:
-      - ./config/bitpay/api.key:/tmp/src/config/bitpay/api.key
       - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
     command: npm start
     networks:
