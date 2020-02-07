@@ -1,0 +1,1 @@
+docker stop $(docker ps -a -q --filter ancestor=podverse/podverse_api)
