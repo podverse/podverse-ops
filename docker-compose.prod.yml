@@ -142,6 +142,8 @@ services:
   podverse_admin:
     image: podverse/podverse_admin
     container_name: podverse_admin_prod
+    depends_on:
+      - podverse_nginx_proxy
     env_file:
       - ./config/podverse-admin-prod.env
     volumes:
