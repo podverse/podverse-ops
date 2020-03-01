@@ -77,7 +77,6 @@ services:
     privileged: true
     depends_on:
       - podverse_nginx_proxy
-      - podverse_jenkins_docker
     networks:
       - nginx-proxy
     environment:
@@ -89,6 +88,7 @@ services:
       - jenkins-docker-certs:/certs/client:ro
       - $HOME:/home
     environment:
+      JENKINS_OPTS: "--httpPort=8100"
       VIRTUAL_HOST:
       VIRTUAL_PORT: 8100
       LETSENCRYPT_HOST:
