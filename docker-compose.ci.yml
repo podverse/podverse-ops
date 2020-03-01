@@ -69,9 +69,9 @@ services:
         max-file: "1"
         max-size: "50m"
 
-  podverse_jenkins_tutorial:
+  podverse_jenkins_admin:
     image: jenkinsci/blueocean
-    container_name: podverse_jenkins_tutorial
+    container_name: podverse_jenkins_admin
     privileged: true
     networks:
       - nginx-proxy
