@@ -48,6 +48,8 @@ services:
     image: docker:dind
     container_name: podverse_jenkins_docker
     privileged: true
+    depends_on:
+      - podverse_nginx_proxy
     ports:
       - 3000:3000
     volumes:
@@ -73,6 +75,8 @@ services:
     image: jenkinsci/blueocean
     container_name: podverse_jenkins_admin
     privileged: true
+    depends_on:
+      - podverse_nginx_proxy
     networks:
       - nginx-proxy
     environment:
