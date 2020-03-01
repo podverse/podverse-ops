@@ -56,7 +56,7 @@ services:
       - jenkins-data:/var/jenkins_home
       - $HOME:/home
     networks:
-      - jenkins
+      - nginx-proxy
     environment:
       DOCKER_TLS_CERTDIR: "/certs"
     environment:
@@ -75,7 +75,7 @@ services:
     container_name: podverse_jenkins_tutorial
     privileged: true
     networks:
-      - jenkins
+      - nginx-proxy
     environment:
       DOCKER_HOST: "tcp://docker:2376"
       DOCKER_CERT_PATH: "/certs/client"
@@ -103,9 +103,11 @@ services:
         max-size: "50m"
 
 networks:
-  jenkins:
+  nginx-proxy:
     external: true
 
 volumes:
+  vhost:
+  html:
   jenkins-docker-certs:
   jenkins-data:
