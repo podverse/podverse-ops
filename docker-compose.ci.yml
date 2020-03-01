@@ -90,6 +90,9 @@ services:
       LETSENCRYPT_HOST:
       LETSENCRYPT_EMAIL:
     expose:
+      - 80
+      - 8100
+    expose:
       - 8100
     ports:
       - 8100:8080
