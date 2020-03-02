@@ -18,5 +18,3 @@ config/podverse-web-prod.env
 config/bitpay/api.key
 
 config/google/jwt.keys.json
-
-jenkins
