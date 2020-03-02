@@ -4,7 +4,7 @@ services:
 
   podverse_nginx_proxy:
     image: jwilder/nginx-proxy
-    container_name: podverse_nginx_proxy_prod
+    container_name: podverse_nginx_proxy_ci
     ports:
       - 80:80
       - 443:443
@@ -28,7 +28,7 @@ services:
 
   podverse_letsencrypt_nginx:
     image: jrcs/letsencrypt-nginx-proxy-companion
-    container_name: podverse_letsencrypt_nginx_prod
+    container_name: podverse_letsencrypt_nginx_ci
     depends_on: 
       - podverse_nginx_proxy
     volumes:
