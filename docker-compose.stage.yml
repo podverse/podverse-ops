@@ -15,6 +15,7 @@ services:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./stage-proxy.conf:/etc/nginx/vhost.d/default_location:ro
       - static-admin:/tmp/static-admin
+      - ./.htpasswd:/tmp/.htpasswd
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
     networks:
