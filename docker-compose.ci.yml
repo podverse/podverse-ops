@@ -75,6 +75,7 @@ services:
     image: jenkinsci/blueocean
     container_name: podverse_jenkins_admin
     privileged: true
+    restart: always
     depends_on:
       - podverse_nginx_proxy
     networks:
