@@ -6,7 +6,7 @@ services:
     cap_add:
      - NET_ADMIN
     image: kylemanna/openvpn
-    container_name: podverse_openvpn
+    container_name: podverse_openvpn_stage
     restart: always
     ports:
      - "1194:1194/udp"
@@ -14,6 +14,8 @@ services:
      - ./openvpn-data/conf:/etc/openvpn
     networks:
       - nginx-proxy
+    environment:
+      ENABLE_IPV6: "true"
     logging:
       driver: "json-file"
       options:
