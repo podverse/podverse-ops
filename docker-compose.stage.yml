@@ -2,6 +2,24 @@ version: "3"
 
 services:
 
+  podverse_openvpn:
+    cap_add:
+     - NET_ADMIN
+    image: kylemanna/openvpn
+    container_name: podverse_openvpn
+    restart: always
+    ports:
+     - "1194:1194/udp"
+    volumes:
+     - ./openvpn-data/conf:/etc/openvpn
+    networks:
+      - nginx-proxy
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
+
   podverse_nginx_proxy:
     image: jwilder/nginx-proxy
     container_name: podverse_nginx_proxy_stage
