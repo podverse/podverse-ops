@@ -116,7 +116,7 @@ services:
         max-size: "50m"
 
   podverse_web:
-    image: podverse/podverse_web
+    image: podverse/podverse_web:stage
     container_name: podverse_web_stage
     depends_on:
       - podverse_nginx_proxy
