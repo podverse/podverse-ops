@@ -56,6 +56,7 @@ services:
       - jenkins-docker-certs:/certs/client
       - jenkins-data:/var/jenkins_home
       - $HOME:/home
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - nginx-proxy
     environment:
@@ -72,7 +73,7 @@ services:
         max-size: "50m"
 
   podverse_jenkins_admin:
-    image: jenkinsci/blueocean
+    image: jenkins/jenkins:lts
     container_name: podverse_jenkins_admin
     privileged: true
     restart: always
@@ -88,6 +89,7 @@ services:
       - jenkins-data:/var/jenkins_home
       - jenkins-docker-certs:/certs/client:ro
       - $HOME:/home
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       JENKINS_OPTS: "--httpPort=8100"
       VIRTUAL_HOST:
