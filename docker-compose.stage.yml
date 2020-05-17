@@ -66,7 +66,7 @@ services:
         max-size: "50m"
 
   podverse_api:
-    image: podverse/podverse_api
+    image: podverse/podverse_api:stage
     container_name: podverse_api_stage
     depends_on:
       - podverse_nginx_proxy
@@ -92,7 +92,7 @@ services:
         max-size: "50m"
 
   podverse_api_parser_worker:
-    image: podverse/podverse_api
+    image: podverse/podverse_api:stage
     container_name: podverse_api_parser_worker_stage
     env_file:
       - ./config/podverse-api-stage.env
@@ -103,7 +103,7 @@ services:
         max-size: "50m"
 
   podverse_api_stats:
-    image: podverse/podverse_api
+    image: podverse/podverse_api:stage
     container_name: podverse_api_stats_stage
     env_file:
       - ./config/podverse-api-stage.env
