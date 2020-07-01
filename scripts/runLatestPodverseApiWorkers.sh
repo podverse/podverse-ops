@@ -12,3 +12,5 @@ docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name p
 sleep 30
 docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_5 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1800000
 sleep 30
+docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.yml run -d --name podverse_api_parser_worker_6 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 1800000
+sleep 30
