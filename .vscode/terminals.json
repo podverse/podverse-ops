@@ -4,61 +4,61 @@
     {
       "name": "Podverse API - open directory",
       "description": "Podverse API - open directory",
-      "cwd": "/Users/Mitch/Repos/podverse-api",
+      "cwd": "<path to repos>/podverse-api",
       "open": true
     },
     {
       "name": "Podverse UI - open directory",
       "description": "Podverse UI - open directory",
-      "cwd": "/Users/Mitch/Repos/podverse-ui",
+      "cwd": "<path to repos>/podverse-ui",
       "open": true
     },
     {
       "name": "Podverse Web - open directory",
       "description": "Podverse Web - open directory",
-      "cwd": "/Users/Mitch/Repos/podverse-web",
+      "cwd": "<path to repos>/podverse-web",
       "open": true
     },
     {
       "name": "Podverse Web Tests - open directory",
       "description": "Podverse Web Tests - open directory",
-      "cwd": "/Users/Mitch/Repos/podverse-web",
+      "cwd": "<path to repos>/podverse-web",
       "open": true
     },
     {
       "name": "Podverse RN - open directory",
       "description": "Podverse RN - open directory",
-      "cwd": "/Users/Mitch/Repos/podverse-rn",
+      "cwd": "<path to repos>/podverse-rn",
       "open": true
     },
     {
       "name": "Podverse F-Droid - open directory",
       "description": "Podverse F-Droid - open directory",
-      "cwd": "/Users/Mitch/Repos/podverse-fdroid",
+      "cwd": "<path to repos>/podverse-fdroid",
       "open": true
     },
     {
       "name": "Podverse Admin - open directory",
       "description": "Podverse Admin - open directory",
-      "cwd": "/Users/Mitch/Repos/podverse-admin",
+      "cwd": "<path to repos>/podverse-admin",
       "open": true
     },
     {
       "name": "Podverse Ops - open directory",
       "description": "Podverse Ops - open directory",
-      "cwd": "/Users/Mitch/Repos/podverse-ops",
+      "cwd": "<path to repos>/podverse-ops",
       "open": true
     },
     {
       "name": "Podverse SSH 1 - open directory",
       "description": "Podverse SSH - open directory",
-      "cwd": "/Users/Mitch/Repos/podverse-ops",
+      "cwd": "<path to repos>/podverse-ops",
       "open": true
     },
     {
       "name": "Podverse SSH 2 - open directory",
       "description": "Podverse SSH - open directory",
-      "cwd": "/Users/Mitch/Repos/podverse-ops",
+      "cwd": "<path to repos>/podverse-ops",
       "open": true
     }
   ]
