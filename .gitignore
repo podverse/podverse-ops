@@ -1,5 +1,7 @@
 node_modules
 
+.vscode/terminals.json
+
 config/podverse-api-local.env
 config/podverse-db-local.env
 config/podverse-admin-local.env
