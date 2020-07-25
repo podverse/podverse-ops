@@ -1,5 +1,7 @@
 node_modules
 
+truffle.log
+
 .vscode/terminals.json
 
 config/podverse-api-local.env
