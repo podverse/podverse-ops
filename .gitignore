@@ -22,3 +22,7 @@ config/podverse-web-prod.env
 config/bitpay/api.key
 
 config/google/jwt.keys.json
+
+utils/translate-json/
+!utils/translate-json/package.json
+!utils/translate-json/translate-json.js
