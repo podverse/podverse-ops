@@ -1,0 +1,27 @@
+{
+  "name": "translate-json",
+  "version": "1.0.0",
+  "description": "Awesome script written by Trevor Ewen and Randhi Pratama Putra that will automatically translate a json file into multiple languages using the Google Translate API. (We have created a package.json just to handle installing the required dependencies for this script.)",
+  "homepage": "https://github.com/tewen/gtd-scripts/blob/master/translate-json",
+  "main": "translate-json.js",
+  "scripts": {
+    "translate": "node translate-json.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/podverse/podverse-ops.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/podverse/podverse-ops/issues"
+  },
+  "dependencies": {
+    "google-translate-api-browser": "^1.1.71",
+    "lodash": "^4.17.20",
+    "moment": "^2.27.0",
+    "superagent": "^6.0.0",
+    "superagent-promise": "^1.1.0"
+  }
+}
