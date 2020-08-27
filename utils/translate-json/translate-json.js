@@ -12,12 +12,13 @@ let dicc = {};
 
 //Lang Codes https://ctrlq.org/code/19899-google-translate-languages
 
-if (process.argv.length >= 4) {
+if (process.argv.length === 6) {
 
     //Args
     const inputFile = process.argv[2];
-    const destinationCodes = process.argv[3].split(',');
-    const apiKey = process.argv.length > 4 && process.argv[4];
+    const languageCodes = process.argv[3].split(',');
+    const outputFile = process.argv[4];
+    const apiKey = process.argv[5];
 
     const apiUrl = _.template('https://www.googleapis.com/language/translate/v2?key=<%= apiKey %>&q=<%= value %>&source=en&target=<%= languageKey %>');
 
@@ -27,8 +28,9 @@ if (process.argv.length >= 4) {
 
     const getCache = (languageKey) => {
         try {        
-            dicc[languageKey] = {};    
-            let fileContent = fs.readFileSync(`./translateCache-${languageKey}.txt`, 'utf-8').split('\n');
+            dicc[languageKey] = {};
+            let fileContent = [];
+            // let fileContent = fs.readFileSync(`./translateCache-${languageKey}.txt`, 'utf-8').split('\n');
             fileContent.map((line)=> {
                 let cached = line.split('|');
                 if(cached[0]) dicc[languageKey][cached[0]] = cached[1];
@@ -40,7 +42,7 @@ if (process.argv.length >= 4) {
     const cachedIndex = (key, value, languageKey) => {
         const line = key + '|' + value + '\n';
         dicc[languageKey][key] = value;
-        fs.appendFileSync(`./translateCache-${languageKey}.txt`, line);
+        // fs.appendFileSync(`./translateCache-${languageKey}.txt`, line);
         return value;
     }
 
@@ -93,12 +95,7 @@ if (process.argv.length >= 4) {
         }
     }
 
-    Promise.all(_.reduce(destinationCodes, (sum, languageKey) => {
-        const fileName = _.template('./<%= languageKey %>-<%= timeStamp %>.json')({
-            languageKey,
-            timeStamp: moment().unix()
-        });
-
+    Promise.all(_.reduce(languageCodes, (sum, languageKey) => {
         //read languageKey Cache.
         getCache(languageKey);
 
@@ -106,12 +103,11 @@ if (process.argv.length >= 4) {
         return sum.concat(_.reduce(iterLeaves(JSON.parse(fs.readFileSync(path.resolve(inputFile), 'utf-8')), undefined, undefined, languageKey), (promiseChain, fn) => {
             return promiseChain.then(fn);
         }, Promise.resolve()).then((payload) => {
-            fs.writeFileSync(fileName, JSON.stringify(payload));
-        }).then(_.partial(console.log, 'Successfully translated all nodes, file output at ' + fileName)));
+            fs.writeFileSync(outputFile, JSON.stringify(payload, null, 2));
+        }).then(_.partial(console.log, 'Successfully translated all nodes, file output at ' + outputFile)));
     }, [])).then(() => {
         process.exit();
     });
-
 } else {
-    console.error('You must provide an input json file and a comma-separated list of destination language codes.');
+    console.error('You must provide an input json file, and a comma-separated list of language codes, an output file, and a Google API key.');
 }

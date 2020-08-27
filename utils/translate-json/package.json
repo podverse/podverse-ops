@@ -5,6 +5,8 @@
   "homepage": "https://github.com/tewen/gtd-scripts/blob/master/translate-json",
   "main": "translate-json.js",
   "scripts": {
+    "translate:podverse-rn": "./scripts/translate-podverse-rn.sh",
+    "translate:podverse-web": "./scripts/translate-podverse-web.sh",
     "translate": "node translate-json.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
