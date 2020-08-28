@@ -1,60 +1,58 @@
 version: "2"
 
 services:
-
   podverse_db:
     image: postgres:11.5
     container_name: podverse_db_local
     env_file:
       - ./config/podverse-db-local.env
     ports:
-      - '5432:5432'
+      - "5432:5432"
     command: postgres -c max_connections=200 -c superuser_reserved_connections=20 -c shared_buffers=2GB -c effective_cache_size=6GB -c maintenance_work_mem=512MB -c checkpoint_completion_target=0.7 -c wal_buffers=16MB -c default_statistics_target=100 -c random_page_cost=1.1 -c effective_io_concurrency=200 -c work_mem=5242kB -c min_wal_size=1GB -c max_wal_size=2GB -c max_worker_processes=4 -c max_parallel_workers_per_gather=2 -c max_parallel_workers=4
     restart: always
 
-  podverse_api:
-    image: podverse_api
-    container_name: podverse_api_local
-    env_file:
-      - ./config/podverse-api-local.env
-    ports:
-      - '1234:1234'
-    volumes:
-      - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
-    command: npm start
+  # podverse_api:
+  #   image: podverse_api
+  #   container_name: podverse_api_local
+  #   env_file:
+  #     - ./config/podverse-api-local.env
+  #   ports:
+  #     - '1234:1234'
+  #   volumes:
+  #     - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
+  #   command: npm start
 
-  podverse_api_parser_worker:
-    image: podverse_api
-    container_name: podverse_api_parser_worker_local
-    env_file:
-      - ./config/podverse-api-local.env
+  # podverse_api_parser_worker:
+  #   image: podverse_api
+  #   container_name: podverse_api_parser_worker_local
+  #   env_file:
+  #     - ./config/podverse-api-local.env
 
-  podverse_api_stats:
-    image: podverse_api
-    container_name: podverse_api_stats_local
-    env_file:
-      - ./config/podverse-api-local.env
-    volumes:
-      - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
+  # podverse_api_stats:
+  #   image: podverse_api
+  #   container_name: podverse_api_stats_local
+  #   env_file:
+  #     - ./config/podverse-api-local.env
+  #   volumes:
+  #     - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
 
-  podverse_web:
-    image: podverse_web
-    container_name: podverse_web_local
-    env_file:
-      - ./config/podverse-web-local.env
-    ports:
-      - '8765:8765'
-    command: npm start
+  # podverse_web:
+  #   image: podverse_web
+  #   container_name: podverse_web_local
+  #   env_file:
+  #     - ./config/podverse-web-local.env
+  #   ports:
+  #     - '8765:8765'
+  #   command: npm start
 
-  podverse_admin:
-    image: podverse_admin
-    container_name: podverse_admin_local
-    env_file:
-      - ./config/podverse-admin-local.env
-    ports:
-      - '8000:8000'
-    command: python manage.py runserver 0.0.0.0:8000
-
+  # podverse_admin:
+  #   image: podverse_admin
+  #   container_name: podverse_admin_local
+  #   env_file:
+  #     - ./config/podverse-admin-local.env
+  #   ports:
+  #     - '8000:8000'
+  #   command: python manage.py runserver 0.0.0.0:8000
 
 networks:
   default:
