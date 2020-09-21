@@ -77,7 +77,6 @@ services:
       LETSENCRYPT_HOST:
       LETSENCRYPT_EMAIL:
     expose:
-      - 443
       - 1234
     volumes:
       - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
@@ -128,7 +127,6 @@ services:
       LETSENCRYPT_HOST:
       LETSENCRYPT_EMAIL:
     expose:
-      - 443
       - 8765
     command: npm start
     networks:
@@ -154,7 +152,6 @@ services:
       LETSENCRYPT_HOST:
       LETSENCRYPT_EMAIL:
     expose:
-      - 443
       - 8000
     ports:
       - '8000:8000'
