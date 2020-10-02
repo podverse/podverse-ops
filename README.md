@@ -93,13 +93,19 @@ This project uses AWS SQS for its remote queue.
 To add all orphan feeds to the queue:
 
 ```
-docker exec podverse_api_### npm --prefix /tmp run scripts:addAllOrphanFeedUrlsToQueue
+docker exec podverse_api_### npm --prefix /tmp run scripts:addAllOrphanFeedUrlsToPriorityQueue
 ```
 
 To add all non-orphan, public feeds to the queue:
 
 ```
 docker exec podverse_api_### npm --prefix /tmp run scripts:addAllPublicFeedUrlsToQueue
+```
+
+To add all recently updated (according to Podcast Index), public feeds to the priority queue:
+
+```
+docker exec podverse_api_### npm --prefix /tmp run scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue
 ```
 
 After you have added feed urls to a queue, you can retrieve and then parse

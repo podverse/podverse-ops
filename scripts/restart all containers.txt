@@ -4,7 +4,7 @@ docker exec -d podverse_api_prod npm --prefix /tmp run seeds:categories
 
 docker exec -d podverse_api_prod npm --prefix /tmp run scripts:addFeedUrlsFromFile
 
-docker exec -d podverse_api_prod npm --prefix /tmp run scripts:addAllOrphanFeedUrlsToQueue
+docker exec -d podverse_api_prod npm --prefix /tmp run scripts:addAllOrphanFeedUrlsToPriorityQueue
 
 docker exec -it podverse_admin_prod python manage.py migrate
 

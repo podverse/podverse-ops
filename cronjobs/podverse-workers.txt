@@ -21,8 +21,9 @@
 
 55 */12 * * * /home/mitch/backup-repos/backup_repos.sh /home/mitch/backup-repos
 
-0 */4 * * * /home/mitch/podverse-ops/scripts/stopPodverseApiWorkers.sh prod
+10 * * * * /usr/local/bin/docker-compose -f /home/mitch/podverse-ops/docker-compose.prod.yml run --rm podverse_api_parser_worker npm run scripts:addAllOrphanFeedUrlsToPriorityQueue
+*/15 * * * * /usr/local/bin/docker-compose -f /home/mitch/podverse-ops/docker-compose.prod.yml run --rm podverse_api_parser_worker npm run scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue
+20 */4 * * * /home/mitch/podverse-ops/scripts/runLatestPodverseApiWorkers.sh prod
 
-5 */4 * * * /usr/local/bin/docker-compose -f /home/mitch/podverse-ops/docker-compose.prod.yml run --rm podverse_api_parser_worker npm run scripts:addAllOrphanFeedUrlsToQueue
-10 */4 * * * /usr/local/bin/docker-compose -f /home/mitch/podverse-ops/docker-compose.prod.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue
-15 */4 * * * /home/mitch/podverse-ops/scripts/runLatestPodverseApiWorkers.sh prod
+0 */12 * * * /home/mitch/podverse-ops/scripts/stopPodverseApiWorkers.sh prod
+5 */12 * * * /usr/local/bin/docker-compose -f /home/mitch/podverse-ops/docker-compose.prod.yml run --rm podverse_api_parser_worker npm run scripts:addAllPublicFeedUrlsToQueue
