@@ -7,6 +7,9 @@ git pull origin master
 cd $1/podverse-api
 git pull origin master
 
+cd $1/podverse-fdroid
+git pull origin master
+
 cd $1/podverse-ops
 git pull origin master
 
