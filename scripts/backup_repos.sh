@@ -21,3 +21,6 @@ git pull origin master
 
 cd $1/podverse-web
 git pull origin master
+
+cd $1/podableapp/podverse-rn
+git pull origin master
