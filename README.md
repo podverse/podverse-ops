@@ -102,6 +102,12 @@ To add all non-orphan, public feeds to the queue:
 docker exec podverse_api_### npm --prefix /tmp run scripts:addAllPublicFeedUrlsToQueue
 ```
 
+To add all non-authority feedUrls (podcasts that do not have an authorityId):
+
+```
+docker exec podverse_api_### npm --prefix /tmp run scripts:addNonAuthorityFeedUrlsToPriorityQueue
+```
+
 To add all recently updated (according to Podcast Index), public feeds to the priority queue:
 
 ```
