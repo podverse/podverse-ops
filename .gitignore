@@ -24,3 +24,5 @@ config/bitpay/api.key
 config/google/jwt.keys.json
 
 utils/translate-json/node_modules
+
+temp
