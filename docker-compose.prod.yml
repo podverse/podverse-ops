@@ -114,6 +114,19 @@ services:
         max-file: "1"
         max-size: "50m"
 
+  podverse_api_sync_with_podcast_index:
+    image: podverse/podverse_api
+    container_name: podverse_api_backup_database_prod
+    env_file:
+      - ./config/podverse-api-prod.env
+    volumes:      
+      - ../podverse-api/temp:/temp
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
+
   podverse_api_stats:
     image: podverse/podverse_api
     container_name: podverse_api_stats_prod
