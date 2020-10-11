@@ -116,7 +116,7 @@ services:
 
   podverse_api_sync_with_podcast_index:
     image: podverse/podverse_api
-    container_name: podverse_api_backup_database_prod
+    container_name: podverse_api_sync_with_podcast_index
     env_file:
       - ./config/podverse-api-prod.env
     volumes:      
