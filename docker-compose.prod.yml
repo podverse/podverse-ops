@@ -120,7 +120,7 @@ services:
     env_file:
       - ./config/podverse-api-prod.env
     volumes:      
-      - ../podverse-api/temp:/temp
+      - ../podverse-ops/temp:/temp
     logging:
       driver: "json-file"
       options:
