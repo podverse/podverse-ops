@@ -1,5 +1,7 @@
 -- These commands were used while restoring episodes and mediaRefs that were accidentally deleted.
 
+-- *** local commands *** --
+
 -- SELECT * FROM "mediaRefs" WHERE "isOfficialChapter"=TRUE
 
 -- SELECT * FROM "mediaRefs" WHERE "episodeId"='ZaBtM9LkAU9';
@@ -42,8 +44,43 @@
 -- 		ownerId
 -- FROM import.data_1604807460699_dead_mediarefs
 
--- DELETE FROM import.data_1604806497774_dead_episodes WHERE "mediaUrl" IS NULL
+-- DELETE FROM import.data_1604806497774_dead_episodes WHERE mediaurl IS NULL
 
--- DELETE FROM import.data_1604807460699_dead_mediarefs WHERE "episodeid" IS NULL
+-- DELETE FROM import.data_1604807460699_dead_mediarefs WHERE episodeid IS NULL
 
+----
 
+-- *** prod commands *** --
+
+-- INSERT INTO public.episodes (id,description,guid,"imageUrl","linkUrl","mediaType","mediaUrl",title,"podcastId")
+-- SELECT 						id,description,guid, imageUrl , linkUrl , mediaType , mediaUrl ,title, podcastId
+-- FROM import.data_1604806497774_dead_episodes WHERE id='4RA8aRVgm7G'
+
+-- SELECT * FROM public.episodes WHERE id='4RA8aRVgm7G'
+
+-- SELECT * FROM public.episodes WHERE "mediaUrl"=
+
+-- DELETE FROM import.data_1604806497774_dead_episodes WHERE mediaurl IS NULL
+
+-- DELETE FROM import.data_1604807460699_dead_mediarefs WHERE episodeid IS NULL
+
+-- INSERT INTO public."mediaRefs" (
+-- 	id,
+-- 	"endTime",
+-- 	"startTime",
+-- 	title,
+-- 	"episodeId",
+-- 	"ownerId"
+-- )
+-- SELECT id,
+-- 	CAST(
+-- 		CASE
+-- 			WHEN endTime='NULL' then NULL
+-- 			ELSE endTime
+-- 		END as integer
+-- 	),
+-- 		startTime::integer,
+-- 		title,
+-- 		episodeId,
+-- 		ownerId
+-- FROM import.data_1604807460699_dead_mediarefs
