@@ -105,7 +105,7 @@ docker exec podverse_api_### npm --prefix /tmp run scripts:addAllPublicFeedUrlsT
 To add all non-authority feedUrls (podcasts that do not have an authorityId):
 
 ```
-docker exec podverse_api_### npm --prefix /tmp run scripts:addNonAuthorityFeedUrlsToPriorityQueue
+docker exec podverse_api_### npm --prefix /tmp run scripts:addNonPodcastIndexFeedUrlsToPriorityQueue
 ```
 
 To add all recently updated (according to Podcast Index), public feeds to the priority queue:
