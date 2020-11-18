@@ -1,3 +1,6 @@
 /usr/bin/docker start podverse_api_parser_worker_priority_1
 /usr/bin/docker start podverse_api_parser_worker_priority_2
 /usr/bin/docker start podverse_api_parser_worker_priority_3
+/usr/bin/docker start podverse_api_parser_worker_priority_4
+/usr/bin/docker start podverse_api_parser_worker_priority_5
+/usr/bin/docker start podverse_api_parser_worker_priority_6
