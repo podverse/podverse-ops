@@ -1,0 +1,3 @@
+/usr/bin/docker podverse_api_parser_worker_priority_1
+/usr/bin/docker podverse_api_parser_worker_priority_2
+/usr/bin/docker podverse_api_parser_worker_priority_3
