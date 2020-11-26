@@ -66,6 +66,24 @@ services:
         max-file: "1"
         max-size: "50m"
 
+  podverse_sphinx_search:
+    image: macbre/sphinxsearch:3.3.1
+    container_name: podverse_sphinx_search_prod
+    ports:
+      - '9312:9312'
+    volumes:
+      - ./sphinx:/opt/log
+      - ./sphinx:/opt/sphinx/index
+      - ./sphinx/sphinx.conf:/opt/sphinx/conf/sphinx.conf
+    mem_limit: 512M
+    networks:
+      - nginx-proxy
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'
+
   podverse_api:
     image: podverse/podverse_api
     container_name: podverse_api_prod
