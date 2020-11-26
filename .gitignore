@@ -23,6 +23,8 @@ config/bitpay/api.key
 
 config/google/jwt.keys.json
 
+sphinx/production*
+
 utils/translate-json/node_modules
 
 temp
