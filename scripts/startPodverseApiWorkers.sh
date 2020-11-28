@@ -8,5 +8,3 @@
 /usr/bin/docker start podverse_api_parser_worker_priority_8
 /usr/bin/docker start podverse_api_parser_worker_priority_9
 /usr/bin/docker start podverse_api_parser_worker_priority_10
-/usr/bin/docker start podverse_api_parser_worker_priority_11
-/usr/bin/docker start podverse_api_parser_worker_priority_12
