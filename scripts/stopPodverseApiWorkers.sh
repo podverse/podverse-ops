@@ -6,3 +6,5 @@
 /usr/bin/docker stop podverse_api_parser_worker_priority_6
 /usr/bin/docker stop podverse_api_parser_worker_priority_7
 /usr/bin/docker stop podverse_api_parser_worker_priority_8
+/usr/bin/docker stop podverse_api_parser_worker_priority_9
+/usr/bin/docker stop podverse_api_parser_worker_priority_10
