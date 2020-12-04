@@ -25,23 +25,28 @@ services:
         max-file: '1'
         max-size: '50m'
     
-  podverse_sphinx_search:
-    image: macbre/sphinxsearch:3.3.1
-    container_name: podverse_sphinx_search_local
-    ports:
-      - '9312:9312'
-    volumes:
-      - ./sphinx:/opt/log
-      - ./sphinx:/opt/sphinx/index
-      - ./sphinx/sphinx.conf:/opt/sphinx/conf/sphinx.conf
-    mem_limit: 512M
+  podverse_manticore:
+    image: manticoresearch/manticore
+    container_name: podverse_manticore_local
+    depends_on: 
+      - podverse_db
+    restart: always
     networks:
       - nginx-proxy
-    logging:
-      driver: 'json-file'
-      options:
-        max-file: '1'
-        max-size: '50m'
+    ports:
+      - 9306:9306
+      - 9308:9308
+    ulimits:
+      nproc: 65535
+      nofile:
+         soft: 65535
+         hard: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./manticore/data:/var/lib/manticore
+      - ./manticore/manticore.conf:/etc/manticoresearch/manticore.conf
 
   # podverse_api:
   #   image: podverse_api
