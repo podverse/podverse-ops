@@ -23,7 +23,7 @@ config/bitpay/api.key
 
 config/google/jwt.keys.json
 
-sphinx/production*
+manticore/data*
 
 utils/translate-json/node_modules
 
