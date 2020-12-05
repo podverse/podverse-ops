@@ -1,0 +1,59 @@
+version: "3"
+
+services:
+
+  podverse_api_parser_worker:
+    image: podverse/podverse_api
+    container_name: podverse_api_parser_worker_prod
+    env_file:
+      - ./config/podverse-api-prod.env
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
+
+  podverse_api_backup_database:
+    image: podverse/podverse_api
+    container_name: podverse_api_backup_database_prod
+    env_file:
+      - ./config/podverse-api-prod.env
+    volumes:      
+      - ../db-backups:/db-backups
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
+
+  podverse_api_sync_with_podcast_index:
+    image: podverse/podverse_api
+    container_name: podverse_api_sync_with_podcast_index
+    env_file:
+      - ./config/podverse-api-prod.env
+    volumes:      
+      - ../podverse-ops/temp:/temp
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
+    command: tail -F anything
+
+  podverse_api_stats:
+    image: podverse/podverse_api
+    container_name: podverse_api_stats_prod
+    env_file:
+      - ./config/podverse-api-prod.env
+    volumes:
+      - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
+
+volumes:
+  vhost:
+  html:
+  static-admin:
