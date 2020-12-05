@@ -47,6 +47,11 @@ services:
     volumes:
       - ./manticore/data:/var/lib/manticore
       - ./manticore/manticore.conf:/etc/manticoresearch/manticore.conf
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'
 
   # podverse_api:
   #   image: podverse_api
