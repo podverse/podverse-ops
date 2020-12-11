@@ -6,5 +6,3 @@
 /usr/bin/docker start podverse_api_parser_worker_6
 /usr/bin/docker start podverse_api_parser_worker_7
 /usr/bin/docker start podverse_api_parser_worker_8
-/usr/bin/docker start podverse_api_parser_worker_9
-/usr/bin/docker start podverse_api_parser_worker_10
