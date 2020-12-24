@@ -8,6 +8,12 @@
       "open": true
     },
     {
+      "name": "Podverse API tests - open directory",
+      "description": "Podverse API tests - open directory",
+      "cwd": "<path to repos>/podverse-api",
+      "open": true
+    },
+    {
       "name": "Podverse UI - open directory",
       "description": "Podverse UI - open directory",
       "cwd": "<path to repos>/podverse-ui",
@@ -47,6 +53,24 @@
       "name": "Podverse Ops - open directory",
       "description": "Podverse Ops - open directory",
       "cwd": "<path to repos>/podverse-ops",
+      "open": true
+    },
+    {
+      "name": "Podverse Shared - open directory",
+      "description": "podverse-shared - open directory",
+      "cwd": "<path to repos>/podverse-shared",
+      "open": true
+    },
+    {
+      "name": "podcast-feed-parser - open directory",
+      "description": "podcast-feed-parser - open directory",
+      "cwd": "<path to repos>/podcast-feed-parser",
+      "open": true
+    },
+    {
+      "name": "podcastindex - open directory",
+      "description": "podcastindex - open directory",
+      "cwd": "<path to repos>/podcastindex",
       "open": true
     },
     {
