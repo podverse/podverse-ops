@@ -65,13 +65,6 @@ A list of sample podcast feed urls can be found in
 docker exec podverse_api_### npm --prefix /tmp run scripts:addFeedUrls <feed urls>
 ```
 
-OR you can pass an array of feed urls in the /src/config/parser/addFeedUrlsFile.json file,
-then run the `npm run dev:scripts:addFeedUrlsFromFile` command.
-
-```
-docker exec podverse_api_### npm --prefix /tmp run scripts:addFeedUrlsFromFile
-```
-
 ### Parse feed urls to add podcasts and episodes to the database
 
 Orphan feed urls do not have a podcast associated with them.
