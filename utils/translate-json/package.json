@@ -7,6 +7,7 @@
   "scripts": {
     "translate:podverse-rn": "./scripts/translate-podverse-rn.sh",
     "translate:podverse-web": "./scripts/translate-podverse-web.sh",
+    "create-human-language-file": "./scripts/create-human-language-file.sh",
     "translate": "node translate-json.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
