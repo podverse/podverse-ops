@@ -11,9 +11,7 @@ const { translate } = require("google-translate-api-browser");
 let dicc = {};
 
 const humanTranslations = {
-    es: require("./es-human.json"),
-    it: require("./it-human.json"),
-    pt: require("./pt-human.json")
+    es: require("./es-human.json")
 }
 
 const sortObject = (obj) => {
