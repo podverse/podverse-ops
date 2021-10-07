@@ -10,104 +10,61 @@ const agent = require('superagent-promise')(require('superagent'), Promise);
 const { translate } = require("google-translate-api-browser");
 let dicc = {};
 
-//Lang Codes https://ctrlq.org/code/19899-google-translate-languages
+const humanTranslations = {
+    es: require("./es-human.json")
+}
+
+const sortObject = (obj) => {
+    return _(obj).toPairs().sortBy(0).fromPairs().value()
+}
 
 if (process.argv.length === 6) {
-
     //Args
     const inputFile = process.argv[2];
-    const languageCodes = process.argv[3].split(',');
+    const languageKey = process.argv[3]
     const outputFile = process.argv[4];
     const apiKey = process.argv[5];
 
     const apiUrl = _.template('https://www.googleapis.com/language/translate/v2?key=<%= apiKey %>&q=<%= value %>&source=en&target=<%= languageKey %>');
-
-    const transformResponse = (res) => {
-        return _.get(JSON.parse(res.text), ['data', 'translations', 0, 'translatedText'], '');
+    const transformResponse = (res, key, languageKey) => {
+        return {key, value:_.get(JSON.parse(res.text), ['data', 'translations', 0, 'translatedText'], '')};
     }
 
-    const getCache = (languageKey) => {
-        try {        
-            dicc[languageKey] = {};
-            let fileContent = [];
-            // let fileContent = fs.readFileSync(`./translateCache-${languageKey}.txt`, 'utf-8').split('\n');
-            fileContent.map((line)=> {
-                let cached = line.split('|');
-                if(cached[0]) dicc[languageKey][cached[0]] = cached[1];
-            });
-        } catch (error) {
-            
-        }
-    }
-    const cachedIndex = (key, value, languageKey) => {
-        const line = key + '|' + value + '\n';
-        dicc[languageKey][key] = value;
-        // fs.appendFileSync(`./translateCache-${languageKey}.txt`, line);
-        return value;
-    }
+    const inputJSON = JSON.parse(fs.readFileSync(path.resolve(inputFile), 'utf-8'))
 
-    function iterLeaves(value, keyChain, accumulator, languageKey) {
-        accumulator = accumulator || {};
-        keyChain = keyChain || [];
-        if (_.isObject(value)) {
-            return _.chain(value).reduce((handlers, v, k) => {
-                return handlers.concat(iterLeaves(v, keyChain.concat(k), accumulator, languageKey));
-            }, []).flattenDeep().value();
+    let promArr =[]
+    dicc[languageKey] = {}
+
+    for (const wordKey in inputJSON) {
+        if(humanTranslations[languageKey][wordKey]) {
+            promArr.push(new Promise((resolve) => {
+                resolve({key:wordKey, value: humanTranslations[languageKey][wordKey] })
+            }))
         } else {
-            if(typeof value !== 'string')
-                return value;
-
-            return function () {
-                if(!(value in dicc[languageKey])) {
-                    console.log(_.template('Translating <%= value %> to <%= languageKey %>')({value, languageKey}));
-    
-                    let prom;
-                    //Translates individual string to language code
-                    if(apiKey != '') {
-                        //using apiKey
-                        prom = agent('GET', apiUrl({
-                            value: encodeURI(value),
-                            languageKey,
-                            apiKey
-                        })).then(transformResponse)
-                    }
-                    else {
-                        //using free api key 
-                        prom = translate(value, { to: languageKey })
-                    }
-                    
-                    return prom.then((res) => cachedIndex(value, res, languageKey))
-                    .catch((err) => console.log(err))
-                    .then((text) => {
-                        //Sets the value in the accumulator
-                        _.set(accumulator, keyChain, text);
-    
-                        //This needs to be returned to it's eventually written to json
-                        return accumulator;
-                    });
-                }
-                else {
-                    console.log(value + ' cached: ' + dicc[languageKey][value]);
-                    _.set(accumulator, keyChain, dicc[languageKey][value]);    
-                    return accumulator;
-                }
-            };
+            humanTranslations[languageKey][wordKey] = ""
+            promArr.push(agent('GET', apiUrl({
+                value: encodeURI(wordKey),
+                languageKey,
+                apiKey
+            }))
+            .then((res) => {
+                return transformResponse(res, wordKey)
+            }))
         }
     }
+    
+    Promise.all(promArr).then(resArr => {
+        resArr = _.sortBy( resArr, 'key' )
+        
+        for (const res of resArr) {
+            const {key, value} = res
+            dicc[languageKey][key] = value
+        }
 
-    Promise.all(_.reduce(languageCodes, (sum, languageKey) => {
-        //read languageKey Cache.
-        getCache(languageKey);
-
-        //Starts with the top level strings
-        return sum.concat(_.reduce(iterLeaves(JSON.parse(fs.readFileSync(path.resolve(inputFile), 'utf-8')), undefined, undefined, languageKey), (promiseChain, fn) => {
-            return promiseChain.then(fn);
-        }, Promise.resolve()).then((payload) => {
-            fs.writeFileSync(outputFile, JSON.stringify(payload, null, 2));
-        }).then(_.partial(console.log, 'Successfully translated all nodes, file output at ' + outputFile)));
-    }, [])).then(() => {
-        process.exit();
-    });
+        fs.writeFileSync(languageKey + "-human.json", JSON.stringify(sortObject(humanTranslations[languageKey]), null, 2));
+        fs.writeFileSync(outputFile, JSON.stringify(dicc[languageKey], null, 2));
+        console.log("All Done!!")
+    })
 } else {
     console.error('You must provide an input json file, and a comma-separated list of language codes, an output file, and a Google API key.');
 }
