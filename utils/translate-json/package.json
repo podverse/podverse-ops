@@ -7,6 +7,7 @@
   "scripts": {
     "translate:podverse-rn": "./scripts/translate-podverse-rn.sh",
     "translate:podverse-web": "./scripts/translate-podverse-web.sh",
+    "create-human-language-file": "./scripts/create-human-language-file.sh",
     "translate": "node translate-json.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,7 +22,7 @@
   },
   "dependencies": {
     "google-translate-api-browser": "^1.1.71",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "moment": "^2.27.0",
     "superagent": "^6.0.0",
     "superagent-promise": "^1.1.0"
