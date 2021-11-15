@@ -84,7 +84,7 @@ services:
   #   env_file:
   #     - ./config/podverse-web-local.env
   #   ports:
-  #     - '8765:8765'
+  #     - '3000:3000'
   #   command: npm start
 
   # podverse_admin:
