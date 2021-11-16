@@ -91,11 +91,11 @@ services:
       - ./config/podverse-web-prod.env
     environment:
       VIRTUAL_HOST:
-      VIRTUAL_PORT: 8765
+      VIRTUAL_PORT: 3000
       LETSENCRYPT_HOST:
       LETSENCRYPT_EMAIL:
     expose:
-      - 8765
+      - 3000
     command: npm start
     networks:
       - nginx-proxy
