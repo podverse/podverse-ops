@@ -22,7 +22,10 @@ const rnTranslations = {
   lt: require("./human-translated-overrides/podverse-rn/lt-human.json")
 }
 
-const webTranslations = {}
+const webTranslations = {
+  es: require("./human-translated-overrides/podverse-web/es-human.json"),
+  lt: require("./human-translated-overrides/podverse-web/lt-human.json")
+}
 
 let humanTranslations = {}
 if (repoName === 'podverse-rn') {
@@ -43,10 +46,31 @@ const getRepoPath = () => {
   }
 }
 
+const getInputFileName = () => {
+  if (repoName === 'podverse-rn') {
+    return 'en.json'
+  } else if (repoName === 'podverse-web') {
+    return `en/common.json`
+  } else {
+    throw new Error(`Invalid repo name provided. Valid options: ${validRepoNameParameters.join(', ')}`)
+  }
+}
+
+const getOutputPath = () => {
+  if (repoName === 'podverse-rn') {
+    return `${repoPath}/${languageKey}.json`
+  } else if (repoName === 'podverse-web') {
+    return `${repoPath}/${languageKey}/common.json`
+  } else {
+    throw new Error(`Invalid repo name provided. Valid options: ${validRepoNameParameters.join(', ')}`)
+  }
+}
+
 const repoPath = getRepoPath()
-const inputFile = `${repoPath}/en.json`
+const inputFileName = getInputFileName()
+const inputFile = `${repoPath}/${inputFileName}`
 const overridesFilePath = `./human-translated-overrides/${repoName}/${languageKey}-human.json`
-const outputPath = `${repoPath}/${languageKey}.json`
+const outputPath = getOutputPath()
 
 module.exports = {
   googleAPIKey,
