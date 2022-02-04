@@ -1,1 +1,1 @@
-node create-human-language-file.js ../../../podverse-rn/src/resources/i18n/translations/en.json $1
+node create-human-language-file.js $1 $2
