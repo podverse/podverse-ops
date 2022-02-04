@@ -18,6 +18,8 @@ Any values that are put in this JSON file will *override* the values that otherw
 
 ## Auto-translate a language file
 
+NOTE: Before running the command, you must import/require the human-translated-overrides file you created in the previous section to the ./translate-json/util.js file in the corresponding translations object.
+
 Run the following command:
 
 `yarn translate:<repo name> <language code> <Google API key>`
