@@ -3,9 +3,3 @@ docker-compose -f docker-compose.prod.yml up -d podverse_nginx_proxy podverse_le
 docker exec -d podverse_api_prod npm --prefix /tmp run seeds:categories
 
 docker exec -d podverse_api_prod npm --prefix /tmp run scripts:addAllOrphanFeedUrlsToPriorityQueue
-
-docker exec -it podverse_admin_prod python manage.py migrate
-
-docker exec -it podverse_admin_prod python manage.py create_permissions_and_groups
-
-docker exec -it podverse_admin_prod python manage.py createsuperuser

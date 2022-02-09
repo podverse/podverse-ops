@@ -86,14 +86,3 @@ services:
   #   ports:
   #     - '3000:3000'
   #   command: npm start
-
-  # podverse_admin:
-  #   image: podverse_admin
-  #   container_name: podverse_admin_local
-  #   env_file:
-  #     - ./config/podverse-admin-local.env
-  #   ports:
-  #     - '8000:8000'
-  #   command: python manage.py runserver 0.0.0.0:8000
-
-

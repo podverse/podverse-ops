@@ -14,12 +14,6 @@
       "open": true
     },
     {
-      "name": "Podverse UI - open directory",
-      "description": "Podverse UI - open directory",
-      "cwd": "<path to repos>/podverse-ui",
-      "open": true
-    },
-    {
       "name": "Podverse Web - open directory",
       "description": "Podverse Web - open directory",
       "cwd": "<path to repos>/podverse-web",
@@ -41,12 +35,6 @@
       "name": "Podverse F-Droid - open directory",
       "description": "Podverse F-Droid - open directory",
       "cwd": "<path to repos>/podverse-fdroid",
-      "open": true
-    },
-    {
-      "name": "Podverse Admin - open directory",
-      "description": "Podverse Admin - open directory",
-      "cwd": "<path to repos>/podverse-admin",
       "open": true
     },
     {

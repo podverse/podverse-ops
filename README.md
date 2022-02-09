@@ -41,7 +41,7 @@ docker network create nginx-proxy
 Then run the application containers:
 
 ```
-docker-compose -f docker-compose.###.yml up -d podverse_nginx_proxy podverse_letsencrypt_nginx podverse_db podverse_api podverse_web podverse_admin
+docker-compose -f docker-compose.###.yml up -d podverse_nginx_proxy podverse_letsencrypt_nginx podverse_db podverse_api podverse_web
 ```
 
 ### Add podcast categories to the database
@@ -157,23 +157,6 @@ Analytics, which is used throughout the site for sorting by popularity (not an i
 25 */8 * * * /usr/local/bin/docker-compose -f /home/mitch/podverse-ops/docker-compose.prod.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- podcasts year
 40 */12 * * * /usr/local/bin/docker-compose -f /home/mitch/podverse-ops/docker-compose.prod.yml run --rm podverse_api_stats npm run scripts:queryUniquePageviews -- podcasts allTime
 ```
-
-### Setup podverse-admin
-
-After you start the podverse_admin container for the first time, you will need to run the following commands:
-
-#### run migrations
-
-`docker exec -it podverse_admin_### python manage.py migrate`
-
-#### create permissions and groups
-
-`docker exec -it podverse_admin_### python manage.py create_permissions_and_groups`
-
-#### create a superuser
-
-`docker exec -it podverse_admin_### python manage.py createsuperuser`
-
 ### Automated Database Backup
 
 You can run the `scripts/db_backup.sh` file with cron to automatically backup the database. Follow steps 1 and 2 in [this tutorial by Rahul Kumar](https://tecadmin.net/install-postgresql-server-on-ubuntu/) to install pg_dump, and follow [this tutorial by Pranav Prakash](https://pranavprakash.net/2017/05/16/automated-postgresql-backups/) to configure the script.

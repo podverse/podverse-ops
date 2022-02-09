@@ -6,17 +6,14 @@ truffle.log
 
 config/podverse-api-local.env
 config/podverse-db-local.env
-config/podverse-admin-local.env
 config/podverse-web-local.env
 
 config/podverse-api-stage.env
 config/podverse-db-stage.env
-config/podverse-admin-stage.env
 config/podverse-web-stage.env
 
 config/podverse-api-prod.env
 config/podverse-db-prod.env
-config/podverse-admin-prod.env
 config/podverse-web-prod.env
 
 config/bitpay/api.key
@@ -28,3 +25,5 @@ manticore/data*
 utils/translate-json/node_modules
 
 temp
+
+nginx-error.log

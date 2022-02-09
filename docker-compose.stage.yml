@@ -168,32 +168,6 @@ services:
         max-file: "1"
         max-size: "50m"
 
-  podverse_admin:
-    image: podverse/podverse_admin
-    container_name: podverse_admin_stage
-    env_file:
-      - ./config/podverse-admin-stage.env
-    volumes:
-      - static-admin:/tmp/static-admin
-    environment:
-      VIRTUAL_HOST:
-      VIRTUAL_PORT: 8000
-      LETSENCRYPT_HOST:
-      LETSENCRYPT_EMAIL:
-    expose:
-      - 80
-      - 8000
-    ports:
-      - '8000:8000'
-    command: python manage.py runserver 0.0.0.0:8000
-    networks:
-      - nginx-proxy
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "1"
-        max-size: "50m"
-
 networks:
   nginx-proxy:
     external: true
