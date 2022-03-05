@@ -74,26 +74,26 @@ services:
         hard: -1
     volumes:
       - ./manticore/data:/var/lib/manticore
-      - ./manticore/episode_export_00.csv:/etc/manticoresearch/episode_export_00.csv
-      - ./manticore/episode_export_01.csv:/etc/manticoresearch/episode_export_01.csv
-      - ./manticore/episode_export_02.csv:/etc/manticoresearch/episode_export_02.csv
-      - ./manticore/episode_export_03.csv:/etc/manticoresearch/episode_export_03.csv
-      - ./manticore/episode_export_04.csv:/etc/manticoresearch/episode_export_04.csv
-      - ./manticore/episode_export_05.csv:/etc/manticoresearch/episode_export_05.csv
-      - ./manticore/episode_export_06.csv:/etc/manticoresearch/episode_export_06.csv
-      - ./manticore/episode_export_07.csv:/etc/manticoresearch/episode_export_07.csv
-      - ./manticore/episode_export_08.csv:/etc/manticoresearch/episode_export_08.csv
-      - ./manticore/episode_export_09.csv:/etc/manticoresearch/episode_export_09.csv
-      - ./manticore/episode_export_10.csv:/etc/manticoresearch/episode_export_10.csv
-      - ./manticore/episode_export_11.csv:/etc/manticoresearch/episode_export_11.csv
-      - ./manticore/episode_export_12.csv:/etc/manticoresearch/episode_export_12.csv
-      - ./manticore/episode_export_13.csv:/etc/manticoresearch/episode_export_13.csv
-      - ./manticore/episode_export_14.csv:/etc/manticoresearch/episode_export_14.csv
-      - ./manticore/episode_export_15.csv:/etc/manticoresearch/episode_export_15.csv
-      - ./manticore/episode_export_16.csv:/etc/manticoresearch/episode_export_16.csv
-      - ./manticore/episode_export_17.csv:/etc/manticoresearch/episode_export_17.csv
-      - ./manticore/episode_export_18.csv:/etc/manticoresearch/episode_export_18.csv
-      - ./manticore/episode_export_19.csv:/etc/manticoresearch/episode_export_19.csv
+      - ./manticore/episode_export_csvs/episode_export_00.csv:/etc/manticoresearch/episode_export_00.csv
+      - ./manticore/episode_export_csvs/episode_export_01.csv:/etc/manticoresearch/episode_export_01.csv
+      - ./manticore/episode_export_csvs/episode_export_02.csv:/etc/manticoresearch/episode_export_02.csv
+      - ./manticore/episode_export_csvs/episode_export_03.csv:/etc/manticoresearch/episode_export_03.csv
+      - ./manticore/episode_export_csvs/episode_export_04.csv:/etc/manticoresearch/episode_export_04.csv
+      - ./manticore/episode_export_csvs/episode_export_05.csv:/etc/manticoresearch/episode_export_05.csv
+      - ./manticore/episode_export_csvs/episode_export_06.csv:/etc/manticoresearch/episode_export_06.csv
+      - ./manticore/episode_export_csvs/episode_export_07.csv:/etc/manticoresearch/episode_export_07.csv
+      - ./manticore/episode_export_csvs/episode_export_08.csv:/etc/manticoresearch/episode_export_08.csv
+      - ./manticore/episode_export_csvs/episode_export_09.csv:/etc/manticoresearch/episode_export_09.csv
+      - ./manticore/episode_export_csvs/episode_export_10.csv:/etc/manticoresearch/episode_export_10.csv
+      - ./manticore/episode_export_csvs/episode_export_11.csv:/etc/manticoresearch/episode_export_11.csv
+      - ./manticore/episode_export_csvs/episode_export_12.csv:/etc/manticoresearch/episode_export_12.csv
+      - ./manticore/episode_export_csvs/episode_export_13.csv:/etc/manticoresearch/episode_export_13.csv
+      - ./manticore/episode_export_csvs/episode_export_14.csv:/etc/manticoresearch/episode_export_14.csv
+      - ./manticore/episode_export_csvs/episode_export_15.csv:/etc/manticoresearch/episode_export_15.csv
+      - ./manticore/episode_export_csvs/episode_export_16.csv:/etc/manticoresearch/episode_export_16.csv
+      - ./manticore/episode_export_csvs/episode_export_17.csv:/etc/manticoresearch/episode_export_17.csv
+      - ./manticore/episode_export_csvs/episode_export_18.csv:/etc/manticoresearch/episode_export_18.csv
+      - ./manticore/episode_export_csvs/episode_export_19.csv:/etc/manticoresearch/episode_export_19.csv
       - ./manticore/manticore.conf:/etc/manticoresearch/manticore.conf
     logging:
       driver: 'json-file'
