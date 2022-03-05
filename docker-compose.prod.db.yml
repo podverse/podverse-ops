@@ -60,6 +60,10 @@ services:
     ports:
       - 9306:9306
       - 9308:9308
+    deploy:
+      resources:
+        limits:
+          memory: 4GB
     ulimits:
       nproc: 65535
       nofile:
