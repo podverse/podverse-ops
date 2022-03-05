@@ -87,6 +87,7 @@ services:
         hard: -1
     volumes:
       - ./manticore/data:/var/lib/manticore
+      - ./manticore/data/episode_export_with_serial_column.csv:/etc/manticoresearch/episode_export_with_serial_column.csv
       - ./manticore/manticore.conf:/etc/manticoresearch/manticore.conf
     logging:
       driver: 'json-file'

@@ -70,6 +70,7 @@ services:
         hard: -1
     volumes:
       - /mnt/podverse_db_prod_volume/manticore/data:/var/lib/manticore
+      - /mnt/podverse_db_prod_volume/manticore/data/episode_export_with_serial_column.csv:/etc/manticoresearch/episode_export_with_serial_column.csv
       - /mnt/podverse_db_prod_volume/manticore/manticore.conf:/etc/manticoresearch/manticore.conf
     logging:
       driver: 'json-file'
