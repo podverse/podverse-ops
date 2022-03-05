@@ -70,6 +70,26 @@ services:
       - ./manticore/episode_export_csvs/episode_export_17.csv:/etc/manticoresearch/episode_export_17.csv
       - ./manticore/episode_export_csvs/episode_export_18.csv:/etc/manticoresearch/episode_export_18.csv
       - ./manticore/episode_export_csvs/episode_export_19.csv:/etc/manticoresearch/episode_export_19.csv
+      - ./manticore/episode_export_csvs/episode_export_20.csv:/etc/manticoresearch/episode_export_20.csv
+      - ./manticore/episode_export_csvs/episode_export_21.csv:/etc/manticoresearch/episode_export_21.csv
+      - ./manticore/episode_export_csvs/episode_export_22.csv:/etc/manticoresearch/episode_export_22.csv
+      - ./manticore/episode_export_csvs/episode_export_23.csv:/etc/manticoresearch/episode_export_23.csv
+      - ./manticore/episode_export_csvs/episode_export_24.csv:/etc/manticoresearch/episode_export_24.csv
+      - ./manticore/episode_export_csvs/episode_export_25.csv:/etc/manticoresearch/episode_export_25.csv
+      - ./manticore/episode_export_csvs/episode_export_26.csv:/etc/manticoresearch/episode_export_26.csv
+      - ./manticore/episode_export_csvs/episode_export_27.csv:/etc/manticoresearch/episode_export_27.csv
+      - ./manticore/episode_export_csvs/episode_export_28.csv:/etc/manticoresearch/episode_export_28.csv
+      - ./manticore/episode_export_csvs/episode_export_29.csv:/etc/manticoresearch/episode_export_29.csv
+      - ./manticore/episode_export_csvs/episode_export_30.csv:/etc/manticoresearch/episode_export_30.csv
+      - ./manticore/episode_export_csvs/episode_export_31.csv:/etc/manticoresearch/episode_export_31.csv
+      - ./manticore/episode_export_csvs/episode_export_32.csv:/etc/manticoresearch/episode_export_32.csv
+      - ./manticore/episode_export_csvs/episode_export_33.csv:/etc/manticoresearch/episode_export_33.csv
+      - ./manticore/episode_export_csvs/episode_export_34.csv:/etc/manticoresearch/episode_export_34.csv
+      - ./manticore/episode_export_csvs/episode_export_35.csv:/etc/manticoresearch/episode_export_35.csv
+      - ./manticore/episode_export_csvs/episode_export_36.csv:/etc/manticoresearch/episode_export_36.csv
+      - ./manticore/episode_export_csvs/episode_export_37.csv:/etc/manticoresearch/episode_export_37.csv
+      - ./manticore/episode_export_csvs/episode_export_38.csv:/etc/manticoresearch/episode_export_38.csv
+      - ./manticore/episode_export_csvs/episode_export_39.csv:/etc/manticoresearch/episode_export_39.csv
       - ./manticore/manticore.conf:/etc/manticoresearch/manticore.conf
     logging:
       driver: 'json-file'
