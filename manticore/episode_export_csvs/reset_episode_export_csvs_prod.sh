@@ -1,40 +1,9 @@
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_00.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_01.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_02.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_03.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_04.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_05.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_06.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_07.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_08.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_09.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_10.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_11.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_12.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_13.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_14.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_15.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_16.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_17.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_18.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_19.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_20.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_21.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_22.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_23.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_24.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_25.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_26.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_27.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_28.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_29.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_30.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_31.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_32.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_33.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_34.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_35.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_36.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_37.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_38.csv
-cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_39.csv
+for i in `seq -w 1 9`
+do
+    cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_0$i.csv
+done
+
+for i in `seq -w 10 99`
+do
+    cp /dev/null /home/mitch/podverse-ops/manticore/episode_export_csvs/episode_export_$i.csv
+done
