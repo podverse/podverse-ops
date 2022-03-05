@@ -21,6 +21,7 @@ config/bitpay/api.key
 config/google/jwt.keys.json
 
 manticore/data*
+manticore/episode_export.csv
 manticore/episode_export_with_serial_column.csv
 
 utils/translate-json/node_modules
