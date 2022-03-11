@@ -5,6 +5,9 @@ services:
   podverse_api_parser_worker:
     image: podverse/podverse_api
     container_name: podverse_api_parser_worker_prod
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     env_file:
       - ./config/podverse-api-prod.env
     logging:
@@ -16,6 +19,9 @@ services:
   podverse_api_backup_database:
     image: podverse/podverse_api
     container_name: podverse_api_backup_database_prod
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     env_file:
       - ./config/podverse-api-prod.env
     volumes:      
@@ -29,6 +35,9 @@ services:
   podverse_api_sync_with_podcast_index:
     image: podverse/podverse_api
     container_name: podverse_api_sync_with_podcast_index
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     env_file:
       - ./config/podverse-api-prod.env
     volumes:      
@@ -43,6 +52,9 @@ services:
   podverse_api_stats:
     image: podverse/podverse_api
     container_name: podverse_api_stats_prod
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     env_file:
       - ./config/podverse-api-prod.env
     volumes:
