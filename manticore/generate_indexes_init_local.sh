@@ -2,4 +2,13 @@ docker exec -it podverse_manticore_local gosu manticore indexer idx_author --ver
 docker exec -it podverse_manticore_local gosu manticore indexer idx_media_ref --verbose;
 docker exec -it podverse_manticore_local gosu manticore indexer idx_playlist --verbose;
 docker exec -it podverse_manticore_local gosu manticore indexer idx_podcast --verbose;
-docker exec -it podverse_manticore_local gosu manticore indexer idx_episode --verbose;
+docker exec -it podverse_manticore_local gosu manticore indexer idx_episode_01 --verbose;
+docker exec -it podverse_manticore_local gosu manticore indexer idx_episode_02 --verbose;
+docker exec -it podverse_manticore_local gosu manticore indexer idx_episode_03 --verbose;
+docker exec -it podverse_manticore_local gosu manticore indexer idx_episode_04 --verbose;
+docker exec -it podverse_manticore_local gosu manticore indexer idx_episode_05 --verbose;
+docker exec -it podverse_manticore_local gosu manticore indexer idx_episode_06 --verbose;
+docker exec -it podverse_manticore_local gosu manticore indexer idx_episode_07 --verbose;
+docker exec -it podverse_manticore_local gosu manticore indexer idx_episode_08 --verbose;
+docker exec -it podverse_manticore_local gosu manticore indexer idx_episode_09 --verbose;
+docker exec -it podverse_manticore_local gosu manticore indexer idx_episode_10 --verbose;
