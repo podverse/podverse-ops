@@ -50,6 +50,7 @@ services:
     container_name: podverse_api_prod
     depends_on:
       - podverse_nginx_proxy
+    privileged: true
     env_file:
       - ./config/podverse-api-prod.env
     environment:

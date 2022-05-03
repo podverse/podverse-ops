@@ -56,6 +56,7 @@ services:
   # podverse_api:
   #   image: podverse_api
   #   container_name: podverse_api_local
+  #   privileged: true
   #   env_file:
   #     - ./config/podverse-api-local.env
   #   ports:

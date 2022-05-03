@@ -99,6 +99,7 @@ services:
     container_name: podverse_api_stage
     depends_on:
       - podverse_nginx_proxy
+    privileged: true
     env_file:
       - ./config/podverse-api-stage.env
     environment:
