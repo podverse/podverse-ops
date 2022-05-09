@@ -10,3 +10,4 @@ docker image rm podverse/podverse_api
 /usr/local/bin/docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.worker.yml run -d --name podverse_api_parser_worker_8 podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 360000
 /usr/local/bin/docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.worker.yml run -d --name podverse_api_parser_worker_9_live podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 60000 live
 /usr/local/bin/docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.worker.yml run -d --name podverse_api_parser_worker_10_live podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- 60000 live
+/usr/local/bin/docker-compose -f /home/mitch/podverse-ops/docker-compose.$1.worker.yml run -d --name runLiveItemListener podverse_api_parser_worker npm run scripts:podping:runLiveItemListener
