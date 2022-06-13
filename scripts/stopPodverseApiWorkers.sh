@@ -6,5 +6,3 @@
 /usr/bin/docker stop podverse_api_parser_worker_6
 /usr/bin/docker stop podverse_api_parser_worker_7
 /usr/bin/docker stop podverse_api_parser_worker_8
-/usr/bin/docker stop podverse_api_parser_worker_9_live
-/usr/bin/docker stop podverse_api_parser_worker_10_live
