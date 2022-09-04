@@ -1,3 +1,5 @@
+#!/bin/bash
+
 docker stop podverse_db_stage;
 docker rm podverse_db_stage;
 docker-compose -f ./podverse-ops/docker-compose.stage.yml up -d podverse_db;
