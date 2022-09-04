@@ -1,3 +1,5 @@
+#!/bin/bash
+
 cd $1/podverse-api
 git pull origin develop
 
