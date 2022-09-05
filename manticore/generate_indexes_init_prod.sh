@@ -1,3 +1,5 @@
+#!/bin/bash
+
 docker exec -i podverse_manticore_prod gosu manticore indexer idx_author --verbose;
 docker exec -i podverse_manticore_prod gosu manticore indexer idx_media_ref --verbose;
 docker exec -i podverse_manticore_prod gosu manticore indexer idx_playlist --verbose;
