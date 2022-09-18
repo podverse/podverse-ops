@@ -1,7 +1,7 @@
+#!/bin/bash
+
 # Thanks to Pranav Prakash! 
 # https://pranavprakash.net/2017/05/16/automated-postgresql-backups/
-
-#!/bin/bash
 
 ##############################
 ## POSTGRESQL BACKUP CONFIG ##
@@ -52,37 +52,38 @@ fi;
 function perform_backups()
 {
   SUFFIX=$1
-  FINAL_BACKUP_DIR=$BACKUP_DIR"`date +\%Y-\%m-\%d`$SUFFIX/"
+  DATE="$(date +'%Y-%m-%d')"
+  FINAL_BACKUP_DIR="${BACKUP_DIR}${DATE}${SUFFIX}/"
  
-  echo "Making backup directory in $FINAL_BACKUP_DIR"
+  echo "Making backup directory in ${FINAL_BACKUP_DIR}"
  
-  if ! mkdir -p $FINAL_BACKUP_DIR; then
-    echo "Cannot create backup directory in $FINAL_BACKUP_DIR. Go and fix it!" 1>&2
+  if ! mkdir -p "${FINAL_BACKUP_DIR}"; then
+    echo "Cannot create backup directory in ${FINAL_BACKUP_DIR}. Go and fix it!" 1>&2
     exit 1;
   fi;
  
-  echo -e "\n\nPerforming full backup of $DATABASE"
+  echo -e "\n\nPerforming full backup of ${DATABASE}"
   echo -e "--------------------------------------------\n"
  
-    if [ $ENABLE_PLAIN_BACKUPS = "yes" ]
+    if [ ${ENABLE_PLAIN_BACKUPS} = "yes" ]
     then
-      echo "Plain backup of $DATABASE"
+      echo "Plain backup of ${DATABASE}"
  
-      if ! pg_dump -Fp -h "$HOSTNAME" -U "$USERNAME" "$DATABASE" | gzip > $FINAL_BACKUP_DIR"$DATABASE".sql.gz.in_progress; then
+      if ! pg_dump -Fp -h "${HOSTNAME}" -U "${USERNAME}" "${DATABASE}" | gzip > "${FINAL_BACKUP_DIR}${DATABASE}.sql.gz.in_progress"; then
         echo "[!!ERROR!!] Failed to produce plain backup database $DATABASE" 1>&2
       else
-        mv $FINAL_BACKUP_DIR"$DATABASE".sql.gz.in_progress $FINAL_BACKUP_DIR"$DATABASE".sql.gz
+        mv "${FINAL_BACKUP_DIR}${DATABASE}.sql.gz.in_progress" "${FINAL_BACKUP_DIR}$}.sql.gz"
       fi
     fi
  
-    if [ $ENABLE_CUSTOM_BACKUPS = "yes" ]
+    if [ ${ENABLE_CUSTOM_BACKUPS} = "yes" ]
     then
-      echo "Custom backup of $DATABASE"
+      echo "Custom backup of ${DATABASE}"
  
-      if ! pg_dump -Fc -h "$HOSTNAME" -U "$USERNAME" "$DATABASE" -f $FINAL_BACKUP_DIR"$DATABASE".custom.in_progress; then
+      if ! pg_dump -Fc -h "${HOSTNAME}" -U "${USERNAME}" "${DATABASE}" -f "${FINAL_BACKUP_DIR}${DATABASE}.custom.in_progress"; then
         echo "[!!ERROR!!] Failed to produce custom backup database $DATABASE"
       else
-        mv $FINAL_BACKUP_DIR"$DATABASE".custom.in_progress $FINAL_BACKUP_DIR"$DATABASE".custom
+        mv "${FINAL_BACKUP_DIR}${DATABASE}.custom.in_progress" "${FINAL_BACKUP_DIR}${DATABASE}.custom"
       fi
     fi
  
@@ -92,6 +93,6 @@ function perform_backups()
 # DAILY BACKUPS
  
 # Delete daily backups older than DAYS_TO_KEEP
-find $BACKUP_DIR -maxdepth 1 -mtime +$DAYS_TO_KEEP -name "*-daily" -exec rm -rf '{}' ';'
+find ${BACKUP_DIR} -maxdepth 1 -mtime +${DAYS_TO_KEEP} -name "*-daily" -exec rm -rf '{}' ';'
 
 perform_backups "-daily"

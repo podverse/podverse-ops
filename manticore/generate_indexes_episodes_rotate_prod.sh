@@ -1,3 +1,5 @@
+#!/bin/bash
+
 docker exec -i podverse_manticore_prod gosu manticore indexer idx_episode_01 --rotate --verbose;
 docker exec -i podverse_manticore_prod gosu manticore indexer idx_episode_02 --rotate --verbose;
 docker exec -i podverse_manticore_prod gosu manticore indexer idx_episode_03 --rotate --verbose;
