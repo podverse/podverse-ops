@@ -29,7 +29,7 @@ ENABLE_PLAIN_BACKUPS=yes
 #### SETTINGS FOR ROTATED BACKUPS ####
 
 # Number of days to keep daily backups
-DAYS_TO_KEEP=7
+DAYS_TO_KEEP=3
 
  
 ###########################
