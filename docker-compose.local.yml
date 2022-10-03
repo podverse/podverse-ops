@@ -53,17 +53,29 @@ services:
         max-file: '1'
         max-size: '50m'
 
-  # podverse_api:
-  #   image: podverse_api
-  #   container_name: podverse_api_local
-  #   privileged: true
-  #   env_file:
-  #     - ./config/podverse-api-local.env
-  #   ports:
-  #     - '1234:1234'
-  #   volumes:
-  #     - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
-  #   command: npm start
+  podverse_api:
+    image: podverse_api
+    container_name: podverse_api_local
+    depends_on: 
+      - podverse_db
+    privileged: true
+    env_file:
+      - ./config/podverse-api-local.env
+    ports:
+      - '1234:1234'
+    expose:
+      - 80
+      - 1234
+    volumes:
+      - ./config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
+    command: npm start
+    networks:
+      - nginx-proxy
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
 
   # podverse_api_parser_worker:
   #   image: podverse_api
