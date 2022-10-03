@@ -61,6 +61,8 @@ services:
     privileged: true
     env_file:
       - ./config/podverse-api-local.env
+    ports:
+      - '1234:1234'
     expose:
       - 80
       - 1234
