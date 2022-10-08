@@ -16,8 +16,6 @@ For prod deployment, use the docker-compose.prod.yml file, and replace \#\#\# wi
 
 Duplicate the config/podverse-api-\#\#\#.example.env file, rename it to config/podverse-api-\#\#\#.env, and update all of the environment variables to match what is needed for your environment. Repeat these steps for podverse-db-\#\#\#.env and podverse-web-\#\#\#.env.
 
-Add your BitPay API key file to config/bitpay/api.key. Look in the config/bitpay/api.key.example for more info.
-
 Add your Google API key file to config/google/jwt.keys.json. Look in the config/google/jwt.keys.json.example for more info.
 
 ### SSL Setup (Stage/Prod)
