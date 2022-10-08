@@ -1,1 +1,0 @@
-node create-human-language-file.js $1 $2
