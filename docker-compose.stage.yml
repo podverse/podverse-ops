@@ -67,7 +67,7 @@ services:
         max-size: "50m"
 
   podverse_manticore:
-    image: manticoresearch/manticore
+    image: manticoresearch/manticore:4.2.0
     container_name: podverse_manticore_stage
     depends_on: 
       - podverse_db
