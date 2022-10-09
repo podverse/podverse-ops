@@ -100,3 +100,6 @@ local_refresh: local_down local_up
 stage_clean_manticore:
 	@echo "Cleaning Manticore"
 	rm -rf ./manticore/data
+
+prod_cron_init:
+	crontab cronjobs/prod-podverse-workers
