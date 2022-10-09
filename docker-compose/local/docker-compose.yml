@@ -68,7 +68,6 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - ../../manticore/data:/var/lib/manticore
       - ../../manticore/manticore.conf:/etc/manticoresearch/manticore.conf
     logging:
       driver: 'json-file'
@@ -77,7 +76,7 @@ services:
         max-size: '50m'
 
   podverse_api:
-    image: podverse_api
+    build: ./projects/podverse-api
     container_name: podverse_api_local
     privileged: true
     depends_on:
@@ -100,7 +99,7 @@ services:
         max-size: "50m"
 
   podverse_web:
-    image: podverse_web
+    build: ./projects/podverse-web
     container_name: podverse_web_local
     depends_on:
       # - podverse_nginx_proxy
@@ -121,7 +120,7 @@ services:
         max-size: "50m"
 
   podverse_api_worker:
-    image: podverse_api
+    build: ./projects/podverse-api
     container_name: podverse_api_worker_local
     dns:
       - 8.8.8.8
