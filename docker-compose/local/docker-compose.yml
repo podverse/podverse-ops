@@ -19,12 +19,15 @@ services:
   #   volumes:      
   #     - vhost:/etc/nginx/vhost.d
   #     - html:/usr/share/nginx/html
-  #     # - /home/user/tools/nginx_webproxy/certificats:/etc/nginx/certs:ro
+  #     - proxy/local/certs:/etc/nginx/certs:ro
   #     - /var/run/docker.sock:/tmp/docker.sock:ro
-  #     # - ./local-proxy.conf:/etc/nginx/vhost.d/default_location:ro
+  #     # - ./proxy/proxy.conf:/etc/nginx/vhost.d/default_location:ro
   #     # - static-admin:/tmp/static-admin
   #   environment:
   #     ENABLE_IPV6: "true"
+  #     VIRTUAL_HOST: "www.podverse.local"
+  #     VIRTUAL_PORT: 443
+  #     CERT_NAME: "podverse-server.crt"
   #   logging:
   #     driver: "json-file"
   #     options:
