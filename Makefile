@@ -95,6 +95,13 @@ local_down: local_down_docker_compose
 .PHONY: local_refresh local_down local_up
 local_refresh: local_down local_up
 
+local_nginx_proxy:
+	@echo 'Generate new cert'
+	test -d proxy/local/certs || mkdir -p proxy/local/certs
+	cd proxy/local/certs && openssl genrsa -out podverse-server.key 4096
+	cd proxy/local/certs && openssl rsa -in podverse-server.key -out podverse-server.key.insecure
+	cd proxy/local/certs && openssl req -new -sha256 -key podverse-server.key -subj "/C=US/ST=Jefferson/L=Grand/O=EXA/OU=MPL/CN=podverse.local" -reqexts SAN -config <(cat /etc/ssl/openssl.cnf <(printf "[SAN]\nsubjectAltName=DNS:podverse.local,DNS:www.podverse.local,DNS:api.podverse.local")) -out podverse-server.csr
+	cd proxy/local/certs && openssl x509 -req -days 365 -in podverse-server.csr -signkey podverse-server.key -out podverse-server.crt
 
 
 stage_clean_manticore:
