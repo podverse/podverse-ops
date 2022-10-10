@@ -125,9 +125,6 @@ services:
   podverse_api_worker:
     build: ./projects/podverse-api
     container_name: podverse_api_worker_local
-    dns:
-      - 8.8.8.8
-      - 8.8.4.4
     env_file:
       - ../../config/podverse-api-local.env
     logging:

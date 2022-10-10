@@ -151,9 +151,6 @@ services:
   podverse_api_worker:
     image: podverse/podverse_api:stage
     container_name: podverse_api_worker_stage
-    dns:
-      - 8.8.8.8
-      - 8.8.4.4
     env_file:
       - ../../config/podverse-api-stage.env
     logging:
