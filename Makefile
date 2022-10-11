@@ -102,7 +102,7 @@ local_down_docker_compose:
 	docker-compose -f docker-compose/local/docker-compose.yml down
 
 # This will add a predefined list of ~30 feed urls to the AWS SQS queue based on their Podcast Index id.
-# This is useful for initializing the database with 
+# This is useful for seeding the database with podcast data.
 local_add_podcast_index_seed_feeds_to_queue:
 	docker-compose -f docker-compose/local/docker-compose.yml run --name addPodcastIndexSeedFeedsToQueue --rm podverse_api_worker npm run scripts:addFeedsByPodcastIndexIdToQueue -- 5718023,387129,3662287,160817,150842,878147,487548,167137,465231,767934,577105,54545,650774,955598,3758236,203827,879740,393504,575694,921030,41504,5341434,757675,174725,920666,1333070,227573,5465405,5498327,5495489,556715,5485175,202764,830124,66844,4169501
 
