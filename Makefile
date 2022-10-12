@@ -19,7 +19,7 @@ init_project:
 local_init_conf:
 	cp ./config/podverse-api-local.env.example ./config/podverse-api-local.env
 
-.PHONY: local_validate_init: config/podverse-api-local.env config/podverse-db-local.env config/podverse-web-local.env
+.PHONY: local_validate_init config/podverse-api-local.env config/podverse-db-local.env config/podverse-web-local.env
 local_validate_init: config/podverse-api-local.env config/podverse-db-local.env config/podverse-web-local.env
 
 config/podverse-api-local.env:
