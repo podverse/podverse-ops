@@ -49,6 +49,24 @@ local_nginx_proxy:
 local_up_db: 
 	docker-compose -f docker-compose/local/docker-compose.yml up podverse_db -d
 
+local_init_materialized_views:
+# init 
+	docker-compose -f docker-compose/local/docker-compose.yml exec podverse_db psql -U postgres -d postgres -a -f /opt/migrations/0032_mediaRefs_videos_materialized_view.sql
+	docker-compose -f docker-compose/local/docker-compose.yml exec podverse_db psql -U postgres -d postgres -a -f /opt/migrations/0037_episodes_most_recent_materialized_view.sql
+# have to call REFRESH one time for each table without CONCURRENTLY
+# the _refresh make commands use CONCURRENTLY.
+	docker-compose -f docker-compose/local/docker-compose.yml exec podverse_db psql -U postgres -d postgres -c 'REFRESH MATERIALIZED VIEW "mediaRefs_videos"'
+	docker-compose -f docker-compose/local/docker-compose.yml exec podverse_db psql -U postgres -d postgres -c 'REFRESH MATERIALIZED VIEW "episodes_most_recent"'
+
+# This materialized view is used when querying for only mediaRefs for video podcasts.
+local_materialized_view_mediaRefs_refresh:
+	docker-compose -f docker-compose/local/docker-compose.yml run --name refreshMediaRefsVideosMaterializedView --rm podverse_api_worker npm run scripts:refreshMediaRefsVideosMaterializedView
+
+# This materialized view is used for sorting all episodes by recency.
+# It is limited to the past ~21 days currently.
+local_materialized_view_episodes_refresh:
+	docker-compose -f docker-compose/local/docker-compose.yml run --name refreshEpisodesMostRecentMaterializedView --rm podverse_api_worker npm run scripts:refreshEpisodesMostRecentMaterializedView
+
 local_up_manticore_server:
 	docker-compose -f docker-compose/local/docker-compose.yml up podverse_manticore -d
 
@@ -66,6 +84,8 @@ local_manticore_indexes_init:
 	docker-compose -f docker-compose/local/docker-compose.yml exec podverse_manticore gosu manticore indexer idx_episode_08 --verbose
 	docker-compose -f docker-compose/local/docker-compose.yml exec podverse_manticore gosu manticore indexer idx_episode_09 --verbose
 	docker-compose -f docker-compose/local/docker-compose.yml exec podverse_manticore gosu manticore indexer idx_episode_10 --verbose
+# after initializing the indexes, manticore must be restarted to be able to use the indexes
+	docker restart podverse_manticore_local
 
 local_manticore_indexes_rotate:
 	docker-compose -f docker-compose/local/docker-compose.yml exec podverse_manticore gosu manticore indexer idx_author --rotate --verbose;
@@ -155,15 +175,6 @@ local_hide_dead_podcasts_from_podcast_index:
 # associated with it, then it will be considered "dead" and deleted from the database.
 local_remove_dead_episodes:
 	docker-compose -f docker-compose/local/docker-compose.yml run --name removeDeadEpisodes --rm podverse_api_worker npm run scripts:removeDeadEpisodes
-
-# This materialized view is used when querying for only mediaRefs for video podcasts.
-local_mediaRefs_materialized_view_refresh:
-	docker-compose -f docker-compose/local/docker-compose.yml run --name refreshMediaRefsVideosMaterializedView --rm podverse_api_worker npm run scripts:refreshMediaRefsVideosMaterializedView
-
-# This materialized view is used for sorting all episodes by recency.
-# It is limited to the past ~21 days currently.
-local_episodes_materialized_view_refresh:
-	docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --name refreshEpisodesMostRecentMaterializedView --rm podverse_api_worker npm run scripts:refreshEpisodesMostRecentMaterializedView
 
 # This query gets the Value for Value aka <podcast:value> tag information
 # from Podcast Index. Ideally <podcast:value> tag info is available in the RSS feed,
