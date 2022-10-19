@@ -8,56 +8,67 @@ node "Podverse" {
   [Internet] --> HTTP
   [Internet] --> HTTPS
 
+
   node "Docker Container WEB" {
-    HTTP --> [nginx_proxy]
-    HTTPS --> [nginx_proxy]
-    nginx_proxy --> [APPLICATION]
-    nginx_proxy --> [API]
+    [nginx_proxy]
+    [APPLICATION]
+    [API]
   }
 }
+
 node "Podverse Droplet DB" {
   node "Docker Container DB" {
     database "PostGreSQL" {
-      folder "PostGreSQL Database" {
-        [database]
-      }
+      [database]
     }
   }
 }
 node "Podverse API Worker" {
   node "Docker Container API Worker" {
-    component node0 [
-      nodejs/podping
+    node node0 [
+      nodejs
+      podping
     ]
-    component node1 [
-      nodejs/podping
+    node node1 [
+      nodejs
+      podping
     ]
-    component node2 [
-      nodejs/podping
+    node node2 [
+      nodejs
+      podping
     ]
-    component node3 [
-      nodejs/podping
+    node node3 [
+      nodejs
+      podping
     ]
-    component node4 [
-      nodejs/podping
+    node node4 [
+      nodejs
+      podping
     ]
-    component node5 [
-      nodejs/podping
+    node node5 [
+      nodejs
+      podping
     ]
-    component node6 [
-      nodejs/podping
+    node node6 [
+      nodejs
+      podping
     ]
-    component node7 [
-      nodejs/podping
+    node node7 [
+      nodejs
+      podping
     ]
   }
 }
 
 
+HTTP --> [nginx_proxy]
+HTTPS --> [nginx_proxy]
+nginx_proxy --> [APPLICATION]
+nginx_proxy --> [API]
 
 [API] --> [database]
 [APPLICATION] --> [database]
-[node0] -up-> [database]
+[node0] --> [database]
 [node1] --> [database]
 [node2] --> [database]
 [node3] --> [database]
