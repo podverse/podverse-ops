@@ -1,4 +1,4 @@
-@startuml
+@startuml vps00
 
 cloud {
   [Internet]
