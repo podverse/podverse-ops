@@ -18,8 +18,8 @@ database db
 
 hive <-> api_worker
 
-sqs -> api_worker
 
+api_worker <-- sqs
 api_worker <-> db
 db <-> app
 app <-> client
