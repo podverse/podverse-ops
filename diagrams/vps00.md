@@ -1,0 +1,71 @@
+```puml
+@startuml
+
+cloud {
+  [Internet]
+}
+
+node "Podverse" {
+  [Internet] --> HTTP
+  [Internet] --> HTTPS
+
+  node "Docker Container WEB" {
+    HTTP --> [nginx_proxy]
+    HTTPS --> [nginx_proxy]
+    nginx_proxy --> [APPLICATION]
+    nginx_proxy --> [API]
+  }
+}
+node "Podverse Droplet DB" {
+  node "Docker Container DB" {
+    database "PostGreSQL" {
+      folder "PostGreSQL Database" {
+        [database]
+      }
+    }
+  }
+}
+node "Podverse API Worker" {
+  node "Docker Container API Worker" {
+    component node0 [
+      nodejs/podping
+    ]
+    component node1 [
+      nodejs/podping
+    ]
+    component node2 [
+      nodejs/podping
+    ]
+    component node3 [
+      nodejs/podping
+    ]
+    component node4 [
+      nodejs/podping
+    ]
+    component node5 [
+      nodejs/podping
+    ]
+    component node6 [
+      nodejs/podping
+    ]
+    component node7 [
+      nodejs/podping
+    ]
+  }
+}
+
+
+
+[API] --> [database]
+[APPLICATION] --> [database]
+[node0] -up-> [database]
+[node1] --> [database]
+[node2] --> [database]
+[node3] --> [database]
+[node4] --> [database]
+[node5] --> [database]
+[node6] --> [database]
+[node7] --> [database]
+
+@enduml
+```
