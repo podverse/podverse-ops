@@ -1,0 +1,114 @@
+
+
+@startuml vps00
+
+title Vitual Private Cloud
+
+skinparam node {
+
+BackgroundColor #FFFFD0
+BackgroundColor<<host>> #80D080
+BackgroundColor<<containerService>> #DDFFDD
+}
+
+skinparam cloud {
+BackgroundColor<<user>> #F0F0FF
+BackgroundColor<<api>> #FFC080
+}
+cloud frontEnd <<user>>{
+[Internet]
+}
+
+cloud backEnd <<api>> {
+[hive]
+[sqs]
+}
+node proxy <<host>> as “Podverse” {
+[Internet] --> HTTP
+[Internet] --> HTTPS
+
+node webDocker <<containerService>> as “Docker Container WEB” {
+[nginx_proxy]
+[APPLICATION]
+[API]
+}
+}
+
+node dbserver <<host>> as “Podverse Droplet DB” {
+node dbserverDocker <<containerService>> as “Docker Container DB” {
+database “PostGreSQL” {
+[database]
+}
+}
+}
+node apiWorkcer <<host>> as “Podverse API Worker” {
+node apiWorkcerDocker <<containerService>> as “Docker Container API Worker” {
+node node0 [
+nodejs
+podping
+]
+node node1 [
+nodejs
+podping
+]
+node node2 [
+nodejs
+podping
+]
+node node3 [
+nodejs
+podping
+]
+node node4 [
+nodejs
+podping
+]
+node node5 [
+nodejs
+podping
+]
+node node6 [
+nodejs
+podping
+]
+node node7 [
+nodejs
+podping
+]
+}
+}
+
+HTTP --> [nginx_proxy]
+HTTPS --> [nginx_proxy]
+nginx_proxy --> [APPLICATION]
+nginx_proxy --> [API]
+
+[API] --> [database]
+[APPLICATION] --> [database]
+
+[database] <-- [node0]
+[database] <-- [node1]
+[database] <-- [node2]
+[database] <-- [node3]
+[database] <-- [node4]
+[database] <-- [node5]
+[database] <-- [node6]
+[database] <-- [node7]
+
+[node0] <-- [sqs]
+[node2] <-- [sqs]
+[node3] <-- [sqs]
+[node4] <-- [sqs]
+[node5] <-- [sqs]
+[node6] <-- [sqs]
+[node7] <-- [sqs]
+
+[node0] <–> [hive]
+[node2] <–> [hive]
+[node3] <–> [hive]
+[node4] <–> [hive]
+[node5] <–> [hive]
+[node6] <–> [hive]
+[node7] <–> [hive]
+
+@enduml
