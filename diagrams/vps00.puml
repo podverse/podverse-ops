@@ -5,110 +5,72 @@
 title Vitual Private Cloud
 
 skinparam node {
-
-BackgroundColor #FFFFD0
-BackgroundColor<<host>> #80D080
-BackgroundColor<<containerService>> #DDFFDD
+    BackgroundColor #FFFFD0
+    BackgroundColor<<host>> #74a8dc
+    BackgroundColor<<containerService>> #cccccc
 }
 
 skinparam cloud {
-BackgroundColor<<user>> #F0F0FF
-BackgroundColor<<api>> #FFC080
+    BackgroundColor<<user>> #69c890
+    BackgroundColor<<api>> #f4a24f
 }
 cloud frontEnd <<user>>{
-[Internet]
+    [Internet]
 }
 
 cloud backEnd <<api>> {
-[hive]
-[sqs]
+    [podpingWebsocket]
+    queue sqs
 }
 node proxy <<host>> as “Podverse” {
-[Internet] --> HTTP
-[Internet] --> HTTPS
+    [Internet] --> HTTP
+    [Internet] --> HTTPS
 
-node webDocker <<containerService>> as “Docker Container WEB” {
-[nginx_proxy]
-[APPLICATION]
-[API]
-}
+    node webDocker <<containerService>> as “Docker Container WEB” {
+        rectangle nginx_proxy
+        rectangle webApplication as "Web Application"
+        collections podverseAPI as "Podverse API / Podping"
+        
+    }
 }
 
 node dbserver <<host>> as “Podverse Droplet DB” {
-node dbserverDocker <<containerService>> as “Docker Container DB” {
-database “PostGreSQL” {
-[database]
+    node dbserverDocker <<containerService>> as “Docker Container DB” {
+        database PostGreSQL [
+            postgres
+        ]
+        database MariaDB [
+            manticore db
+        ]
+        rectangle manticore
+    }
 }
-}
-}
-node apiWorkcer <<host>> as “Podverse API Worker” {
-node apiWorkcerDocker <<containerService>> as “Docker Container API Worker” {
-node node0 [
-nodejs
-podping
-]
-node node1 [
-nodejs
-podping
-]
-node node2 [
-nodejs
-podping
-]
-node node3 [
-nodejs
-podping
-]
-node node4 [
-nodejs
-podping
-]
-node node5 [
-nodejs
-podping
-]
-node node6 [
-nodejs
-podping
-]
-node node7 [
-nodejs
-podping
-]
-}
+node apiWorker <<host>> as “Podverse API Worker” {
+    node apiWorkerDocker <<containerService>> as “Docker Container API Worker” {
+
+    collections podverseWorker as "Worker Containers"
+    collections runLiveItemListener
+    }
 }
 
-HTTP --> [nginx_proxy]
-HTTPS --> [nginx_proxy]
-nginx_proxy --> [APPLICATION]
-nginx_proxy --> [API]
+HTTP --> nginx_proxy
+HTTPS --> nginx_proxy
+nginx_proxy --> webApplication
+nginx_proxy --> podverseAPI
 
-[API] --> [database]
-[APPLICATION] --> [database]
+podverseAPI --> PostGreSQL
+podverseAPI --> manticore
+webApplication --> podverseAPI
 
-[database] <-- [node0]
-[database] <-- [node1]
-[database] <-- [node2]
-[database] <-- [node3]
-[database] <-- [node4]
-[database] <-- [node5]
-[database] <-- [node6]
-[database] <-- [node7]
+manticore --> MariaDB
+manticore --> PostGreSQL
 
-[node0] <-- [sqs]
-[node2] <-- [sqs]
-[node3] <-- [sqs]
-[node4] <-- [sqs]
-[node5] <-- [sqs]
-[node6] <-- [sqs]
-[node7] <-- [sqs]
+runLiveItemListener --> PostGreSQL
+runLiveItemListener --> podpingWebsocket
+runLiveItemListener --> sqs
 
-[node0] <–> [hive]
-[node2] <–> [hive]
-[node3] <–> [hive]
-[node4] <–> [hive]
-[node5] <–> [hive]
-[node6] <–> [hive]
-[node7] <–> [hive]
+PostGreSQL <-- podverseWorker
+
+podverseWorker --> sqs
 
 @enduml
