@@ -80,6 +80,9 @@ local_up_api:
 local_up_web:
 	docker-compose -f docker-compose/local/docker-compose.yml up podverse_web -d
 
+local_up_maintenance_mode:
+	docker-compose -f docker-compose/local/docker-compose.yml up podverse_maintenance_mode_web -d
+
 local_up_proxy:
 	docker-compose -f docker-compose/local/docker-compose.yml up podverse_nginx_proxy -d
 
