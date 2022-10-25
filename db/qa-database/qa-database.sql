@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 11.5 (Debian 11.5-3.pgdg90+1)
--- Dumped by pg_dump version 12.4
+-- Dumped by pg_dump version 14.5 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -3188,6 +3188,27 @@ CREATE INDEX "IDX_fcmDevices_userId" ON public."fcmDevices" USING btree ("userId
 --
 
 CREATE INDEX "IDX_ff3fe42ceba07c5d88125a0d78" ON public.podcasts_authors_authors USING btree ("podcastsId");
+
+
+--
+-- Name: IDX_liveItems_end; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "IDX_liveItems_end" ON public."liveItems" USING btree ("end");
+
+
+--
+-- Name: IDX_liveItems_start; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "IDX_liveItems_start" ON public."liveItems" USING btree (start);
+
+
+--
+-- Name: IDX_liveItems_stats; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "IDX_liveItems_stats" ON public."liveItems" USING btree (status);
 
 
 --
