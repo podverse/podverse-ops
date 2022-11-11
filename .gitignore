@@ -26,3 +26,5 @@ utils/translate-json/node_modules
 temp
 
 nginx-error.log
+
+proxy/local/certs
