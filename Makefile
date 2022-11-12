@@ -11,13 +11,7 @@ else
 endif
 
 say_hello:
-	@echo "Hello World"
-
-init_project:
-	@echo "doing the work"
-
-local_init_conf:
-	cp ./config/podverse-api-local.env.example ./config/podverse-api-local.env
+	@echo "Hello Podverse"
 
 .PHONY: local_validate_init config/podverse-api-local.env config/podverse-db-local.env config/podverse-web-local.env
 local_validate_init: config/podverse-api-local.env config/podverse-db-local.env config/podverse-web-local.env
