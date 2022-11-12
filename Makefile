@@ -13,7 +13,7 @@ endif
 say_hello:
 	@echo "Hello Podverse"
 
-.PHONY: local_validate_init config/podverse-api-local.env config/podverse-db-local.env config/podverse-web-local.env
+.PHONY: local_validate_init
 local_validate_init: config/podverse-api-local.env config/podverse-db-local.env config/podverse-web-local.env
 
 config/podverse-api-local.env:
@@ -108,7 +108,7 @@ proxy/local/certs/podverse-server.csr: proxy/local/certs/podverse-server.key
 proxy/local/certs/podverse-server.crt: proxy/local/certs/podverse-server.csr
 	openssl x509 -req -days 365 -in $< -signkey proxy/local/certs/podverse-server.key -out $@
 
-.PHONY: local_nginx_proxy_cert proxy/local/certs proxy/local/certs/podverse-server.key proxy/local/certs/podverse-server.key.insecure proxy/local/certs/podverse-server.csr proxy/local/certs/podverse-server.crt
+.PHONY: local_nginx_proxy_cert
 local_nginx_proxy_cert: proxy/local/certs proxy/local/certs/podverse-server.key proxy/local/certs/podverse-server.key.insecure proxy/local/certs/podverse-server.csr proxy/local/certs/podverse-server.crt
 	@echo 'Generate new cert'
 
