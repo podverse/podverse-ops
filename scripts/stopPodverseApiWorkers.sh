@@ -8,8 +8,4 @@
 /usr/bin/docker stop podverse_api_parser_worker_6
 /usr/bin/docker stop podverse_api_parser_worker_7
 /usr/bin/docker stop podverse_api_parser_worker_8
-/usr/bin/docker stop podverse_api_parser_worker_9
-/usr/bin/docker stop podverse_api_parser_worker_10
-/usr/bin/docker stop podverse_api_parser_worker_11
-/usr/bin/docker stop podverse_api_parser_worker_12
 /usr/bin/docker stop addNewFeedUrls
