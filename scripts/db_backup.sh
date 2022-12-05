@@ -23,7 +23,7 @@ DATABASE=postgres
 # Will produce a custom-format backup if set to "yes"
 ENABLE_CUSTOM_BACKUPS=no
  
-# Will produce a gzipped plain-format backup if set to "yes"
+# Will produce a zstd plain-format backup if set to "yes"
 ENABLE_PLAIN_BACKUPS=yes
 
 #### SETTINGS FOR ROTATED BACKUPS ####
@@ -31,24 +31,24 @@ ENABLE_PLAIN_BACKUPS=yes
 # Number of days to keep daily backups
 DAYS_TO_KEEP=3
 
- 
+
 ###########################
 ### INITIALISE DEFAULTS ###
 ###########################
  
-if [ ! $HOSTNAME ]; then
+if [ ! "${HOSTNAME}" ]; then
   HOSTNAME="localhost"
 fi;
  
-if [ ! $USERNAME ]; then
+if [ ! "${USERNAME}" ]; then
   USERNAME="postgres"
 fi;
  
- 
+
 ###########################
 #### START THE BACKUPS ####
 ###########################
- 
+
 function perform_backups()
 {
   SUFFIX=$1
@@ -69,19 +69,19 @@ function perform_backups()
     then
       echo "Plain backup of ${DATABASE}"
  
-      if ! pg_dump -Fp -h "${HOSTNAME}" -U "${USERNAME}" "${DATABASE}" | gzip > "${FINAL_BACKUP_DIR}${DATABASE}.sql.gz.in_progress"; then
+      if ! PGPASSWORD="${PVPGPASSWORD}" pg_dump -Fp -h "${HOSTNAME}" -U "${USERNAME}" "${DATABASE}" | zstd -6 --rsyncable > "${FINAL_BACKUP_DIR}${DATABASE}.sql.zst.in_progress"; then
         echo "[!!ERROR!!] Failed to produce plain backup database $DATABASE" 1>&2
-      else
-        mv "${FINAL_BACKUP_DIR}${DATABASE}.sql.gz.in_progress" "${FINAL_BACKUP_DIR}$}.sql.gz"
+      else  
+        mv "${FINAL_BACKUP_DIR}${DATABASE}.sql.zst.in_progress" "${FINAL_BACKUP_DIR}${DATABASE}.sql.zst"
       fi
     fi
  
     if [ ${ENABLE_CUSTOM_BACKUPS} = "yes" ]
     then
       echo "Custom backup of ${DATABASE}"
- 
-      if ! pg_dump -Fc -h "${HOSTNAME}" -U "${USERNAME}" "${DATABASE}" -f "${FINAL_BACKUP_DIR}${DATABASE}.custom.in_progress"; then
-        echo "[!!ERROR!!] Failed to produce custom backup database $DATABASE"
+
+      if ! PGPASSWORD="${PVPGPASSWORD}" pg_dump -Fc -h "${HOSTNAME}" -U "${USERNAME}" "${DATABASE}" -f "${FINAL_BACKUP_DIR}${DATABASE}".custom.in_progress; then
+        echo "[!!ERROR!!] Failed to produce custom backup database ${DATABASE}"
       else
         mv "${FINAL_BACKUP_DIR}${DATABASE}.custom.in_progress" "${FINAL_BACKUP_DIR}${DATABASE}.custom"
       fi
@@ -93,6 +93,9 @@ function perform_backups()
 # DAILY BACKUPS
  
 # Delete daily backups older than DAYS_TO_KEEP
-find ${BACKUP_DIR} -maxdepth 1 -mtime +${DAYS_TO_KEEP} -name "*-daily" -exec rm -rf '{}' ';'
+echo "Find and remove old backups, before creating new one"
+echo "The following will be removed:"
+find ${BACKUP_DIR} -maxdepth 1 -mtime +${DAYS_TO_KEEP} -name "*-daily" -print -exec rm -rfv {} \;
 
+echo "Starting backup function"
 perform_backups "-daily"
