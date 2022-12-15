@@ -889,8 +889,8 @@ ALTER TABLE public."googlePlayPurchase" OWNER TO postgres;
 
 CREATE TABLE public."liveItems" (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
-    start timestamp without time zone NOT NULL,
-    "end" timestamp without time zone,
+    start timestamp with time zone DEFAULT now() NOT NULL,
+    "end" timestamp with time zone DEFAULT now(),
     status character varying(14) NOT NULL,
     "episodeId" character varying(14) NOT NULL,
     "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
@@ -3079,7 +3079,7 @@ ALTER TABLE ONLY public.podcasts_authors_authors
 --
 
 ALTER TABLE ONLY public."liveItems"
-    ADD CONSTRAINT "FK_liveItems_episode" FOREIGN KEY ("episodeId") REFERENCES public.episodes(id);
+    ADD CONSTRAINT "FK_liveItems_episode" FOREIGN KEY ("episodeId") REFERENCES public.episodes(id) ON DELETE CASCADE;
 
 
 --

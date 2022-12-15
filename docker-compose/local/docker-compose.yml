@@ -36,8 +36,8 @@ services:
 
   podverse_db:
     # build: ./db/old-sample-database
-    build: ./db/qa-database
-    # build: ./db/schema-only
+    # build: ./db/qa-database
+    build: ./db/schema-only
     container_name: podverse_db_local
     # depends_on:
     #   - podverse_nginx_proxy
