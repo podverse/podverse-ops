@@ -1,0 +1,151 @@
+version: "3.9"
+
+networks:
+  nginx-proxy:
+      name: nginx-proxy
+
+volumes:
+  vhost:
+  html:
+  static-admin:
+
+services:
+  # podverse_nginx_proxy:
+  #   image: jwilder/nginx-proxy
+  #   container_name: podverse_nginx_proxy_local
+  #   # ports:
+  #   #   - 80:80
+  #   #   - 443:443
+  #   volumes:      
+  #     - vhost:/etc/nginx/vhost.d
+  #     - html:/usr/share/nginx/html
+  #     - proxy/local/certs:/etc/nginx/certs:ro
+  #     - /var/run/docker.sock:/tmp/docker.sock:ro
+  #     # - ./proxy/proxy.conf:/etc/nginx/vhost.d/default_location:ro
+  #     # - static-admin:/tmp/static-admin
+  #   environment:
+  #     ENABLE_IPV6: "true"
+  #     VIRTUAL_HOST: "www.podverse.local"
+  #     VIRTUAL_PORT: 443
+  #     CERT_NAME: "podverse-server.crt"
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-file: "1"
+  #       max-size: "50m"
+
+  podverse_db:
+    # build: ./db/old-sample-database
+    # build: ./db/qa-database
+    build: ./db/schema-only
+    container_name: podverse_db_local
+    # depends_on:
+    #   - podverse_nginx_proxy
+    env_file:
+      - ../../config/podverse-db-local.env
+    ports:
+      - '5432:5432'
+    volumes:
+      - ../../projects/podverse-api/migrations:/opt/migrations
+    command: postgres -c max_connections=200 -c superuser_reserved_connections=20 -c shared_buffers=2GB -c effective_cache_size=6GB -c maintenance_work_mem=512MB -c checkpoint_completion_target=0.7 -c wal_buffers=16MB -c default_statistics_target=100 -c random_page_cost=1.1 -c effective_io_concurrency=200 -c work_mem=5242kB -c min_wal_size=1GB -c max_wal_size=2GB -c max_worker_processes=4 -c max_parallel_workers_per_gather=2 -c max_parallel_workers=4
+    restart: always
+    shm_size: 1gb
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'
+
+  podverse_manticore:
+    image: manticoresearch/manticore:4.2.0
+    container_name: podverse_manticore_local
+    depends_on:
+      # - podverse_nginx_proxy
+      - podverse_db
+    restart: always
+    ports:
+      - 9306:9306
+      - 9308:9308
+    ulimits:
+      nproc: 65535
+      nofile:
+         soft: 65535
+         hard: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ../../manticore/manticore.conf:/etc/manticoresearch/manticore.conf
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'
+
+  podverse_api:
+    build: ./projects/podverse-api
+    container_name: podverse_api_local
+    privileged: true
+    depends_on:
+      # - podverse_nginx_proxy
+      - podverse_db
+    env_file:
+      - ../../config/podverse-api-local.env
+    ports:
+      - '1234:1234'
+    expose:
+      - 80
+      - 1234
+    volumes:
+      - ../../config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
+    command: npm start
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
+
+  podverse_web:
+    build: ./projects/podverse-web
+    container_name: podverse_web_local
+    depends_on:
+      # - podverse_nginx_proxy
+      - podverse_db
+      - podverse_api
+    env_file:
+      - ../../config/podverse-web-local.env
+    ports:
+      - '3000:3000'
+    expose:
+      - 80
+      - 3000
+    command: npm start
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
+
+  podverse_api_worker:
+    build: ./projects/podverse-api
+    container_name: podverse_api_worker_local
+    env_file:
+      - ../../config/podverse-api-local.env
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
+
+  podverse_maintenance_mode_web:
+    build: ./projects/podverse-web/maintenance_mode
+    container_name: podverse_maintenance_mode_web_local
+    # depends_on:
+      # - podverse_nginx_proxy
+    ports:
+      - '3000:80'
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"

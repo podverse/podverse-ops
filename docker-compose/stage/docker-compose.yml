@@ -1,0 +1,160 @@
+version: "3.9"
+
+networks:
+  nginx-proxy:
+    external: true
+
+volumes:
+  vhost:
+  html:
+  static-admin:
+
+services:
+  podverse_nginx_proxy:
+    image: jwilder/nginx-proxy
+    container_name: podverse_nginx_proxy_stage
+    ports:
+      - 80:80
+      - 443:443
+    volumes:      
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /home/user/tools/nginx_webproxy/certificats:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ../../stage-proxy.conf:/etc/nginx/vhost.d/default_location:ro
+      - static-admin:/tmp/static-admin
+      - ./.htpasswd:/tmp/.htpasswd # is this needed???
+    labels:
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
+    environment:
+      ENABLE_IPV6: "true"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
+
+  podverse_letsencrypt_nginx:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: podverse_letsencrypt_nginx_stage
+    depends_on: 
+      - podverse_nginx_proxy
+    volumes:
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /home/user/tools/nginx_webproxy/certificats:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
+
+  podverse_db:
+    build: ./db
+    container_name: podverse_db_stage
+    depends_on:
+      - podverse_nginx_proxy
+      - podverse_letsencrypt_nginx
+    env_file:
+      - ../../config/podverse-db-stage.env
+    ports:
+      - '5432:5432'
+    volumes:
+      - /mnt/podverse_db_stage_volume:/var/lib/postgresql/data
+    command: postgres -c max_connections=200 -c superuser_reserved_connections=20 -c shared_buffers=512MB -c effective_cache_size=1536MB -c maintenance_work_mem=128MB -c checkpoint_completion_target=0.7 -c wal_buffers=16MB -c default_statistics_target=100 -c random_page_cost=1.1 -c effective_io_concurrency=200 -c work_mem=1310kB -c min_wal_size=1GB -c max_wal_size=2GB
+    restart: always
+    shm_size: 1gb
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
+
+  podverse_manticore:
+    image: manticoresearch/manticore:4.2.0
+    container_name: podverse_manticore_stage
+    depends_on:
+      - podverse_nginx_proxy
+      - podverse_letsencrypt_nginx
+      - podverse_db
+    restart: always
+    ports:
+      - 9306:9306
+      - 9308:9308
+    ulimits:
+      nproc: 65535
+      nofile:
+         soft: 65535
+         hard: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ../../manticore/data:/var/lib/manticore
+      - ../../manticore/manticore.conf:/etc/manticoresearch/manticore.conf
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'
+
+  podverse_api:
+    image: podverse/podverse_api:stage
+    container_name: podverse_api_stage
+    depends_on:
+      - podverse_nginx_proxy
+      - podverse_letsencrypt_nginx
+      - podverse_db
+    privileged: true
+    env_file:
+      - ../../config/podverse-api-stage.env
+    environment:
+      VIRTUAL_HOST:
+      VIRTUAL_PORT: 1234
+      LETSENCRYPT_HOST:
+      LETSENCRYPT_EMAIL:
+    expose:
+      - 80
+      - 1234
+    command: npm start
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
+
+  podverse_web:
+    image: podverse/podverse_web:stage
+    container_name: podverse_web_stage
+    depends_on:
+      - podverse_nginx_proxy
+      - podverse_letsencrypt_nginx
+      - podverse_api
+    env_file:
+      - ../../config/podverse-web-stage.env
+    environment:
+      VIRTUAL_HOST:
+      VIRTUAL_PORT: 3000
+      LETSENCRYPT_HOST:
+      LETSENCRYPT_EMAIL:
+    expose:
+      - 80
+      - 3000
+    command: npm start
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
+
+  podverse_api_worker:
+    image: podverse/podverse_api:stage
+    container_name: podverse_api_worker_stage
+    env_file:
+      - ../../config/podverse-api-stage.env
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"

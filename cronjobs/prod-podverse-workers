@@ -1,0 +1,37 @@
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+
+#5 * * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- clips hour
+10 0,4,8,12,16,20 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- clips day
+15 0,6,12,18 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- clips week
+20 0,8,16 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- clips month
+25 0,12 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- clips year
+30 0 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- clips allTime
+
+#6 * * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- episodes hour
+11 1,5,9,13,17,21 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- episodes day
+16 1,7,13,19 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- episodes week
+21 1,9,17 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- episodes month
+26 1,13 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- episodes year
+33 1 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- episodes allTime
+
+#7 * * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- podcasts hour
+12 2,6,10,14,18,22 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- podcasts day
+17 2,8,14,20 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- podcasts week
+22 2,10,18 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- podcasts month
+32 2,14 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- podcasts year
+36 2 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --rm podverse_api_worker npm run scripts:queryUniquePageviews -- podcasts allTime
+
+2 * * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --name addNewFeedUrls --rm podverse_api_worker npm run scripts:addNewFeedsFromPodcastIndex
+*/20 * * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --name addRecentlyUpdated --rm podverse_api_worker npm run scripts:addRecentlyUpdatedFeedUrlsToPriorityQueue
+6 * * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --name removeDeadEpisodes --rm podverse_api_worker npm run scripts:removeDeadEpisodes
+14 8,16 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --name hideDeadPodcasts --rm podverse_api_worker npm run scripts:hideDeadPodcasts
+19,39,59 * * * * /home/mitch/podverse-ops/scripts/startPodverseApiWorkers.sh
+#4 */4 * * * /home/mitch/podverse-ops/scripts/runLatestPodverseApiWorkersRecovery.sh prod
+
+18,38,50 * * * * /home/mitch/podverse-ops/scripts/stopPodverseApiWorkers.sh
+25 */8 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --name refreshMediaRefsVideosMaterializedView --rm podverse_api_worker npm run scripts:refreshMediaRefsVideosMaterializedView
+51 * * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --name refreshEpisodesMostRecentMaterializedView --rm podverse_api_worker npm run scripts:refreshEpisodesMostRecentMaterializedView
+
+5 3 * * * /usr/local/bin/docker-compose -f /opt/podverse-ops/docker-compose/prod/docker-compose.yml run --name updateValueTagEnabledPodcastIdsFromPI --rm podverse_api_worker npm run scripts:podcastindex:updateValueTagEnabledPodcastIdsFromPI
+
+23 */4 * * * /usr/bin/docker restart runLiveItemListener
