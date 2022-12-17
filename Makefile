@@ -11,31 +11,25 @@ else
 endif
 
 say_hello:
-	@echo "Hello World"
+	@echo "Hello Podverse"
 
-init_project:
-	@echo "doing the work"
-
-local_init_conf:
-	cp ./config/podverse-api-local.env.example ./config/podverse-api-local.env
-
-.PHONY: local_validate_init config/podverse-api-local.env config/podverse-db-local.env config/podverse-web-local.env
+.PHONY: local_validate_init
 local_validate_init: config/podverse-api-local.env config/podverse-db-local.env config/podverse-web-local.env
 
 config/podverse-api-local.env:
-	@echo "Missing: config/podverse-api-local.env"
+	@echo "Missing: $@"
 	@echo "Copying from example file"
-	cp ./config/podverse-api-local.env.example ./config/podverse-api-local.env
+	cp ./$@.example ./$@
 
 config/podverse-db-local.env:
-	@echo "Missing: config/podverse-db-local.env"
+	@echo "Missing: $@"
 	@echo "Copying from example file"
-	cp ./config/podverse-db-local.env.example ./config/podverse-db-local.env
+	cp ./$@.example ./$@
 
 config/podverse-web-local.env:
-	@echo "Missing: config/podverse-web-local.env"
+	@echo "Missing: $@"
 	@echo "Copying from example file"
-	cp ./config/podverse-web-local.env.example ./config/podverse-web-local.env
+	cp ./$@.example ./$@
 
 local_nginx_proxy:
 	@echo 'Generate new cert'
@@ -236,6 +230,26 @@ local_down: local_down_docker_compose
 
 .PHONY: local_refresh local_down local_up
 local_refresh: local_down local_up
+
+
+proxy/local/certs:
+	mkdir -p $@
+
+proxy/local/certs/podverse-server.key:
+	openssl genrsa -out $@ 4096
+
+proxy/local/certs/podverse-server.key.insecure: proxy/local/certs/podverse-server.key
+	openssl rsa -in $< -out $@
+
+proxy/local/certs/podverse-server.csr: proxy/local/certs/podverse-server.key
+	openssl req -new -sha256 -key $< -subj "/C=US/ST=Jefferson/L=Grand/O=Podverse/OU=Inra/CN=podverse.local" -reqexts SAN -config <(cat /etc/ssl/openssl.cnf <(printf "[SAN]\nsubjectAltName=DNS:podverse.local,DNS:www.podverse.local,DNS:api.podverse.local")) -out $@
+
+proxy/local/certs/podverse-server.crt: proxy/local/certs/podverse-server.csr
+	openssl x509 -req -days 365 -in $< -signkey proxy/local/certs/podverse-server.key -out $@
+
+.PHONY: local_nginx_proxy_cert
+local_nginx_proxy_cert: proxy/local/certs proxy/local/certs/podverse-server.key proxy/local/certs/podverse-server.key.insecure proxy/local/certs/podverse-server.csr proxy/local/certs/podverse-server.crt
+	@echo 'Generate new cert'
 
 stage_clean_manticore:
 	@echo "Cleaning Manticore"
