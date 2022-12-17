@@ -18,25 +18,24 @@ init_project:
 
 local_init_conf:
 	cp ./config/podverse-api-local.env.example ./config/podverse-api-local.env
-	cp ./config/podverse-db-local.env.example ./config/podverse-db-local.env
-	cp ./config/podverse-web-local.env.example ./config/podverse-web-local.env
-local_validate_init:
-# https://stackoverflow.com/questions/5553352/how-do-i-check-if-file-exists-in-makefile-so-i-can-delete-it
 
-# config/podverse-api-local.env
-ifeq ("$(wildcard ./config/podverse-api-local.env)","")
+.PHONY: local_validate_init config/podverse-api-local.env config/podverse-db-local.env config/podverse-web-local.env
+local_validate_init: config/podverse-api-local.env config/podverse-db-local.env config/podverse-web-local.env
+
+config/podverse-api-local.env:
 	@echo "Missing: config/podverse-api-local.env"
-endif
+	@echo "Copying from example file"
+	cp ./config/podverse-api-local.env.example ./config/podverse-api-local.env
 
-# config/podverse-db-local.env
-ifeq ("$(wildcard ./config/podverse-db-local.env)","")
+config/podverse-db-local.env:
 	@echo "Missing: config/podverse-db-local.env"
-endif
-# config/podverse-web-local.env
-ifeq ("$(wildcard ./config/podverse-web-local.env)","")
+	@echo "Copying from example file"
+	cp ./config/podverse-db-local.env.example ./config/podverse-db-local.env
+
+config/podverse-web-local.env:
 	@echo "Missing: config/podverse-web-local.env"
-endif
-	@echo "Check complete"
+	@echo "Copying from example file"
+	cp ./config/podverse-web-local.env.example ./config/podverse-web-local.env
 
 local_nginx_proxy:
 	@echo 'Generate new cert'
@@ -114,6 +113,9 @@ local_up_web:
 
 local_up_web_no_cache:
 	docker-compose -f docker-compose/local/docker-compose.yml build --no-cache podverse_web
+
+local_up_maintenance_mode:
+	docker-compose -f docker-compose/local/docker-compose.yml up podverse_maintenance_mode_web -d
 
 local_up_proxy:
 	docker-compose -f docker-compose/local/docker-compose.yml up podverse_nginx_proxy -d

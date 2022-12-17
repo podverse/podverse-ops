@@ -136,3 +136,16 @@ services:
       options:
         max-file: "1"
         max-size: "50m"
+
+  podverse_maintenance_mode_web:
+    build: ./projects/podverse-web/maintenance_mode
+    container_name: podverse_maintenance_mode_web_local
+    # depends_on:
+      # - podverse_nginx_proxy
+    ports:
+      - '3000:80'
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
