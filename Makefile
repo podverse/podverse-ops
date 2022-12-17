@@ -123,6 +123,12 @@ local_down_docker_compose:
 
 # This will add a predefined list of ~30 feed urls to the AWS SQS queue based on their Podcast Index id.
 # This is useful for seeding the database with podcast data.
+# You may need a valid Podcast Index API keys for the
+# PODCAST_INDEX_AUTH_KEY and PODCAST_INDEX_SECRET_KEY env vars.
+# Sign up for a key here: https://api.podcastindex.org/
+# TODO: is a Podcast Index API actually required by our services?
+# TODO: Research how to validate key after it has been required, or post error message explaining the key is missing.
+# TODO: Use environment variables to insert the ids as a parameter at the end of the command.
 local_add_podcast_index_seed_feeds_to_queue:
 	docker-compose -f docker-compose/local/docker-compose.yml run --name addPodcastIndexSeedFeedsToQueue --rm podverse_api_worker npm run scripts:addFeedsByPodcastIndexIdToQueue -- 5718023,387129,3662287,160817,150842,878147,487548,167137,465231,767934,577105,54545,650774,955598,3758236,203827,879740,393504,575694,921030,41504,5341434,757675,174725,920666,1333070,227573,5465405,5498327,5495489,556715,5485175,202764,830124,66844,4169501
 
@@ -136,21 +142,22 @@ local_add_podcast_index_seed_feeds_with_live_items_to_queue:
 # The priority queue is used in most cases, but the non-priority queue
 # is used for less time sensitive jobs (like doing a full sync with Podcast Index).
 # The live queue is used for live streams.
+# TODO: Do an environment variable check for AWS credentials.
 local_up_parsers:
-	docker-compose -f docker-compose/local/docker-compose.yml run -d --name podverse_api_parser_1 podverse_api_worker npm run scripts:parseFeedUrlsFromQueue -- 60000 priority
-	docker-compose -f docker-compose/local/docker-compose.yml run -d --name podverse_api_parser_2 podverse_api_worker npm run scripts:parseFeedUrlsFromQueue -- 60000
-	docker-compose -f docker-compose/local/docker-compose.yml run -d --name podverse_api_parser_3_live podverse_api_worker npm run scripts:parseFeedUrlsFromQueue -- 60000 live
+	docker-compose -f docker-compose/local/docker-compose.yml run -d --name --rm podverse_api_parser_1 podverse_api_worker npm run scripts:parseFeedUrlsFromQueue -- 60000 priority
+	docker-compose -f docker-compose/local/docker-compose.yml run -d --name --rm podverse_api_parser_2 podverse_api_worker npm run scripts:parseFeedUrlsFromQueue -- 60000
+	docker-compose -f docker-compose/local/docker-compose.yml run -d --name --rm podverse_api_parser_3_live podverse_api_worker npm run scripts:parseFeedUrlsFromQueue -- 60000 live
 
 local_down_parsers:
 # I think down may not work like this, and it's a known issue?
 # https://github.com/docker/compose/issues/9627#issuecomment-1196514436
 #	docker-compose -f docker-compose/local/docker-compose.yml down podverse_api_parser_1 podverse_api_parser_2 podverse_api_parser_3_live
 	docker stop podverse_api_parser_1 podverse_api_parser_2 podverse_api_parser_3_live
-	docker rm podverse_api_parser_1 podverse_api_parser_2 podverse_api_parser_3_live
 
 # This will request the new feeds added to Podcast Index over the past X milliseconds
 # (as defined in the podverse-api-xxxxx.env), and then parse and add them to the database
 # one-by-one immediately (without sending the feeds to an SQS queue).
+# TODO: Add environment variable check. Make the time-range the request is for human readable in an echo.
 local_add_podcast_index_new_feeds:
 	docker-compose -f docker-compose/local/docker-compose.yml run --name addNewFeedUrls --rm podverse_api_worker npm run scripts:addNewFeedsFromPodcastIndex
 
