@@ -1,1 +1,2 @@
-sample-database/qa-database.sql
+db/qa-database/
+db/old-sample-database/
