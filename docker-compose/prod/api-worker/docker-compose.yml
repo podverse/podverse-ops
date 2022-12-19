@@ -1,0 +1,19 @@
+version: "3.9"
+
+networks:
+  nginx-proxy:
+      name: nginx-proxy
+
+
+services:
+
+  podverse_api_worker:
+    image: podverse/podverse_api
+    container_name: podverse_api_worker_prod
+    env_file:
+      - ../../config/podverse-api-prod.env
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"

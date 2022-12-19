@@ -1,0 +1,48 @@
+version: "3.9"
+
+networks:
+  nginx-proxy:
+    name: nginx-proxy
+
+services:
+
+  podverse_api:
+    image: podverse/podverse_api
+    container_name: podverse_api_prod
+    privileged: true
+    env_file:
+      - ../../../config/podverse-api-prod.env
+    environment:
+      VIRTUAL_HOST:
+      VIRTUAL_PORT: 1234
+    expose:
+      - 1234
+    volumes:
+      - ../../../config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
+    command: npm start
+    networks:
+      - nginx-proxy
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
+
+  podverse_web:
+    image: podverse/podverse_web
+    container_name: podverse_web_prod
+    depends_on:
+      - podverse_api
+    env_file:
+      - ../../../config/podverse-web-prod.env
+    environment:
+      VIRTUAL_HOST:
+      VIRTUAL_PORT: 3000
+    expose:
+      - 3000
+    command: npm start
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
