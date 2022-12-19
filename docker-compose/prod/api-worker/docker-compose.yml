@@ -2,7 +2,7 @@ version: "3.9"
 
 networks:
   nginx-proxy:
-      name: nginx-proxy
+    name: nginx-proxy
 
 
 services:
