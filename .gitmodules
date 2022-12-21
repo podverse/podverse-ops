@@ -1,6 +1,6 @@
 [submodule "projects/podverse-web"]
 	path = projects/podverse-web
-	url = git@github.com:podverse/podverse-web.git
+	url = https://github.com/podverse/podverse-web.git
 [submodule "projects/podverse-api"]
 	path = projects/podverse-api
-	url = git@github.com:podverse/podverse-api.git
+	url = https://github.com/podverse/podverse-api.git

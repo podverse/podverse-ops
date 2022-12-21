@@ -251,9 +251,21 @@ proxy/local/certs/podverse-server.crt: proxy/local/certs/podverse-server.csr
 local_nginx_proxy_cert: proxy/local/certs proxy/local/certs/podverse-server.key proxy/local/certs/podverse-server.key.insecure proxy/local/certs/podverse-server.csr proxy/local/certs/podverse-server.crt
 	@echo 'Generate new cert'
 
+.PHONY: local_git_sub_init
+local_git_sub_init:
+	git submodule update --init --recursive
+
 stage_clean_manticore:
 	@echo "Cleaning Manticore"
 	rm -rf ./manticore/data
 
 prod_cron_init:
 	crontab cronjobs/prod-podverse-workers
+
+.PHONY: prod_docker-compose_up
+prod_docker-compose_up:
+	docker-compose -f docker-compose/prod/srv/docker-compose.yml up -d
+
+.PHONY: prod_docker-compose_up-no_dettach
+prod_docker-compose_up:
+	docker-compose -f docker-compose/prod/srv/docker-compose.yml up
