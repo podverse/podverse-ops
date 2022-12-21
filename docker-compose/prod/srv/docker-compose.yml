@@ -16,7 +16,7 @@ services:
       VIRTUAL_HOST:
       VIRTUAL_PORT: 1234
     expose:
-      - 1234:1234
+      - 0.0.0.0:1234:1234
     volumes:
       - ../../../config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
     command: npm start
@@ -39,7 +39,7 @@ services:
       VIRTUAL_HOST:
       VIRTUAL_PORT: 3000
     expose:
-      - 3000:3000
+      - 0.0.0.0:3000:3000
     command: npm start
     logging:
       driver: "json-file"
