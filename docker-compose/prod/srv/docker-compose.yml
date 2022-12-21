@@ -15,8 +15,11 @@ services:
     environment:
       VIRTUAL_HOST:
       VIRTUAL_PORT: 1234
+    expose:
+      - 1234
     ports:
       - 0.0.0.0:1234:1234
+    hostname: podverse_api
     volumes:
       - ../../../config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
     command: npm start
@@ -38,10 +41,13 @@ services:
     environment:
       VIRTUAL_HOST:
       VIRTUAL_PORT: 3000
+    expose:
+      - 3000
     ports:
       - 0.0.0.0:3000:3000
-    links:
-      - podverse_api:podverse_api
+    hostname: podverse_web
+    networks:
+      - nginx-proxy
     command: npm start
     logging:
       driver: "json-file"
