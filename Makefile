@@ -261,3 +261,11 @@ stage_clean_manticore:
 
 prod_cron_init:
 	crontab cronjobs/prod-podverse-workers
+
+.PHONY: prod_docker-compose_pull
+prod_docker-compose_pull:
+	docker-compose -f docker-compose/prod/srv/docker-compose.yml up -d
+
+.PHONY: prod_docker-compose_pull-no_dettach
+prod_docker-compose_pull:
+	docker-compose -f docker-compose/prod/srv/docker-compose.yml up
