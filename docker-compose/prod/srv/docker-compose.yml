@@ -40,6 +40,8 @@ services:
       VIRTUAL_PORT: 3000
     ports:
       - 0.0.0.0:3000:3000
+    links:
+      - podverse_api:podverse_api
     command: npm start
     logging:
       driver: "json-file"
