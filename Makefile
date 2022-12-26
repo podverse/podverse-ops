@@ -10,6 +10,7 @@ else
 	SHELL := /bin/bash
 endif
 
+.PHONY: say_hello
 say_hello:
 	@echo "Hello Podverse"
 
