@@ -10,6 +10,7 @@ else
 	SHELL := /bin/bash
 endif
 
+.PHONY: say_hello
 say_hello:
 	@echo "Hello Podverse"
 
@@ -293,10 +294,18 @@ stage_clean_manticore:
 prod_cron_init:
 	crontab cronjobs/prod-podverse-workers
 
-.PHONY: prod_docker-compose_up
-prod_docker-compose_up:
+.PHONY: prod_srv_docker-compose_up
+prod_srv_docker-compose_up:
 	docker-compose -f docker-compose/prod/srv/docker-compose.yml up -d
 
-.PHONY: prod_docker-compose_up-no_dettach
-prod_docker-compose_up-no_dettach:
+.PHONY: prod_srv_docker-compose_up-no_dettach
+prod_srv_docker-compose_up-no_dettach:
 	docker-compose -f docker-compose/prod/srv/docker-compose.yml up
+
+.PHONY: sanbox_db_docker-compose_up
+sanbox_db_docker-compose_up:
+	docker-compose -f docker-compose/sandbox/db/docker-compose.yml up -d
+
+.PHONY: sanbox_db_docker-compose_up-no_dettach
+sanbox_db_docker-compose_up-no_dettach:
+	docker-compose -f docker-compose/sandbox/db/docker-compose.yml up
