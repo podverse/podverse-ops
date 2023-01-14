@@ -8,6 +8,8 @@ config/podverse-api-local.env
 config/podverse-db-local.env
 config/podverse-web-local.env
 
+config/podverse-db-sandbox.env
+
 config/podverse-api-stage.env
 config/podverse-db-stage.env
 config/podverse-web-stage.env
