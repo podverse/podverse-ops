@@ -312,8 +312,8 @@ sanbox_db_docker-compose_up-no_dettach:
 
 .PHONY: sanbox_srv_docker-compose_up
 sanbox_srv_docker-compose_up:
-	docker-compose -f docker-compose/sandbox/db/docker-compose.yml up -d
+	docker-compose -f docker-compose/sandbox/srv/docker-compose.yml up -d
 
 .PHONY: sanbox_srv_docker-compose_up-no_dettach
 sanbox_srv_docker-compose_up-no_dettach:
-	docker-compose -f docker-compose/sandbox/db/docker-compose.yml up
+	docker-compose -f docker-compose/sandbox/srv/docker-compose.yml up
