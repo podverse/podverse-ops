@@ -57,7 +57,7 @@ You can pass multiple feed urls as a comma-delimited string parameter to the
 `npm run scripts:addFeedUrls` command.
 
 A list of sample podcast feed urls can be found in
-[podverse-api/docs/sampleFeedUrls.txt](https://github.com/podverse/podverse-api/tree/deploy/docs/sampleFeedUrls.txt).
+[podverse-api/docs/sampleFeedUrls.txt](https://github.com/podverse/podverse-api/blob/develop/docs/sampleFeedUrls.txt).
 
 ```
 docker exec podverse_api_### npm --prefix /tmp run scripts:addFeedUrls <feed urls>
