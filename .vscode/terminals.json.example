@@ -2,75 +2,63 @@
   "autorun": false,
   "terminals": [
     {
-      "name": "Podverse API - open directory",
-      "description": "Podverse API - open directory",
+      "name": "Podverse API",
+      "description": "Podverse API",
       "cwd": "<path to repos>/podverse-api",
       "open": true
     },
     {
-      "name": "Podverse API tests - open directory",
-      "description": "Podverse API tests - open directory",
-      "cwd": "<path to repos>/podverse-api",
-      "open": true
-    },
-    {
-      "name": "Podverse Web - open directory",
-      "description": "Podverse Web - open directory",
+      "name": "Podverse Web",
+      "description": "Podverse Web",
       "cwd": "<path to repos>/podverse-web",
       "open": true
     },
     {
-      "name": "Podverse Web Tests - open directory",
-      "description": "Podverse Web Tests - open directory",
-      "cwd": "<path to repos>/podverse-web",
-      "open": true
-    },
-    {
-      "name": "Podverse RN - open directory",
-      "description": "Podverse RN - open directory",
+      "name": "Podverse RN",
+      "description": "Podverse RN",
       "cwd": "<path to repos>/podverse-rn",
       "open": true
     },
     {
-      "name": "Podverse F-Droid - open directory",
-      "description": "Podverse F-Droid - open directory",
+      "name": "Podverse F-Droid",
+      "description": "Podverse F-Droid",
       "cwd": "<path to repos>/podverse-fdroid",
       "open": true
     },
     {
-      "name": "Podverse Ops - open directory",
-      "description": "Podverse Ops - open directory",
+      "name": "Podverse Ops",
+      "description": "Podverse Ops",
       "cwd": "<path to repos>/podverse-ops",
       "open": true
     },
     {
-      "name": "Podverse Shared - open directory",
-      "description": "podverse-shared - open directory",
+      "name": "Podverse Shared",
+      "description": "podverse-shared",
       "cwd": "<path to repos>/podverse-shared",
       "open": true
     },
     {
-      "name": "podcast-feed-parser - open directory",
-      "description": "podcast-feed-parser - open directory",
-      "cwd": "<path to repos>/podcast-feed-parser",
+      "name": "Podverse SSH",
+      "description": "Podverse SSH",
+      "cwd": "<path to repos>/podverse-ops",
       "open": true
     },
     {
-      "name": "podcastindex - open directory",
-      "description": "podcastindex - open directory",
+      "name": "Podcast Index",
+      "description": "podcastindex",
       "cwd": "<path to repos>/podcastindex",
       "open": true
     },
     {
-      "name": "Podverse SSH 1 - open directory",
-      "description": "Podverse SSH - open directory",
-      "cwd": "<path to repos>/podverse-ops",
+      "name": "transcriptator",
+      "description": "transcriptator",
+      "cwd": "<path to repos>/transcriptator",
       "open": true
     },
     {
-      "name": "Podverse SSH 2 - open directory",
-      "description": "Podverse SSH - open directory",
-      "cwd": "<path to repos>/podverse-ops",
+      "name": "react-native-track-player",
+      "description": "react-native-track-player",
+      "cwd": "<path to repos>/react-native-track-player",
       "open": true
     }
   ]
