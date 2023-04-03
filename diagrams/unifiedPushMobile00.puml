@@ -1,10 +1,18 @@
 @startuml unifiedPushMobile00
 actor User
+box "User Device"
 participant MobileApp
+participant UPMobileApp
+end box
+box "internet"
+box "Podverse"
 participant API
 database Postgres
-participant UPMobileApp
+end box
+box "User Unfied Push Provider"
 participant UPServer
+end box
+end box
 
 User -> MobileApp : opens the app
 MobileApp -> User : asks the user to accept notifications
