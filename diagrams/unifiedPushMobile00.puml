@@ -1,4 +1,4 @@
-@startuml unifiedpush00
+@startuml unifiedPushMobile00
 actor User
 participant MobileApp
 participant API
