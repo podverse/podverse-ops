@@ -1,0 +1,21 @@
+@startuml unifiedPushParser00
+participant Parser
+database Postgres
+participant UPServer
+participant NtfyMobileApp
+participant MobileApp
+actor User
+
+Parser -> Parser : begins to parse a podcast RSS feed
+Parser -> Parser : determines a notification \nshould be sent
+Parser -> Postgres : queries for unifiedPushTokens \nthat should receive notifications
+Postgres -> Parser : returns unifiedPushTokens
+Parser -> Parser : groups the unifiedPushTokens \nby endpoint hostname
+Parser -> UPServer : iterate over the groups\nto send unifiedPushTokens to \nbatch notify endpoints\nwith podcast and episode data\nin the request body
+UPServer -> Parser : success response
+UPServer -> NtfyMobileApp : pushes notification
+NtfyMobileApp -> User : displays notification
+User -> MobileApp : taps notification\nto open Podverse
+
+
+@enduml
