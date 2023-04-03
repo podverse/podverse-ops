@@ -1,10 +1,18 @@
 @startuml unifiedPushMobile00
 actor User
+box "User Device"
 participant MobileApp
+participant UPMobileApp
+end box
+box "internet"
+box "Podverse"
 participant API
 database Postgres
-participant NtfyMobileApp
+end box
+box "User Unfied Push Provider"
 participant UPServer
+end box
+end box
 
 User -> MobileApp : opens the app
 MobileApp -> User : asks the user to accept notifications
@@ -20,13 +28,13 @@ API -> API : creates UP salted_topic_id
 API -> Postgres : saves the UP hostname+salted_topic_id \nwith ManyToOne to User table \nin the unifiedPushToken table
 Postgres -> API : success response
 API -> MobileApp : returns the hostname+salted_topic_id
-MobileApp -> NtfyMobileApp : registers hostname+salted_topic_id
-NtfyMobileApp -> MobileApp : success response??
+MobileApp -> UPMobileApp : registers hostname+salted_topic_id
+UPMobileApp -> MobileApp : success response??
 MobileApp -> User : shows UP notifications enabled message
 User -> MobileApp : presses the Test button
 MobileApp -> UPServer : posts Test notification body
-UPServer -> NtfyMobileApp : receives Test notification
-NtfyMobileApp -> User : presents Test notification to user
+UPServer -> UPMobileApp : receives Test notification
+UPMobileApp -> User : presents Test notification to user
 User -> MobileApp : presses the Unregister button
 MobileApp -> API : sends authenticated remove unifiedPushToken request
 API -> API : confirms the user has permission \nto remove it
@@ -34,8 +42,8 @@ API -> Postgres : sends delete unifiedPushToken \nrow request
 Postgres -> Postgres : deletes the unifiedPushToken row
 Postgres -> API : success response
 API -> MobileApp : success response
-MobileApp -> NtfyMobileApp : unregisters hostname+salted_topic_id
-NtfyMobileApp -> MobileApp : success response??
+MobileApp -> UPMobileApp : unregisters hostname+salted_topic_id
+UPMobileApp -> MobileApp : success response??
 MobileApp -> User : shows unregister successful message
 
 @enduml
