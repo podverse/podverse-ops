@@ -112,6 +112,22 @@ the feed urls by running:
 docker-compose -f docker-compose.###.yml run podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue -- <retryTimeMS>
 ```
 
+We also have a self-managed parsing queue, where we manually mark podcasts to be added to a separate queue for parsing at a regular cadence. The property is `Podcast.parsingPriority` and the `parsingPriority` is a value between 0-5. 0 is the default, and means the podcast should not be added to the self-managed queue. 1 is the most frequent, and 5 is the least frequent parsing.
+
+At the time of writing this, 3 is the value we are using the most, which adds the feeds to the queue every 30 minutes.
+
+The `offset` value is optional, and probably not needed.
+
+```bash
+docker-compose -f docker-compose.###.yml run podverse_api_parser_worker npm run scripts:addFeedsToQueueByPriority <parsingPriority> <offset>
+```
+
+Then to parse from the self-managed queue call:
+
+```bash
+docker-compose -f docker-compose.###.yml run podverse_api_parser_worker npm run scripts:parseFeedUrlsFromQueue
+```
+
 ### Schedule parsing with cron
 
 Below is a sample cron command for adding feeds to queues.
