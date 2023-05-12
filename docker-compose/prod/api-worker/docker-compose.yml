@@ -11,7 +11,7 @@ services:
     image: podverse/podverse_api
     container_name: podverse_api_worker_prod
     env_file:
-      - ../../config/podverse-api-prod.env
+      - ../../../config/podverse-api-prod.env
     logging:
       driver: "json-file"
       options:
