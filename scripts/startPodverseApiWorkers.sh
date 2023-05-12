@@ -10,3 +10,5 @@
 /usr/bin/docker start podverse_api_parser_worker_8
 /usr/bin/docker start podverse_api_parser_worker_9_live
 /usr/bin/docker start podverse_api_parser_worker_10_live
+/usr/bin/docker start podverse_api_self_managed_parser_worker_1
+/usr/bin/docker start podverse_api_self_managed_parser_worker_2
