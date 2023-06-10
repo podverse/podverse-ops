@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 11.5 (Debian 11.5-3.pgdg90+1)
--- Dumped by pg_dump version 14.5 (Homebrew)
+-- Dumped by pg_dump version 14.8 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1118,7 +1118,8 @@ CREATE TABLE public.podcasts (
     "latestLiveItemStatus" public.podcasts_latest_live_item_status_enum DEFAULT 'none'::public.podcasts_latest_live_item_status_enum NOT NULL,
     "hasPodcastIndexValueTag" boolean DEFAULT false NOT NULL,
     persons jsonb,
-    "embedApprovedMediaUrlPaths" text
+    "embedApprovedMediaUrlPaths" text,
+    "excludeCacheBust" boolean DEFAULT false NOT NULL
 );
 
 
