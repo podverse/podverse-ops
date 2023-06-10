@@ -1119,7 +1119,8 @@ CREATE TABLE public.podcasts (
     "hasPodcastIndexValueTag" boolean DEFAULT false NOT NULL,
     persons jsonb,
     "embedApprovedMediaUrlPaths" text,
-    "excludeCacheBust" boolean DEFAULT false NOT NULL
+    "excludeCacheBust" boolean DEFAULT false NOT NULL,
+    "parsingPriority" integer DEFAULT 0 NOT NULL
 );
 
 
@@ -2620,6 +2621,13 @@ CREATE INDEX "IDX_liveItems_stats" ON public."liveItems" USING btree (status);
 
 
 --
+-- Name: IDX_podcasts_parsingPriority_isPublic; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "IDX_podcasts_parsingPriority_isPublic" ON public.podcasts USING btree ("isPublic", "parsingPriority");
+
+
+--
 -- Name: auth_group_name_a6ea08ec_like; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2778,6 +2786,13 @@ CREATE INDEX playlists_int_id_index ON public.playlists USING btree (int_id);
 --
 
 CREATE INDEX podcasts_int_id_index ON public.podcasts USING btree (int_id);
+
+
+--
+-- Name: podcasts_parsingPriority; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "podcasts_parsingPriority" ON public.podcasts USING btree ("parsingPriority");
 
 
 --
