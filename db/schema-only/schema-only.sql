@@ -1120,7 +1120,8 @@ CREATE TABLE public.podcasts (
     persons jsonb,
     "embedApprovedMediaUrlPaths" text,
     "excludeCacheBust" boolean DEFAULT false NOT NULL,
-    "parsingPriority" integer DEFAULT 0 NOT NULL
+    "parsingPriority" integer DEFAULT 0 NOT NULL,
+    "podcastGuid" uuid
 );
 
 
@@ -2765,6 +2766,13 @@ CREATE INDEX "feedUrls_int_id_index" ON public."feedUrls" USING btree (int_id);
 --
 
 CREATE INDEX idx_episodes_ispublic ON public.episodes USING btree ("isPublic");
+
+
+--
+-- Name: idx_podcasts_podcastguid; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_podcasts_podcastguid ON public.podcasts USING btree ("podcastGuid");
 
 
 --
