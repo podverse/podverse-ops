@@ -7,8 +7,11 @@ Android Auto is our most popular feature request.
 ## Requisites
 
 React Native
+
 Android
+
 Java
+
 Kotlin
 
 ## Bridge
