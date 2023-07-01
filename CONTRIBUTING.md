@@ -6,15 +6,11 @@
 
 *WORK IN PROGRESS - we haven't finalized the terms for bounties yet, but should have them ready soon.*
 
-We currently charge $18 per year for a Podverse Premium membership, which is covering most of our bills at the moment, but we're still far from being able to afford to pay our core team members.
+We currently charge $18 per year for a Podverse Premium membership, which is covering most of our bills at the moment, but we're still far from being able to afford to pay our core team members. Also, we use the [value for value model](https://value4value.info/), and extend Podverse Premium memberships for free for anyone who asks.
 
-Also, we use the [value for value model](https://value4value.info/), and extend Podverse Premium memberships for free to anyone who asks for one.
+While our "treasury" is small, we have invested in a bounties program to help encourage FOSS contributions to Podverse on major features or bug fixes that our core team either doesn't know how to do, or won't realistically have time to complete soon.
 
-That said, we have invested in a bounties program to help encourage FOSS contributions to Podverse on major features or bug fixes that our core team either doesn't know how to do, or won't realistically have time to complete.
-
-If you may be interested in working on a bounty, you can find descriptions for them in [this directory](https://github.com/podverse/podverse-ops/tree/master/bounties).
-
-If you decide to pick one up, please let us know as soon as possible so we can reserve it for you to work on, and also verify our payment method and terms will work for you.
+If you may be interested in working on a bounty, you can find descriptions for them in [this directory](https://github.com/podverse/podverse-ops/tree/master/bounties). If you decide to pick one up, please let us know as soon as possible so we can reserve it for you to work on, and also verify our payment method and terms will work for you.
 
 ## Documentation
 
@@ -32,9 +28,7 @@ We will also pay a bounty to people who make major contributions towards transla
 
 ## Programming
 
-The full Podverse tech stack is primarily written with JavaScript, TypeScript, and Node.js, and we use React and React Native for the website and mobile app.
-
-Our core dev team has good JavaScript and iOS experience, but almost no Android, and limited database experience, so those are both areas we could particularly use help with.
+The full Podverse tech stack is primarily written with JavaScript, TypeScript, and Node.js, and we use React and React Native for the website and mobile app. Our core dev team has good JavaScript and iOS experience, but almost no Android, and limited database experience, so those are both areas we could particularly use help with.
 
 Below is info to help you get started running the Podverse apps locally on your machine.
 
@@ -70,7 +64,14 @@ make local_manticore_indexes_rotate
 
 The database will automatically import the [schema-only.sql.gz file](https://github.com/podverse/podverse-ops/tree/master/db/schema-only), which initializes the tables and indexes.
 
-To destroy the database locally, you can run:
+To populate your local database with sample data, you can go into the podverse-api repo, install dependencies, update the `.env` file according to the example linked in the section above, and then run:
+
+```bash
+yarn dev:seeds:qa:populateDatabase
+# or npm run dev:seeds:qa:populateDatabase
+```
+
+When you're ready to destroy the database locally, you can run:
 
 ```bash
 make local_down_db
@@ -86,13 +87,11 @@ After the database and Manticore are running locally, you can then run whichever
 
 For more info about how to run and begin working on each app, please check the README in their respective repos:
 
-[podverse-api](https://github.com/podverse/podverse-api)
-[podverse-rn](https://github.com/podverse/podverse-rn)
-[podverse-web](https://github.com/podverse/podverse-web)
+- [podverse-api](https://github.com/podverse/podverse-api)
+- [podverse-rn](https://github.com/podverse/podverse-rn)
+- [podverse-web](https://github.com/podverse/podverse-web)
 
 Also, we welcome any contributions to help improve or cleanup this repo [podverse-ops](https://github.com/podverse/podverse-ops).
-
-If you have any issues with the startup process, please 
 
 ### Bounties
 
@@ -102,8 +101,8 @@ Please visit the [bounties directory](https://github.com/podverse/podverse-ops/t
 
 If you'd like to reach us with questions, we'd be happy to hear from you, and can be reached by creating a Github issue in its respective repo, or by contacting us via:
 
-[Matrix](https://matrix.to/#/#podverse-space:matrix.org) (preferred)
-[Discord](https://discord.gg/6HkyNKR)
-[Email](mailto:contact@podverse.fm)
+- [Matrix](https://matrix.to/#/#podverse-space:matrix.org) (preferred)
+- [Discord](https://discord.gg/6HkyNKR)
+- [Email](mailto:contact@podverse.fm)
 
-Thanks for reading! ❤️
+Thank you for supporting Podverse! ❤️
