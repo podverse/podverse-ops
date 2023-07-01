@@ -2,6 +2,20 @@
 
 [Podverse](https://podverse.fm) is a labor of love to create a high quality cross-platform FOSS podcast app, and help drive forward adoption of new RSS namespaces ([Podcasting 2.0](https://github.com/Podcastindex-org/podcast-namespace/blob/main/podcasting2.0.md)), so new features are possible in open podcasting.
 
+## Table of Contents
+- [Bounties](#bounties)
+- [Documentation](#documentation)
+- [Translations](#translations)
+  * [Weblate](#weblate)
+  * [Bounties](#bounties-1)
+- [Development](#development)
+  * [Environment configs](#environment-configs)
+  * [Local environment setup](#local-environment-setup)
+  * [Bounties](#bounties-2)
+- [Contact us](#contact-us)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>generated with markdown-toc</a></i></small>
+
 ## Bounties
 
 *WORK IN PROGRESS - we haven't finalized the terms for bounties yet, but should have them ready soon.*
@@ -26,7 +40,7 @@ If you'd like to add or update translations in the mobile or web app, please vis
 
 We will also pay a bounty to people who make major contributions towards translating the mobile or web site into different languages. Please visit the [translations bounty page](https://github.com/podverse/podverse-ops/tree/master/bounties/translations) for more info.
 
-## Programming
+## Development
 
 The full Podverse tech stack is primarily written with JavaScript, TypeScript, and Node.js, and we use React and React Native for the website and mobile app. Our core dev team has good JavaScript and iOS experience, but almost no Android, and limited database experience, so those are both areas we could particularly use help with.
 
