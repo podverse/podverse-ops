@@ -105,7 +105,7 @@ local_manticore_indexes_rotate:
 	docker-compose -f docker-compose/local/docker-compose.yml exec podverse_manticore gosu manticore indexer idx_episode_09 --rotate --verbose;
 	docker-compose -f docker-compose/local/docker-compose.yml exec podverse_manticore gosu manticore indexer idx_episode_10 --rotate --verbose;
 
-.PHONY: local_manticore_indexes_rotate
+.PHONY: local_update_schema
 local_update_schema:
 	db/schema-only/updateSchema.sh
 
