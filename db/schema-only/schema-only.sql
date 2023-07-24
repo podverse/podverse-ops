@@ -1200,6 +1200,22 @@ CREATE TABLE public."recentEpisodesByPodcast" (
 ALTER TABLE public."recentEpisodesByPodcast" OWNER TO postgres;
 
 --
+-- Name: upDevices; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."upDevices" (
+    "upEndpoint" character varying NOT NULL,
+    "upPublicKey" character varying NOT NULL,
+    "upAuthKey" character varying NOT NULL,
+    "userId" character varying(14),
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
+    "updatedAt" timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public."upDevices" OWNER TO postgres;
+
+--
 -- Name: userHistoryItems; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -2020,6 +2036,14 @@ ALTER TABLE ONLY public.notifications
 
 
 --
+-- Name: upDevices upDevices_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."upDevices"
+    ADD CONSTRAINT "upDevices_pkey" PRIMARY KEY ("upEndpoint");
+
+
+--
 -- Name: IDX_02685aea54efa70d3010f87591; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2629,6 +2653,13 @@ CREATE INDEX "IDX_podcasts_parsingPriority_isPublic" ON public.podcasts USING bt
 
 
 --
+-- Name: IDX_upDevices_userId; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "IDX_upDevices_userId" ON public."upDevices" USING btree ("userId");
+
+
+--
 -- Name: auth_group_name_a6ea08ec_like; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -3224,6 +3255,14 @@ ALTER TABLE ONLY public.notifications
 
 ALTER TABLE ONLY public.notifications
     ADD CONSTRAINT "notifications_userId_fkey" FOREIGN KEY ("userId") REFERENCES public.users(id);
+
+
+--
+-- Name: upDevices upDevices_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."upDevices"
+    ADD CONSTRAINT "upDevices_userId_fkey" FOREIGN KEY ("userId") REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
