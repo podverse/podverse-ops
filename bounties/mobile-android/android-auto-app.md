@@ -2,58 +2,54 @@
 
 [Github issue #1054](https://github.com/podverse/podverse-rn/issues/1054)
 
-Android Auto is our most popular feature request.
+> Android Auto is our most popular feature request. We are offering $1,200 on completion after we can confirm that it works on Android Auto Capable vehicles in production.
 
 ## Requisites
 
-React Native
+- React Native (Javascript)
+- Android (Java/Kotlin)
 
-Android
+## Acceptance Criteria
 
-Java
+### App Launch
+    - Starting Podverse directly from Android Auto should display a list of the users subscribed podcasts.
+    - Android Auto Podverse App should continue to work even when the phone is locked.
 
-Kotlin
+### Navigation
 
-## Bridge
+    The Android Auto App should consist of 3 Tabs.
+    1. Podcast
+        - A list of the user's subscribed podcasts
+        - Selecting a Podcast should drill down to a Podcasts Episode List in reverse chronological order
+        - Selecting an Episode should navigate the user to a Player Screen and start playing th episode from the last saved position. If no such position exists, it should just start from the beginning.
+        - Display the podcast artwork and podcast title in each episode cell.
+    2. Queue
+        - A list of the user's queued episodes
+        -  Selecting an Episode should navigate the user to a Player Screen and start playing th episode from the last saved position. If no such position exists, it should just start from the beginning.
+    3. History
+        - A list of played episodes regardless of completion status
+        - Selecting an Episode should navigate the user to a Player Screen and start playing th episode from the last saved position. If no such position exists, it should just start from the beginning.
 
-While working on the Apple CarPlay app, we ran into issues with keeping a bridge active and connected between the phone and the auto device. CarPlay worked fine, until we locked the phone screen, then the connection ended. I forget the solution we implemented for it...but it involves a CarScene. I'm not sure if we ever truly fixed it because the Github issue is still open [#1650](https://github.com/podverse/podverse-rn/issues/1650).
+    The user should have a way to always go to the player screen from anywhere within the Android Auto Podverse App
 
-## Bridge + Media Player
+### Player Screen
+    - Play/Pause Action
+    - Forward/Backwards Action
+    - Skip/Restart Track Action
+    - Images and Track Title need to changing between Chapters *(if chapters exist)
+    - When player is dismissed, the history and queue ui needs to be updated to reflect latest history and queue state.
 
-Podverse uses two different React Native player libraries for audio and video playback. Ideally the Android App will play both file types (both played as audio only?). If we do not have issues with a React Native to Android Auto bridge, then we should be able to use the existing player class function, which automatically handle audio or video playback.
 
-## Navigation
+## Developer Notes
 
-- Podcasts
-    - List all of the user's subscribed podcasts. On tap of a podcast, load the 
-- Queue
-    - Display the user's queue. On tap, the item should begin playing and be removed from the queue.
-- History
-    - Display the user's history. On tap, the item should begin playing.
-- Now Playing (Player)
-    - Tap to display the Now Playing screen. 
+- The Android Auto App should only handle UI display. All player control functionality exists on the javascript side and should be ported in corresponding native functions to be called on user interaction with the Android Auto UI. 
+See:\
+https://github.com/podverse/podverse-rn/blob/develop/src/lib/carplay/PVCarPlay.ts\
+https://github.com/podverse/podverse-rn/blob/develop/src/lib/carplay/PVCarPlay.android.ts\
+https://github.com/podverse/podverse-rn/blob/develop/src/lib/carplay/helpers.ts
 
-## Load podcast and episode data
+- The user should not need to start Podverse on their phone for the app to start up in Android Auto. We've ran into thread issues with the UI on the iOS CarPlay where the Android Auto App wouldn't load content until the phone app was launched too. This was resolved in iOS with some native changes specific to the launch process.
 
-- Load all subscribed podcasts for user. First show a loading spinner / table cell, then load the subscribed podcast data from local storage, then make a request to the Podverse API for the latest podcast data for that user, then reload the screen. Display the podcast artwork and podcast title in each table cell. On tap of a cell, load the Podcast screen, with a list of all the episodes of the podcast in reverse chronological order. On tap of an episode table cell, play the episode.
-
-## Queue
-
-- Load the user's queue. On tap of a queue item, start playing the item, then reload the queue screen with the updated queue items.
-
-## History
-
-- Load the user's history. On tap of a history item, start playing the item, then reload the history screen with the updated history items (maybe we don't need to reload?).
-
-## Player controls
-
-- Play/Pause - on press, save the current playback position to server
-- Time Jumps - back 10 seconds, forward 30 seconds
-- Previous/Skip - if there is a chapter ahead of the current playback position, then skip to the next chapter, or go back to the previous chapter. If already on the first chapter, then go to the beginning of the episode at position 0 (we don't currently support going back to the previous track). If there are not more than 1 chapter (if there is only one chapter we ignore it), then pressing the skip button starts playing the next item in the player queue.
-
-## Background processes
-
-- Background interval handler - there is a playback increment (1 second) handler in a JS file that handles a variety of things like chapter info changes, clip end-time listening, saving the current playback position to server once per minute, and value-for-value streaming. The same functionality in this interval should run during player progress in Android Auto. Hopefully the bridge between the phone and Android Auto will allow the existing React Native handler to be called.
 
 ## i18n / internationalization
 
