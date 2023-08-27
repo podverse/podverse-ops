@@ -1,5 +1,7 @@
 # Android Auto app
 
+**CURRENTLY ASSIGNED TO @lovegaoshi**
+
 [Github issue #1054](https://github.com/podverse/podverse-rn/issues/1054)
 
 > Android Auto is our most popular feature request. We are offering $1,200 on completion after we can confirm that it works on Android Auto Capable vehicles in production.
