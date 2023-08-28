@@ -7,9 +7,23 @@ Android
 #FFF
 
 blocked
+The work on this issue is blocked by another issue
 #909
 
+bounty
+A paid bounty is available for this issue
+#F90
+
+bounty completed
+Bounty work has been deployed and verified in prod
+#5F0
+
+bounty pending
+Bounty work has been submitted for review, but has not been deployed and verified in prod yet
+#FF9
+
 bug
+Something isn't working
 #900
 
 CarPlay
@@ -18,22 +32,20 @@ CarPlay
 database
 #00F
 
-dependencies
-#09F
-
 documentation
+Improvements or additions to documentation
 #000
 
 duplicate
+This issue or pull request already exists
 #999
 
 enhancement
+New feature or request
 #0F9
 
-fix needs verification
-#FF9
-
 good first issue
+Good for newcomers
 #05F
 
 GrapheneOS
@@ -49,12 +61,14 @@ hacktoberfest-accepted
 #CCF
 
 help wanted
+Extra attention is needed
 #5FC
 
 infra
 #9F0
 
 invalid
+This issue is invalid
 #999
 
 iOS
@@ -70,24 +84,31 @@ matomo
 #59F
 
 more info needed
+More info is needed for work to continue
 #FF9
 
 needs reproduction
+Steps to reproduce the issue are needed for work to continue
 #FF9
 
 needs verification
+A fix has been released, but we are not sure if it will work until testers tell us it does
 #FF9
 
 question
-#F90
+A question for the maintainers or community
+#90F
 
 ready to deploy
+The work has been approved and merged
 #5F0
 
 security
+Security vulnerabilities
 #500
 
 task
+Miscellaneous tasks / other
 #C90
 
 translations
@@ -97,4 +118,5 @@ ux
 #95C
 
 wontfix
+This will not be worked on
 #999
