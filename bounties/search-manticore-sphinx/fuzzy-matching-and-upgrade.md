@@ -1,5 +1,4 @@
-
-manticore
+# Manticore Search Improvement
 
 currently our search engine only matches on exact spelling matchs, and we haven't been able to figure out how make it work with fuzzy matching.
 

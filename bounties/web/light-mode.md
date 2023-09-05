@@ -1,1 +1,3 @@
-podverse-web #1138
+# Light Mode Support
+
+https://github.com/podverse/podverse-web/issues/1138
