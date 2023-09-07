@@ -3,6 +3,7 @@
 
 | Category | Bounty          | Assigned | Priority   | Amount |
 | -------- | --------------- | -------- | ---------- | ------ |
+|<s>API</s>| <s>[Mark Multiple Episodes As Played](https://github.com/podverse/podverse-ops/blob/master/bounties/mobile/react-native/mark-multiple-or-all-episodes-as-played.md)</s> | <s>[x]</s> | <s>Medium</s> | <s>$100</s>
 |Desktop| [Create Desktop App](https://github.com/podverse/podverse-ops/blob/master/bounties/desktop/create-desktop-app.md) | [ ] | Low |
 |Documentation| [Document Podverse API](https://github.com/podverse/podverse-ops/blob/master/bounties/desktop/documentation-podverse-api.md) | [ ] | Low |
 |Documentation| [Document Podverse OPS](https://github.com/podverse/podverse-ops/blob/master/bounties/desktop/documentation-podverse-ops.md) | [ ] | Low |
