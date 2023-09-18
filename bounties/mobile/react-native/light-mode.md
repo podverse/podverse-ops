@@ -10,6 +10,8 @@ We'll also need to make sure the native system components, like system alerts an
 
 I'm not sure if it is possible, but it would be nice if the launch / splash screen would have either a white or black background depending on which theme is active in the app.
 
+Also, please implement automatic theme detection, so the app will launch in either light or dark mode depending on what setting the user has set for their device. If no theme setting is available or is set to "default," then default to the dark mode.
+
 Given that this will require changes across many screens, and it is likely some components will be missed in the first release of light mode, we would greatly appreciate if you can make tweaks in a future release as needed to components that were missed.
 
 $500
