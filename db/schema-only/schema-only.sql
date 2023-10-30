@@ -929,7 +929,8 @@ CREATE TABLE public."mediaRefs" (
     "isOfficialSoundBite" boolean DEFAULT false NOT NULL,
     "linkUrl" character varying,
     int_id integer NOT NULL,
-    "isChapterToc" boolean
+    "isChapterToc" boolean,
+    "chaptersIndex" integer
 );
 
 
@@ -2026,14 +2027,6 @@ ALTER TABLE ONLY public."userHistoryItems"
 
 
 --
--- Name: mediaRefs mediaRef_index_episode_isOfficialChapter_startTime; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public."mediaRefs"
-    ADD CONSTRAINT "mediaRef_index_episode_isOfficialChapter_startTime" UNIQUE ("episodeId", "isOfficialChapter", "startTime");
-
-
---
 -- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2740,6 +2733,13 @@ CREATE INDEX authors_int_id_index ON public.authors USING btree (int_id);
 --
 
 CREATE INDEX categories_int_id_index ON public.categories USING btree (int_id);
+
+
+--
+-- Name: chaptersindex_3col_unique_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX chaptersindex_3col_unique_idx ON public."mediaRefs" USING btree ("episodeId", "isOfficialChapter", "chaptersIndex") WHERE (("isOfficialChapter" IS TRUE) AND ("chaptersIndex" IS NOT NULL));
 
 
 --
