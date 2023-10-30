@@ -710,6 +710,9 @@ CREATE TABLE public.episodes (
     int_id bigint NOT NULL,
     subtitle character varying,
     persons jsonb,
+    "itunesEpisode" integer,
+    "itunesEpisodeType" character varying,
+    "itunesSeason" integer,
     CONSTRAINT chk CHECK ((int_id IS NOT NULL))
 );
 
@@ -925,7 +928,8 @@ CREATE TABLE public."mediaRefs" (
     "isOfficialChapter" boolean,
     "isOfficialSoundBite" boolean DEFAULT false NOT NULL,
     "linkUrl" character varying,
-    int_id integer NOT NULL
+    int_id integer NOT NULL,
+    "isChapterToc" boolean
 );
 
 
@@ -1121,7 +1125,9 @@ CREATE TABLE public.podcasts (
     "embedApprovedMediaUrlPaths" text,
     "excludeCacheBust" boolean DEFAULT false NOT NULL,
     "parsingPriority" integer DEFAULT 0 NOT NULL,
-    "podcastGuid" uuid
+    "podcastGuid" uuid,
+    "itunesFeedType" character varying,
+    "hasSeasons" boolean DEFAULT false NOT NULL
 );
 
 
