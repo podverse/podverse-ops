@@ -35,7 +35,7 @@ services:
   #       max-size: "50m"
 
   podverse_db:
-    build: ./db/schema-only
+    build: ../../db/schema-only
     container_name: podverse_db_local
     # depends_on:
     #   - podverse_nginx_proxy
