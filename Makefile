@@ -147,7 +147,7 @@ local_down_docker_compose:
 # TODO: Use environment variables to insert the ids as a parameter at the end of the command.
 .PHONY: local_add_podcast_index_seed_feeds_to_queue
 local_add_podcast_index_seed_feeds_to_queue:
-	docker-compose -f docker-compose/local/docker-compose.yml run --name addPodcastIndexSeedFeedsToQueue --rm podverse_api_worker npm run scripts:addFeedsByPodcastIndexIdToQueue -- 5718023,387129,3662287,160817,150842,878147,487548,167137,465231,767934,577105,54545,650774,955598,3758236,203827,879740,393504,575694,921030,41504,5341434,757675,174725,920666,1333070,227573,5465405,5498327,5495489,556715,5485175,202764,830124,66844,4169501
+	docker-compose -f docker-compose/local/docker-compose.yml run --name addPodcastIndexSeedFeedsToQueue --rm podverse_api_worker npm run scripts:addFeedsByPodcastIndexIdToQueue -- 5718023,387129,3662287,160817,150842,878147,487548,167137,465231,767934,577105,54545,650774,955598,3758236,203827,879740,393504,575694,921030,41504,5341434,757675,174725,920666,1333070,227573,5465405,5498327,5495489,556715,5485175,202764,830124,66844,4169501,6524027
 
 .PHONY: local_add_podcast_index_seed_feeds_to_queue_small
 local_add_podcast_index_seed_feeds_to_queue_small:
@@ -155,7 +155,7 @@ local_add_podcast_index_seed_feeds_to_queue_small:
 
 .PHONY: local_add_podcast_index_seed_feeds_with_live_items_to_queue
 local_add_podcast_index_seed_feeds_with_live_items_to_queue:
-	docker-compose -f docker-compose/local/docker-compose.yml run --name addPodcastIndexSeedFeedsToQueue --rm podverse_api_worker npm run scripts:addFeedsByPodcastIndexIdToQueue -- 4935828,5495489,162612,5461087,486332,480983,3727160,5496786,901876,5498327,4207213,5710520,5465405,5485175,574891,920666,540927,4432692,5718023,41504,3756449,150842,937170,946122,5373053,624721,5700613,288180,955598
+	docker-compose -f docker-compose/local/docker-compose.yml run --name addPodcastIndexSeedFeedsToQueue --rm podverse_api_worker npm run scripts:addFeedsByPodcastIndexIdToQueue -- 4935828,5495489,162612,5461087,486332,480983,3727160,5496786,901876,5498327,4207213,5710520,5465405,5485175,574891,920666,540927,4432692,5718023,41504,3756449,150842,937170,946122,5373053,624721,5700613,288180,955598,6524027
 
 # This will run 3 parsers that pull from different SQS queues.
 # The priority queue is used in most cases, but the non-priority queue
