@@ -31,6 +31,25 @@ COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UU
 
 
 --
+-- Name: playlists_medium_enum; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.playlists_medium_enum AS ENUM (
+    'podcast',
+    'music',
+    'video',
+    'film',
+    'audiobook',
+    'newsletter',
+    'blog',
+    'music-video',
+    'mixed'
+);
+
+
+ALTER TYPE public.playlists_medium_enum OWNER TO postgres;
+
+--
 -- Name: podcasts_latest_live_item_status_enum; Type: TYPE; Schema: public; Owner: postgres
 --
 
@@ -1025,7 +1044,8 @@ CREATE TABLE public.playlists (
     "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
     "updatedAt" timestamp without time zone DEFAULT now() NOT NULL,
     "ownerId" character varying(14) NOT NULL,
-    int_id integer NOT NULL
+    int_id integer NOT NULL,
+    medium public.playlists_medium_enum DEFAULT 'mixed'::public.playlists_medium_enum NOT NULL
 );
 
 
