@@ -13,7 +13,7 @@ services:
       - podverse_nginx_proxy
       - podverse_letsencrypt_nginx
     env_file:
-      - ../../../config/podverse-db-prod.env
+      - /opt/podverse-ops/config/podverse-db-prod.env
     ports:
       - '5432:5432'
     volumes:
@@ -47,8 +47,8 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - ../../../manticore/data:/var/lib/manticore
-      - ../../../manticore/manticore.conf:/etc/manticoresearch/manticore.conf
+      - /opt/podverse-ops/manticore/data:/var/lib/manticore
+      - /opt/podverse-ops/manticore/manticore.conf:/etc/manticoresearch/manticore.conf
     logging:
       driver: 'json-file'
       options:
