@@ -7,11 +7,9 @@ networks:
 services:
 
   podverse_db:
-    image: postgres:11.5
+    image: postgres:11.20-bullseye
     container_name: podverse_db_prod
-    depends_on:
-      - podverse_nginx_proxy
-      - podverse_letsencrypt_nginx
+
     env_file:
       - /opt/podverse-ops/config/podverse-db-prod.env
     ports:
@@ -31,8 +29,6 @@ services:
     image: manticoresearch/manticore:4.2.0
     container_name: podverse_manticore_prod
     depends_on:
-      - podverse_nginx_proxy
-      - podverse_letsencrypt_nginx
       - podverse_db
     restart: always
     ports:
