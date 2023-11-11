@@ -7,13 +7,11 @@ networks:
 services:
 
   podverse_db:
-    image: postgres:11.5
+    image: postgres:11.20-bullseye
     container_name: podverse_db_prod
-    depends_on:
-      - podverse_nginx_proxy
-      - podverse_letsencrypt_nginx
+
     env_file:
-      - ../../../config/podverse-db-prod.env
+      - /opt/podverse-ops/config/podverse-db-prod.env
     ports:
       - '5432:5432'
     volumes:
@@ -31,8 +29,6 @@ services:
     image: manticoresearch/manticore:4.2.0
     container_name: podverse_manticore_prod
     depends_on:
-      - podverse_nginx_proxy
-      - podverse_letsencrypt_nginx
       - podverse_db
     restart: always
     ports:
@@ -47,8 +43,8 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - ../../../manticore/data:/var/lib/manticore
-      - ../../../manticore/manticore.conf:/etc/manticoresearch/manticore.conf
+      - /opt/podverse-ops/manticore/data:/var/lib/manticore
+      - /opt/podverse-ops/manticore/manticore.conf:/etc/manticoresearch/manticore.conf
     logging:
       driver: 'json-file'
       options:
