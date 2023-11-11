@@ -75,7 +75,8 @@ CREATE TYPE public.podcasts_medium_enum AS ENUM (
     'audiobook',
     'newsletter',
     'blog',
-    'music-video'
+    'music-video',
+    'mixed'
 );
 
 
