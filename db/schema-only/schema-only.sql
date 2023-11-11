@@ -2848,6 +2848,13 @@ CREATE INDEX playlists_int_id_index ON public.playlists USING btree (int_id);
 
 
 --
+-- Name: playlists_medium_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX playlists_medium_index ON public.playlists USING btree (medium);
+
+
+--
 -- Name: playlists_owner_isdefault_medium_unique_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2859,6 +2866,55 @@ CREATE UNIQUE INDEX playlists_owner_isdefault_medium_unique_idx ON public.playli
 --
 
 CREATE INDEX podcasts_int_id_index ON public.podcasts USING btree (int_id);
+
+
+--
+-- Name: podcasts_medium_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX podcasts_medium_index ON public.podcasts USING btree (medium);
+
+
+--
+-- Name: podcasts_medium_pastAllTimeTotalUniquePageviews_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "podcasts_medium_pastAllTimeTotalUniquePageviews_index" ON public.podcasts USING btree (medium, "pastAllTimeTotalUniquePageviews");
+
+
+--
+-- Name: podcasts_medium_pastDayTotalUniquePageviews_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "podcasts_medium_pastDayTotalUniquePageviews_index" ON public.podcasts USING btree (medium, "pastDayTotalUniquePageviews");
+
+
+--
+-- Name: podcasts_medium_pastHourTotalUniquePageviews_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "podcasts_medium_pastHourTotalUniquePageviews_index" ON public.podcasts USING btree (medium, "pastHourTotalUniquePageviews");
+
+
+--
+-- Name: podcasts_medium_pastMonthTotalUniquePageviews_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "podcasts_medium_pastMonthTotalUniquePageviews_index" ON public.podcasts USING btree (medium, "pastMonthTotalUniquePageviews");
+
+
+--
+-- Name: podcasts_medium_pastWeekTotalUniquePageviews_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "podcasts_medium_pastWeekTotalUniquePageviews_index" ON public.podcasts USING btree (medium, "pastWeekTotalUniquePageviews");
+
+
+--
+-- Name: podcasts_medium_pastYearTotalUniquePageviews_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "podcasts_medium_pastYearTotalUniquePageviews_index" ON public.podcasts USING btree (medium, "pastYearTotalUniquePageviews");
 
 
 --
