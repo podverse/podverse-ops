@@ -3,62 +3,74 @@
   "terminals": [
     {
       "name": "Podverse API",
-      "description": "Podverse API",
-      "cwd": "<path to repos>/podverse-api",
+      "description": "podverse-api",
+      "cwd": "~/repos/podverse-api",
       "open": true
     },
     {
-      "name": "Podverse Web",
-      "description": "Podverse Web",
-      "cwd": "<path to repos>/podverse-web",
-      "open": true
-    },
-    {
-      "name": "Podverse RN",
-      "description": "Podverse RN",
-      "cwd": "<path to repos>/podverse-rn",
+      "name": "Podverse External Services",
+      "description": "podverse-external-services",
+      "cwd": "~/repos/podverse-external-services",
       "open": true
     },
     {
       "name": "Podverse F-Droid",
-      "description": "Podverse F-Droid",
-      "cwd": "<path to repos>/podverse-fdroid",
+      "description": "podverse-fdroid",
+      "cwd": "~/repos/podverse-fdroid",
       "open": true
     },
     {
       "name": "Podverse Ops",
-      "description": "Podverse Ops",
-      "cwd": "<path to repos>/podverse-ops",
+      "description": "podverse-ops",
+      "cwd": "~/repos/podverse-ops",
+      "open": true
+    },
+    {
+      "name": "Podverse ORM",
+      "description": "podverse-orm",
+      "cwd": "~/repos/podverse-orm",
+      "open": true
+    },
+    {
+      "name": "Podverse Parser",
+      "description": "podverse-parser",
+      "cwd": "~/repos/podverse-parser",
+      "open": true
+    },
+    {
+      "name": "Podverse RN",
+      "description": "podverse-rn",
+      "cwd": "~/repos/podverse-rn",
+      "open": true
+    },
+    {
+      "name": "Podverse Serverless",
+      "description": "podverse-serverless",
+      "cwd": "~/repos/podverse-serverless",
       "open": true
     },
     {
       "name": "Podverse Shared",
       "description": "podverse-shared",
-      "cwd": "<path to repos>/podverse-shared",
+      "cwd": "~/repos/podverse-shared",
+      "open": true
+    },
+    {
+      "name": "Podverse Web",
+      "description": "podverse-web",
+      "cwd": "~/repos/podverse-web",
+      "open": true
+    },
+    {
+      "name": "Podverse Workers",
+      "description": "podverse-workers",
+      "cwd": "~/repos/podverse-workers",
       "open": true
     },
     {
       "name": "Podverse SSH",
       "description": "Podverse SSH",
-      "cwd": "<path to repos>/podverse-ops",
-      "open": true
-    },
-    {
-      "name": "Podcast Index",
-      "description": "podcastindex",
-      "cwd": "<path to repos>/podcastindex",
-      "open": true
-    },
-    {
-      "name": "transcriptator",
-      "description": "transcriptator",
-      "cwd": "<path to repos>/transcriptator",
-      "open": true
-    },
-    {
-      "name": "react-native-track-player",
-      "description": "react-native-track-player",
-      "cwd": "<path to repos>/react-native-track-player",
+      "cwd": "~/repos/podverse-ops",
       "open": true
     }
   ]
