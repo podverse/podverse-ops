@@ -9,6 +9,7 @@
   * [Weblate](#weblate)
   * [Bounties](#bounties-1)
 - [Development](#development)
+  * [Yarn vs NPM](#yarn-vs-npm)
   * [Environment configs](#environment-configs)
   * [Local environment setup](#local-environment-setup)
   * [Bounties](#bounties-2)
@@ -46,6 +47,10 @@ The full Podverse tech stack is primarily written with JavaScript, TypeScript, a
 
 Below is info to help you get started running the Podverse apps locally on your machine.
 
+### Yarn vs NPM
+
+We use `yarn` accross all of our documentation. NPM does not seem to work with our linked modules when running in localhost, but Yarn does. (This may be related to [differences in circular dependency handling](https://stackoverflow.com/a/74536600/2608858).)
+
 ### Environment configs
 
 You can find example `.env` files for all Podverse repos [here](https://github.com/podverse/podverse-ops/tree/master/config).
@@ -82,7 +87,6 @@ To populate your local database with sample data, you can go into the podverse-a
 
 ```bash
 yarn dev:seeds:qa:populateDatabase
-# or npm run dev:seeds:qa:populateDatabase
 ```
 
 When you're ready to destroy the database locally, you can run:
@@ -97,7 +101,7 @@ To destroy all the Podverse containers locally:
 make local_down
 ```
 
-After the database and Manticore are running locally, you can then run whichever app you want to work on by going into its repo and running `npm run dev` (or `npm run dev:ios` or `npm run dev:android` for the mobile app).
+After the database and Manticore are running locally, you can then run whichever app you want to work on by going into its repo and running `yarn dev` (or `yarn dev:ios` or `yarn dev:android` for the mobile app).
 
 For more info about how to run and begin working on each app, please check the README in their respective repos:
 
