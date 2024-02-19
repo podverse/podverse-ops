@@ -20,10 +20,9 @@ services:
     restart: always
     shm_size: 1gb
     logging:
-      driver: "json-file"
+      driver: "syslog"
       options:
-        max-file: "1"
-        max-size: "50m"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
 
   podverse_manticore:
     image: manticoresearch/manticore:4.2.0
@@ -46,7 +45,6 @@ services:
       - /opt/podverse-ops/manticore/data:/var/lib/manticore
       - /opt/podverse-ops/manticore/manticore.conf:/etc/manticoresearch/manticore.conf
     logging:
-      driver: 'json-file'
+      driver: "syslog"
       options:
-        max-file: '1'
-        max-size: '50m'
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
