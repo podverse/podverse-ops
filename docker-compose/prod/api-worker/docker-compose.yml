@@ -13,7 +13,6 @@ services:
     env_file:
       - ../../../config/podverse-api-prod.env
     logging:
-      driver: "json-file"
+      driver: "syslog"
       options:
-        max-file: "1"
-        max-size: "50m"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
