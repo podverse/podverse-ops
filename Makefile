@@ -86,7 +86,7 @@ local_manticore_indexes_init:
 	docker-compose -f docker-compose/local/docker-compose.yml exec podverse_manticore gosu manticore indexer idx_episode_08 --verbose
 	docker-compose -f docker-compose/local/docker-compose.yml exec podverse_manticore gosu manticore indexer idx_episode_09 --verbose
 	docker-compose -f docker-compose/local/docker-compose.yml exec podverse_manticore gosu manticore indexer idx_episode_10 --verbose
-# after initializing the indexes, manticore must be restarted to be able to use the indexes
+# NOTE! After initializing the indexes, manticore must be restarted to be able to use the indexes
 	docker restart podverse_manticore_local
 
 .PHONY: local_manticore_indexes_rotate

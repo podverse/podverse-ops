@@ -73,7 +73,9 @@ make local_up_db
 make local_up_manticore_server
 
 # initialize the manticore indexes
-# this only needs to run once, the first time 
+# this only needs to run once, the first time
+# NOTE! After this initial indexing completes, you will need to restart
+# the manticore container so that it uses the index.
 make local_manticore_indexes_init
 
 # update / rotate the manticore indexes
