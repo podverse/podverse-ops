@@ -44,7 +44,6 @@ index idx_author {
 source episode_base: base {
     sql_field_string = title
     sql_attr_string = podverse_id
-    sql_attr_uint = pastHourTotalUniquePageviews
     sql_attr_uint = pastDayTotalUniquePageviews
     sql_attr_uint = pastWeekTotalUniquePageviews
     sql_attr_uint = pastMonthTotalUniquePageviews
@@ -55,18 +54,22 @@ source episode_base: base {
     sql_range_step = 10000
     sql_query = \
         SELECT \
-            int_id, \
-            id AS podverse_id, \
-            REPLACE(title, ' ', '') as title, \
-            "pastHourTotalUniquePageviews", \
-            "pastDayTotalUniquePageviews", \
-            "pastWeekTotalUniquePageviews", \
-            "pastMonthTotalUniquePageviews", \
-            "pastYearTotalUniquePageviews", \
-            "pastAllTimeTotalUniquePageviews", \
-            extract(epoch from "pubDate") AS created_date \
-        FROM episodes \
-        WHERE int_id >= $start AND int_id <= $end AND "isPublic" = true AND title <> ''
+            e.int_id, \
+            e.id AS podverse_id, \
+            REPLACE(e.title, ' ', '') as title, \
+            sed.play_count AS "pastDayTotalUniquePageviews", \
+            sew.play_count AS "pastWeekTotalUniquePageviews", \
+            sem.play_count AS "pastMonthTotalUniquePageviews", \
+            sey.play_count AS "pastYearTotalUniquePageviews", \
+            seall.play_count AS "pastAllTimeTotalUniquePageviews", \
+            extract(epoch from e."pubDate") AS created_date \
+        FROM episodes e \
+        LEFT JOIN stats_episode sed ON e.id = sed.episode_id AND sed.timeframe = 'daily' \
+        LEFT JOIN stats_episode sew ON e.id = sew.episode_id AND sew.timeframe = 'weekly' \
+        LEFT JOIN stats_episode sem ON e.id = sem.episode_id AND sem.timeframe = 'monthly' \
+        LEFT JOIN stats_episode sey ON e.id = sey.episode_id AND sey.timeframe = 'yearly' \
+        LEFT JOIN stats_episode seall ON e.id = seall.episode_id AND seall.timeframe = 'all_time' \
+        WHERE e.int_id >= $start AND e.int_id <= $end AND e."isPublic" = true AND e.title <> ''
 }
 
 source episode_01: episode_base {
@@ -185,7 +188,6 @@ index idx_episode_dist {
 source media_ref_base: base {
     sql_field_string = title
     sql_attr_string = podverse_id
-    sql_attr_uint = pastHourTotalUniquePageviews
     sql_attr_uint = pastDayTotalUniquePageviews
     sql_attr_uint = pastWeekTotalUniquePageviews
     sql_attr_uint = pastMonthTotalUniquePageviews
@@ -197,21 +199,25 @@ source media_ref_base: base {
 source media_ref: media_ref_base {
     sql_query = \
         SELECT \
-            "mediaRefs".int_id, \
-            "mediaRefs".id AS podverse_id, \
-            REPLACE("mediaRefs".title, ' ', '') as title, \
-            "mediaRefs"."pastHourTotalUniquePageviews", \
-            "mediaRefs"."pastDayTotalUniquePageviews", \
-            "mediaRefs"."pastWeekTotalUniquePageviews", \
-            "mediaRefs"."pastMonthTotalUniquePageviews", \
-            "mediaRefs"."pastYearTotalUniquePageviews", \
-            "mediaRefs"."pastAllTimeTotalUniquePageviews", \
-            extract(epoch from "mediaRefs"."createdAt") AS created_date \
-        FROM "mediaRefs" \
-        LEFT JOIN episodes ON "mediaRefs"."episodeId" = episodes.id \
-        WHERE "mediaRefs"."isPublic" = true \
-            AND "mediaRefs"."isOfficialChapter" IS NOT true \
-            AND "mediaRefs".title <> '' \
+            mr.int_id, \
+            mr.id AS podverse_id, \
+            REPLACE(mr.title, ' ', '') as title, \
+            smrd.play_count AS "pastDayTotalUniquePageviews", \
+            smrw.play_count AS "pastWeekTotalUniquePageviews", \
+            smrm.play_count AS "pastMonthTotalUniquePageviews", \
+            smry.play_count AS "pastYearTotalUniquePageviews", \
+            smrall.play_count AS "pastAllTimeTotalUniquePageviews", \
+            extract(epoch from mr."createdAt") AS created_date \
+        FROM "mediaRefs" mr \
+        LEFT JOIN episodes ON mr."episodeId" = episodes.id \
+        LEFT JOIN stats_media_ref smrd ON mr.id = smrd.media_ref_id AND smrd.timeframe = 'daily' \
+        LEFT JOIN stats_media_ref smrw ON mr.id = smrw.media_ref_id AND smrw.timeframe = 'weekly' \
+        LEFT JOIN stats_media_ref smrm ON mr.id = smrm.media_ref_id AND smrm.timeframe = 'monthly' \
+        LEFT JOIN stats_media_ref smry ON mr.id = smry.media_ref_id AND smry.timeframe = 'yearly' \
+        LEFT JOIN stats_media_ref smrall ON mr.id = smrall.media_ref_id AND smrall.timeframe = 'all_time' \
+        WHERE mr."isPublic" = true \
+            AND mr."isOfficialChapter" IS NOT true \
+            AND mr.title <> '' \
             AND "episodes"."isPublic" = true
 }
 
@@ -259,7 +265,6 @@ source podcast_base: base {
     sql_attr_string = sortableTitle
     sql_attr_string = medium
     sql_attr_bool = hasVideo
-    sql_attr_uint = pastHourTotalUniquePageviews
     sql_attr_uint = pastDayTotalUniquePageviews
     sql_attr_uint = pastWeekTotalUniquePageviews
     sql_attr_uint = pastMonthTotalUniquePageviews
@@ -273,21 +278,25 @@ source podcast: podcast_base {
     sql_range_step = 10000
     sql_query = \
         SELECT \
-            int_id, \
-            id AS podverse_id, \
-            REPLACE(title, ' ', '') as title, \
-            "sortableTitle", \
-            "pastHourTotalUniquePageviews", \
-            "pastDayTotalUniquePageviews", \
-            "pastWeekTotalUniquePageviews", \
-            "pastMonthTotalUniquePageviews", \
-            "pastYearTotalUniquePageviews", \
-            "pastAllTimeTotalUniquePageviews", \
-            "medium", \
-            "hasVideo", \
-            extract(epoch from "lastEpisodePubDate") AS created_date \
-        FROM podcasts \
-        WHERE int_id >= $start AND int_id <= $end AND "isPublic" = true AND title <> ''
+            p.int_id, \
+            p.id AS podverse_id, \
+            REPLACE(p.title, ' ', '') as title, \
+            p."sortableTitle", \
+            spd.play_count AS "pastDayTotalUniquePageviews", \
+            spw.play_count AS "pastWeekTotalUniquePageviews", \
+            spm.play_count AS "pastMonthTotalUniquePageviews", \
+            spy.play_count AS "pastYearTotalUniquePageviews", \
+            spall.play_count AS "pastAllTimeTotalUniquePageviews", \
+            p."medium", \
+            p."hasVideo", \
+            extract(epoch from p."lastEpisodePubDate") AS created_date \
+        FROM podcasts p \
+        LEFT JOIN stats_podcast spd ON p.id = spd.podcast_id AND spd.timeframe = 'daily' \
+        LEFT JOIN stats_podcast spw ON p.id = spw.podcast_id AND spw.timeframe = 'weekly' \
+        LEFT JOIN stats_podcast spm ON p.id = spm.podcast_id AND spm.timeframe = 'monthly' \
+        LEFT JOIN stats_podcast spy ON p.id = spy.podcast_id AND spy.timeframe = 'yearly' \
+        LEFT JOIN stats_podcast spall ON p.id = spall.podcast_id AND spall.timeframe = 'all_time' \
+        WHERE p.int_id >= $start AND p.int_id <= $end AND p."isPublic" = true AND p.title <> ''
 }
 
 index idx_podcast {
