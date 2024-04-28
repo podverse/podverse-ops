@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 11.5 (Debian 11.5-3.pgdg90+1)
--- Dumped by pg_dump version 14.8 (Homebrew)
+-- Dumped by pg_dump version 14.10 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -29,6 +29,21 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 
 COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
 
+
+--
+-- Name: flag_status_enum; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.flag_status_enum AS ENUM (
+    'none',
+    'spam',
+    'takedown',
+    'other',
+    'always-allow'
+);
+
+
+ALTER TYPE public.flag_status_enum OWNER TO postgres;
 
 --
 -- Name: playlists_medium_enum; Type: TYPE; Schema: public; Owner: postgres
@@ -81,6 +96,37 @@ CREATE TYPE public.podcasts_medium_enum AS ENUM (
 
 
 ALTER TYPE public.podcasts_medium_enum OWNER TO postgres;
+
+--
+-- Name: timeframe_enum; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.timeframe_enum AS ENUM (
+    'daily',
+    'weekly',
+    'monthly',
+    'yearly',
+    'all_time'
+);
+
+
+ALTER TYPE public.timeframe_enum OWNER TO postgres;
+
+--
+-- Name: set_timestamps(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.set_timestamps() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    NEW."updatedAt" := NOW();
+    RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION public.set_timestamps() OWNER TO postgres;
 
 SET default_tablespace = '';
 
@@ -706,12 +752,6 @@ CREATE TABLE public.episodes (
     "mediaFilesize" integer DEFAULT 0 NOT NULL,
     "mediaType" character varying,
     "mediaUrl" character varying NOT NULL,
-    "pastHourTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
-    "pastDayTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
-    "pastWeekTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
-    "pastMonthTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
-    "pastYearTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
-    "pastAllTimeTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
     "pubDate" timestamp without time zone,
     title character varying,
     "podcastId" character varying NOT NULL,
@@ -783,53 +823,6 @@ ALTER TABLE public.episodes_int_id_seq OWNER TO postgres;
 
 ALTER SEQUENCE public.episodes_int_id_seq OWNED BY public.episodes.int_id;
 
-
---
--- Name: episodes_most_recent; Type: MATERIALIZED VIEW; Schema: public; Owner: postgres
---
-
-CREATE MATERIALIZED VIEW public.episodes_most_recent AS
- SELECT episodes.id,
-    episodes.description,
-    episodes.duration,
-    episodes."episodeType",
-    episodes.guid,
-    episodes."imageUrl",
-    episodes."isExplicit",
-    episodes."isPublic",
-    episodes."linkUrl",
-    episodes."mediaFilesize",
-    episodes."mediaType",
-    episodes."mediaUrl",
-    episodes."pastHourTotalUniquePageviews",
-    episodes."pastDayTotalUniquePageviews",
-    episodes."pastWeekTotalUniquePageviews",
-    episodes."pastMonthTotalUniquePageviews",
-    episodes."pastYearTotalUniquePageviews",
-    episodes."pastAllTimeTotalUniquePageviews",
-    episodes."pubDate",
-    episodes.title,
-    episodes."podcastId",
-    episodes."createdAt",
-    episodes."updatedAt",
-    episodes."chaptersType",
-    episodes."chaptersUrl",
-    episodes."chaptersUrlLastParsed",
-    episodes.funding,
-    episodes.transcript,
-    episodes.value,
-    episodes."credentialsRequired",
-    episodes."socialInteraction",
-    episodes."alternateEnclosures",
-    episodes."contentLinks",
-    episodes.int_id,
-    episodes.subtitle
-   FROM public.episodes
-  WHERE ((episodes."isPublic" = true) AND (episodes."pubDate" > (now() - '1000 days'::interval)) AND (episodes."pubDate" < (now() + '1 day'::interval)))
-  WITH NO DATA;
-
-
-ALTER TABLE public.episodes_most_recent OWNER TO postgres;
 
 --
 -- Name: fcmDevices; Type: TABLE; Schema: public; Owner: postgres
@@ -932,12 +925,6 @@ CREATE TABLE public."mediaRefs" (
     id character varying(14) DEFAULT '1aLvCx9Y4'::character varying NOT NULL,
     "endTime" integer,
     "isPublic" boolean DEFAULT false NOT NULL,
-    "pastHourTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
-    "pastDayTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
-    "pastWeekTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
-    "pastMonthTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
-    "pastYearTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
-    "pastAllTimeTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
     "startTime" integer DEFAULT 0 NOT NULL,
     title character varying,
     "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
@@ -1115,12 +1102,6 @@ CREATE TABLE public.podcasts (
     "lastEpisodePubDate" timestamp without time zone,
     "lastEpisodeTitle" character varying,
     "linkUrl" character varying,
-    "pastHourTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
-    "pastDayTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
-    "pastWeekTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
-    "pastMonthTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
-    "pastYearTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
-    "pastAllTimeTotalUniquePageviews" integer DEFAULT 0 NOT NULL,
     "shrunkImageUrl" character varying,
     "sortableTitle" character varying,
     title character varying,
@@ -1150,7 +1131,8 @@ CREATE TABLE public.podcasts (
     "parsingPriority" integer DEFAULT 0 NOT NULL,
     "podcastGuid" uuid,
     "itunesFeedType" character varying,
-    "hasSeasons" boolean DEFAULT false NOT NULL
+    "hasSeasons" boolean DEFAULT false NOT NULL,
+    flag_status public.flag_status_enum DEFAULT 'none'::public.flag_status_enum
 );
 
 
@@ -1227,6 +1209,120 @@ CREATE TABLE public."recentEpisodesByPodcast" (
 
 
 ALTER TABLE public."recentEpisodesByPodcast" OWNER TO postgres;
+
+--
+-- Name: stats_episode; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.stats_episode (
+    id integer NOT NULL,
+    play_count integer DEFAULT 0,
+    timeframe public.timeframe_enum NOT NULL,
+    episode_id character varying NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
+    "updatedAt" timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.stats_episode OWNER TO postgres;
+
+--
+-- Name: stats_episode_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.stats_episode_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.stats_episode_id_seq OWNER TO postgres;
+
+--
+-- Name: stats_episode_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.stats_episode_id_seq OWNED BY public.stats_episode.id;
+
+
+--
+-- Name: stats_media_ref; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.stats_media_ref (
+    id integer NOT NULL,
+    play_count integer DEFAULT 0,
+    timeframe public.timeframe_enum NOT NULL,
+    media_ref_id character varying NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
+    "updatedAt" timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.stats_media_ref OWNER TO postgres;
+
+--
+-- Name: stats_media_ref_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.stats_media_ref_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.stats_media_ref_id_seq OWNER TO postgres;
+
+--
+-- Name: stats_media_ref_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.stats_media_ref_id_seq OWNED BY public.stats_media_ref.id;
+
+
+--
+-- Name: stats_podcast; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.stats_podcast (
+    id integer NOT NULL,
+    play_count integer DEFAULT 0,
+    timeframe public.timeframe_enum NOT NULL,
+    podcast_id character varying NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
+    "updatedAt" timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.stats_podcast OWNER TO postgres;
+
+--
+-- Name: stats_podcast_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.stats_podcast_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.stats_podcast_id_seq OWNER TO postgres;
+
+--
+-- Name: stats_podcast_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.stats_podcast_id_seq OWNED BY public.stats_podcast.id;
+
 
 --
 -- Name: upDevices; Type: TABLE; Schema: public; Owner: postgres
@@ -1487,6 +1583,27 @@ ALTER TABLE ONLY public.playlists ALTER COLUMN int_id SET DEFAULT nextval('publi
 --
 
 ALTER TABLE ONLY public.podcasts ALTER COLUMN int_id SET DEFAULT nextval('public.podcasts_int_id_seq'::regclass);
+
+
+--
+-- Name: stats_episode id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.stats_episode ALTER COLUMN id SET DEFAULT nextval('public.stats_episode_id_seq'::regclass);
+
+
+--
+-- Name: stats_media_ref id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.stats_media_ref ALTER COLUMN id SET DEFAULT nextval('public.stats_media_ref_id_seq'::regclass);
+
+
+--
+-- Name: stats_podcast id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.stats_podcast ALTER COLUMN id SET DEFAULT nextval('public.stats_podcast_id_seq'::regclass);
 
 
 --
@@ -2057,6 +2174,54 @@ ALTER TABLE ONLY public.notifications
 
 
 --
+-- Name: stats_episode stats_episode_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.stats_episode
+    ADD CONSTRAINT stats_episode_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: stats_media_ref stats_media_ref_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.stats_media_ref
+    ADD CONSTRAINT stats_media_ref_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: stats_podcast stats_podcast_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.stats_podcast
+    ADD CONSTRAINT stats_podcast_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: stats_episode unique_timeframe_episode; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.stats_episode
+    ADD CONSTRAINT unique_timeframe_episode UNIQUE (timeframe, episode_id);
+
+
+--
+-- Name: stats_media_ref unique_timeframe_media_ref; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.stats_media_ref
+    ADD CONSTRAINT unique_timeframe_media_ref UNIQUE (timeframe, media_ref_id);
+
+
+--
+-- Name: stats_podcast unique_timeframe_podcast; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.stats_podcast
+    ADD CONSTRAINT unique_timeframe_podcast UNIQUE (timeframe, podcast_id);
+
+
+--
 -- Name: upDevices upDevices_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2076,27 +2241,6 @@ CREATE INDEX "IDX_02685aea54efa70d3010f87591" ON public.playlists_episodes_episo
 --
 
 CREATE INDEX "IDX_0969e6fb7a3e44c9378ad70af2" ON public.podcasts USING btree ("sortableTitle");
-
-
---
--- Name: IDX_09a8c725fd0ba645328586f72e; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_09a8c725fd0ba645328586f72e" ON public."mediaRefs" USING btree ("pastHourTotalUniquePageviews");
-
-
---
--- Name: IDX_09ae4505e3b4b2ddb27486187a; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_09ae4505e3b4b2ddb27486187a" ON public.podcasts USING btree ("feedLastUpdated");
-
-
---
--- Name: IDX_0fe77506692eddad6e575a8f2c; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_0fe77506692eddad6e575a8f2c" ON public."mediaRefs" USING btree ("pastMonthTotalUniquePageviews");
 
 
 --
@@ -2149,13 +2293,6 @@ CREATE INDEX "IDX_19ff4092d18bbfc1965aa26b29" ON public.episodes USING btree ("p
 
 
 --
--- Name: IDX_1a6fc2c8e0b2401e926fdc9ea8; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_1a6fc2c8e0b2401e926fdc9ea8" ON public.episodes USING btree ("mediaType", "pastDayTotalUniquePageviews");
-
-
---
 -- Name: IDX_20f216a080ca2b8687edfdd32f; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2184,20 +2321,6 @@ CREATE INDEX "IDX_2cf53215e8e84587ec8e8a7cdd" ON public.episodes USING btree ("i
 
 
 --
--- Name: IDX_2dd75798bb599b9ced1c491c02; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_2dd75798bb599b9ced1c491c02" ON public.podcasts USING btree ("hasVideo", "pastHourTotalUniquePageviews");
-
-
---
--- Name: IDX_30403fff476188bfb18fd38f10; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_30403fff476188bfb18fd38f10" ON public.podcasts USING btree ("shrunkImageLastUpdated");
-
-
---
 -- Name: IDX_399bc5a8d308e7c03d7d069d11; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2216,13 +2339,6 @@ CREATE INDEX "IDX_420d9f679d41281f282f5bc7d0" ON public.categories USING btree (
 --
 
 CREATE INDEX "IDX_4a7b9c20b0f1e5a7e3a4db1a1d" ON public.media_refs_categories_categories USING btree ("mediaRefsId");
-
-
---
--- Name: IDX_4bafa72e53c0f10cf22f765c9b; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_4bafa72e53c0f10cf22f765c9b" ON public.podcasts USING btree ("hasVideo", "pastAllTimeTotalUniquePageviews");
 
 
 --
@@ -2247,27 +2363,6 @@ CREATE INDEX "IDX_537ed19be00c0a556c3b6daf91" ON public.episodes_categories_cate
 
 
 --
--- Name: IDX_541f35addc2a77f2f28168953d; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_541f35addc2a77f2f28168953d" ON public.podcasts USING btree ("hasVideo", "pastYearTotalUniquePageviews");
-
-
---
--- Name: IDX_54d1c28ab0771a49dbe87b0dcc; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_54d1c28ab0771a49dbe87b0dcc" ON public.episodes USING btree ("mediaType", "pastWeekTotalUniquePageviews");
-
-
---
--- Name: IDX_571bbf908b797f80b595a9690b; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_571bbf908b797f80b595a9690b" ON public."mediaRefs" USING btree ("pastDayTotalUniquePageviews");
-
-
---
 -- Name: IDX_572f275df88fcfb6286c001cce; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2282,13 +2377,6 @@ CREATE INDEX "IDX_5799a9d6ce7ce4b999671beff7" ON public.podcasts USING btree ("l
 
 
 --
--- Name: IDX_5af18e38f12003a8e9bd25adfa; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_5af18e38f12003a8e9bd25adfa" ON public.episodes USING btree ("pastHourTotalUniquePageviews");
-
-
---
 -- Name: IDX_615eeb67c60e861faab5d4f491; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2296,31 +2384,10 @@ CREATE INDEX "IDX_615eeb67c60e861faab5d4f491" ON public.podcasts USING btree ("i
 
 
 --
--- Name: IDX_62a37551f90877865acd36bc73; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_62a37551f90877865acd36bc73" ON public.episodes USING btree ("pastAllTimeTotalUniquePageviews");
-
-
---
--- Name: IDX_6a47478e3666025fe25cc64276; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_6a47478e3666025fe25cc64276" ON public.podcasts USING btree ("hasVideo", "pastDayTotalUniquePageviews");
-
-
---
 -- Name: IDX_6c64b3df09e6774438aeca7e0b; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX "IDX_6c64b3df09e6774438aeca7e0b" ON public.authors USING btree (name);
-
-
---
--- Name: IDX_6d6e0875555cd123471bc8ced4; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_6d6e0875555cd123471bc8ced4" ON public.podcasts USING btree ("hasVideo", "pastMonthTotalUniquePageviews");
 
 
 --
@@ -2345,13 +2412,6 @@ CREATE INDEX "IDX_7aaa96d87796f0de409665a7fd" ON public.episodes_authors_authors
 
 
 --
--- Name: IDX_7ab36ec4759b09ba63842c3c39; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_7ab36ec4759b09ba63842c3c39" ON public.podcasts USING btree ("pastMonthTotalUniquePageviews");
-
-
---
 -- Name: IDX_80c725139ef1eb54e57077e96a; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2370,27 +2430,6 @@ CREATE INDEX "IDX_8708e4136a01077cb833e5cc0a" ON public."recentEpisodesByPodcast
 --
 
 CREATE INDEX "IDX_87922d33aa3cd4ac47558e638c" ON public.media_refs_authors_authors USING btree ("authorsId");
-
-
---
--- Name: IDX_8809e744be7ee07ebcb77d0e40; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_8809e744be7ee07ebcb77d0e40" ON public.episodes USING btree ("mediaType", "pastAllTimeTotalUniquePageviews");
-
-
---
--- Name: IDX_905f8e115445319050b9e75f0d; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_905f8e115445319050b9e75f0d" ON public."mediaRefs" USING btree ("pastYearTotalUniquePageviews");
-
-
---
--- Name: IDX_92cd818c2518ed4507a31f3932; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_92cd818c2518ed4507a31f3932" ON public.episodes USING btree ("pastMonthTotalUniquePageviews");
 
 
 --
@@ -2415,52 +2454,10 @@ CREATE INDEX "IDX_9a2ddcfc55440e921f58e06e4a" ON public.episodes_authors_authors
 
 
 --
--- Name: IDX_9d3df9a4193ffcd5dce7932057; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_9d3df9a4193ffcd5dce7932057" ON public.podcasts USING btree ("pastWeekTotalUniquePageviews");
-
-
---
--- Name: IDX_a62d8df41ff49a59fd04033a58; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_a62d8df41ff49a59fd04033a58" ON public.podcasts USING btree ("pastDayTotalUniquePageviews");
-
-
---
--- Name: IDX_a65598c2450c4f601ecb341994; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_a65598c2450c4f601ecb341994" ON public.podcasts USING btree (title);
-
-
---
 -- Name: IDX_aa79448dc3e959720ab4c13651; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX "IDX_aa79448dc3e959720ab4c13651" ON public.categories USING btree (title);
-
-
---
--- Name: IDX_acd3fd6c4dff47ee1cd00ac582; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_acd3fd6c4dff47ee1cd00ac582" ON public.episodes USING btree (title);
-
-
---
--- Name: IDX_acefc4d091700acb0d7faf25b8; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_acefc4d091700acb0d7faf25b8" ON public.podcasts USING btree ("hasVideo", "pastWeekTotalUniquePageviews");
-
-
---
--- Name: IDX_b2623d89f86f38debe0c414578; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_b2623d89f86f38debe0c414578" ON public.podcasts USING btree ("pastHourTotalUniquePageviews");
 
 
 --
@@ -2478,38 +2475,10 @@ CREATE INDEX "IDX_b651ccc2eec2cb1936244ea742" ON public."userQueueItems" USING b
 
 
 --
--- Name: IDX_bd2336c4578b5fe56594c7b9d2; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_bd2336c4578b5fe56594c7b9d2" ON public.podcasts USING btree ("pastAllTimeTotalUniquePageviews");
-
-
---
--- Name: IDX_bf209f7f5e4fb4e83e73b5f2a4; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_bf209f7f5e4fb4e83e73b5f2a4" ON public.episodes USING btree ("pastYearTotalUniquePageviews");
-
-
---
--- Name: IDX_c1bc0ffc58bc3174371de14a2a; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_c1bc0ffc58bc3174371de14a2a" ON public.episodes USING btree ("mediaType", "pastYearTotalUniquePageviews");
-
-
---
 -- Name: IDX_c5c5dd158252f99509fcded0d6; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX "IDX_c5c5dd158252f99509fcded0d6" ON public.podcasts USING btree ("podcastIndexId");
-
-
---
--- Name: IDX_cb6e0c6ebc9d77ea096c299c4f; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_cb6e0c6ebc9d77ea096c299c4f" ON public.episodes USING btree ("mediaType", "pastHourTotalUniquePageviews");
 
 
 --
@@ -2527,31 +2496,10 @@ CREATE INDEX "IDX_cfa3de60daca1fdd5a10e68faa" ON public.podcasts_categories_cate
 
 
 --
--- Name: IDX_d7710685515eb9325deaba0fb6; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_d7710685515eb9325deaba0fb6" ON public.episodes USING btree ("mediaType", "pastMonthTotalUniquePageviews");
-
-
---
--- Name: IDX_da6fc438d37c65927437b3107f; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_da6fc438d37c65927437b3107f" ON public.episodes USING btree ("mediaUrl");
-
-
---
 -- Name: IDX_dbf6f5af7383c74830c961f98f; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX "IDX_dbf6f5af7383c74830c961f98f" ON public."feedUrls" USING btree (url);
-
-
---
--- Name: IDX_dc5be6361ad85f97f00292b066; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_dc5be6361ad85f97f00292b066" ON public."mediaRefs" USING btree ("pastWeekTotalUniquePageviews");
 
 
 --
@@ -2562,13 +2510,6 @@ CREATE INDEX "IDX_dcece68ce217472405c77338fa" ON public.categories USING btree (
 
 
 --
--- Name: IDX_dfcf4b77555659379068cce3c7; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_dfcf4b77555659379068cce3c7" ON public."mediaRefs" USING btree ("pastAllTimeTotalUniquePageviews");
-
-
---
 -- Name: IDX_e43c5eb439402e4f0622673661; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2576,24 +2517,10 @@ CREATE INDEX "IDX_e43c5eb439402e4f0622673661" ON public."userHistoryItems" USING
 
 
 --
--- Name: IDX_e4c61e9c929b3bafc7c7a36acf; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_e4c61e9c929b3bafc7c7a36acf" ON public.podcasts USING btree ("pastYearTotalUniquePageviews");
-
-
---
 -- Name: IDX_e82794b81decc63a21c888e354; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX "IDX_e82794b81decc63a21c888e354" ON public.users USING btree ("isPublic");
-
-
---
--- Name: IDX_ee4ab0af0bf6e1be5506d9989a; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_ee4ab0af0bf6e1be5506d9989a" ON public.episodes USING btree ("pastDayTotalUniquePageviews");
 
 
 --
@@ -2608,13 +2535,6 @@ CREATE INDEX "IDX_f068a15d416578e89d41189ca2" ON public.authors USING btree (slu
 --
 
 CREATE INDEX "IDX_f380a166d117b8c864caf5d832" ON public.media_refs_authors_authors USING btree ("mediaRefsId");
-
-
---
--- Name: IDX_f4f7f745bb43687e941e6cdd61; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "IDX_f4f7f745bb43687e941e6cdd61" ON public.episodes USING btree ("pastWeekTotalUniquePageviews");
 
 
 --
@@ -2863,6 +2783,13 @@ CREATE UNIQUE INDEX playlists_owner_isdefault_medium_unique_idx ON public.playli
 
 
 --
+-- Name: podcast_hasPodcastIndexValueTag; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "podcast_hasPodcastIndexValueTag" ON public.podcasts USING btree ("hasPodcastIndexValueTag");
+
+
+--
 -- Name: podcasts_int_id_index; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2877,48 +2804,6 @@ CREATE INDEX podcasts_medium_index ON public.podcasts USING btree (medium);
 
 
 --
--- Name: podcasts_medium_pastAllTimeTotalUniquePageviews_index; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "podcasts_medium_pastAllTimeTotalUniquePageviews_index" ON public.podcasts USING btree (medium, "pastAllTimeTotalUniquePageviews");
-
-
---
--- Name: podcasts_medium_pastDayTotalUniquePageviews_index; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "podcasts_medium_pastDayTotalUniquePageviews_index" ON public.podcasts USING btree (medium, "pastDayTotalUniquePageviews");
-
-
---
--- Name: podcasts_medium_pastHourTotalUniquePageviews_index; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "podcasts_medium_pastHourTotalUniquePageviews_index" ON public.podcasts USING btree (medium, "pastHourTotalUniquePageviews");
-
-
---
--- Name: podcasts_medium_pastMonthTotalUniquePageviews_index; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "podcasts_medium_pastMonthTotalUniquePageviews_index" ON public.podcasts USING btree (medium, "pastMonthTotalUniquePageviews");
-
-
---
--- Name: podcasts_medium_pastWeekTotalUniquePageviews_index; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "podcasts_medium_pastWeekTotalUniquePageviews_index" ON public.podcasts USING btree (medium, "pastWeekTotalUniquePageviews");
-
-
---
--- Name: podcasts_medium_pastYearTotalUniquePageviews_index; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "podcasts_medium_pastYearTotalUniquePageviews_index" ON public.podcasts USING btree (medium, "pastYearTotalUniquePageviews");
-
-
---
 -- Name: podcasts_parsingPriority; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2926,10 +2811,136 @@ CREATE INDEX "podcasts_parsingPriority" ON public.podcasts USING btree ("parsing
 
 
 --
+-- Name: stats_episode_episode_id_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX stats_episode_episode_id_idx ON public.stats_episode USING btree (episode_id);
+
+
+--
+-- Name: stats_episode_play_count_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX stats_episode_play_count_idx ON public.stats_episode USING btree (play_count);
+
+
+--
+-- Name: stats_episode_timeframe_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX stats_episode_timeframe_idx ON public.stats_episode USING btree (timeframe);
+
+
+--
+-- Name: stats_episode_updated_at; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX stats_episode_updated_at ON public.stats_episode USING btree ("updatedAt");
+
+
+--
+-- Name: stats_media_ref_media_ref_id_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX stats_media_ref_media_ref_id_idx ON public.stats_media_ref USING btree (media_ref_id);
+
+
+--
+-- Name: stats_media_ref_play_count_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX stats_media_ref_play_count_idx ON public.stats_media_ref USING btree (play_count);
+
+
+--
+-- Name: stats_media_ref_timeframe_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX stats_media_ref_timeframe_idx ON public.stats_media_ref USING btree (timeframe);
+
+
+--
+-- Name: stats_media_ref_updated_at; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX stats_media_ref_updated_at ON public.stats_media_ref USING btree ("updatedAt");
+
+
+--
+-- Name: stats_podcast_play_count_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX stats_podcast_play_count_idx ON public.stats_podcast USING btree (play_count);
+
+
+--
+-- Name: stats_podcast_podcast_id_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX stats_podcast_podcast_id_idx ON public.stats_podcast USING btree (podcast_id);
+
+
+--
+-- Name: stats_podcast_timeframe_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX stats_podcast_timeframe_idx ON public.stats_podcast USING btree (timeframe);
+
+
+--
+-- Name: stats_podcast_updated_at; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX stats_podcast_updated_at ON public.stats_podcast USING btree ("updatedAt");
+
+
+--
 -- Name: users_int_id_index; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX users_int_id_index ON public.users USING btree (int_id);
+
+
+--
+-- Name: stats_episode set_timestamps_before_insert; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER set_timestamps_before_insert BEFORE INSERT ON public.stats_episode FOR EACH ROW EXECUTE PROCEDURE public.set_timestamps();
+
+
+--
+-- Name: stats_media_ref set_timestamps_before_insert; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER set_timestamps_before_insert BEFORE INSERT ON public.stats_media_ref FOR EACH ROW EXECUTE PROCEDURE public.set_timestamps();
+
+
+--
+-- Name: stats_podcast set_timestamps_before_insert; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER set_timestamps_before_insert BEFORE INSERT ON public.stats_podcast FOR EACH ROW EXECUTE PROCEDURE public.set_timestamps();
+
+
+--
+-- Name: stats_episode set_timestamps_before_update; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER set_timestamps_before_update BEFORE UPDATE ON public.stats_episode FOR EACH ROW EXECUTE PROCEDURE public.set_timestamps();
+
+
+--
+-- Name: stats_media_ref set_timestamps_before_update; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER set_timestamps_before_update BEFORE UPDATE ON public.stats_media_ref FOR EACH ROW EXECUTE PROCEDURE public.set_timestamps();
+
+
+--
+-- Name: stats_podcast set_timestamps_before_update; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER set_timestamps_before_update BEFORE UPDATE ON public.stats_podcast FOR EACH ROW EXECUTE PROCEDURE public.set_timestamps();
 
 
 --
@@ -3346,6 +3357,30 @@ ALTER TABLE ONLY public.notifications
 
 ALTER TABLE ONLY public.notifications
     ADD CONSTRAINT "notifications_userId_fkey" FOREIGN KEY ("userId") REFERENCES public.users(id);
+
+
+--
+-- Name: stats_episode stats_episode_episode_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.stats_episode
+    ADD CONSTRAINT stats_episode_episode_id_fkey FOREIGN KEY (episode_id) REFERENCES public.episodes(id) ON DELETE CASCADE;
+
+
+--
+-- Name: stats_media_ref stats_media_ref_media_ref_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.stats_media_ref
+    ADD CONSTRAINT stats_media_ref_media_ref_id_fkey FOREIGN KEY (media_ref_id) REFERENCES public."mediaRefs"(id) ON DELETE CASCADE;
+
+
+--
+-- Name: stats_podcast stats_podcast_podcast_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.stats_podcast
+    ADD CONSTRAINT stats_podcast_podcast_id_fkey FOREIGN KEY (podcast_id) REFERENCES public.podcasts(id) ON DELETE CASCADE;
 
 
 --
