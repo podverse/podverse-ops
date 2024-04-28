@@ -14,3 +14,4 @@ docker exec -i podverse_manticore_stage gosu manticore indexer idx_episode_07 --
 docker exec -i podverse_manticore_stage gosu manticore indexer idx_episode_08 --verbose;
 docker exec -i podverse_manticore_stage gosu manticore indexer idx_episode_09 --verbose;
 docker exec -i podverse_manticore_stage gosu manticore indexer idx_episode_10 --verbose;
+docker restart podverse_manticore_stage;
