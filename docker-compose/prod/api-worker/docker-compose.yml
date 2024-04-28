@@ -8,7 +8,7 @@ networks:
 services:
 
   podverse_api_worker:
-    image: podverse/podverse_api
+    image: podverse/podverse_api:latest
     container_name: podverse_api_worker_prod
     env_file:
       - ../../../config/podverse-api-prod.env
