@@ -1,13 +1,7 @@
 version: "3.9"
 
-networks:
-  nginx-proxy:
-    name: nginx-proxy
-
 volumes:
   vhost:
-  html:
-  static-admin:
 
 services:
   podverse_db:
