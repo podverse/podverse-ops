@@ -11,6 +11,7 @@ volumes:
 
 services:
   podverse_db:
+    image: postgres:16.3
     container_name: podverse_db_local
     env_file:
       - ../../config/podverse-db-local.env
