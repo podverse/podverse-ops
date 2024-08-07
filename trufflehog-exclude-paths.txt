@@ -1,2 +1,0 @@
-db/qa-database/
-db/old-sample-database/
