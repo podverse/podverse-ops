@@ -52,6 +52,11 @@ CREATE TABLE channel (
     sortable_title varchar_short, -- all lowercase, ignores articles at beginning of title
     description varchar_long,
     medium medium_type,
+
+    -- channels with seasons need to be rendered in client apps differently.
+    -- you can only determine if a channel is in a "season" format is by finding
+    -- the <itunes:season> tag in an item in that channel
+    has_season BOOLEAN DEFAULT FALSE,
     
     -- TODO: should we hash the last parsed feed, so we can compare it to the hash of
     -- a feed before completely parsing it, to check if it has changed before continuing?
