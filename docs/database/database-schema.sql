@@ -22,6 +22,12 @@ NOTES:
 
 -- Helpers
 
+CREATE DOMAIN medium_type AS TEXT
+CHECK (VALUE IN (
+    'podcast', 'music', 'video', 'film', 'audiobook', 'newsletter', 'blog', 'publisher', 'course',
+    'podcastL', 'musicL', 'videoL', 'filmL', 'audiobookL', 'newsletterL', 'blogL', 'publisherL', 'courseL', 'mixed'
+));
+
 CREATE DOMAIN numeric_20_11 AS NUMERIC(20, 11);
 
 -- Init tables
@@ -32,15 +38,10 @@ CREATE TABLE channel (
     podcast_index_id INTEGER UNIQUE NOT NULL,
     feed_url TEXT UNIQUE NOT NULL,
     podcast_guid UUID UNIQUE, -- As defined by the Podcast Index spec.
-      CREATE UNIQUE INDEX channel_podcast_guid_unique ON channel(podcast_guid) WHERE podcast_guid IS NOT NULL,
     guid VARCHAR, -- Deprecated. The older RSS guid style, which is less reliable.
     title TEXT,
     description TEXT,
-    medium TEXT,
-      CHECK (medium IN (
-        'podcast', 'music', 'video', 'film', 'audiobook', 'newsletter', 'blog', 'publisher', 'course',
-        'podcastL', 'musicL', 'videoL', 'filmL', 'audiobookL', 'newsletterL', 'blogL', 'publisherL', 'courseL', 'mixed'
-      )),
+    medium medium_type,
 
     -- TODO: categories, how to best handle to account for sub-categories?
 
@@ -48,10 +49,16 @@ CREATE TABLE channel (
     -- Set to current time at beginning of parsing, and NULL at end of parsing. 
     -- This is to prevent multiple threads from parsing the same feed.
     -- If is_parsing is over X minutes old, assume last parsing failed and proceed to parse.
-    is_parsing DATE, 
+    is_parsing DATE
+);
 
-    embed_approved_media_url_paths TEXT,
-    has_podcast_index_value_tag BOOLEAN,
+CREATE UNIQUE INDEX channel_podcast_guid_unique ON channel(podcast_guid) WHERE podcast_guid IS NOT NULL;
+
+CREATE TABLE item (
+    id SERIAL PRIMARY KEY,
+    id_text VARCHAR(14) UNIQUE NOT NULL,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
+    -- TODO: add item columns
 );
 
 CREATE TABLE channel_about (
@@ -62,28 +69,34 @@ CREATE TABLE channel_about (
     explicit BOOLEAN,
     itunes_type TEXT CHECK (itunes_type IN ('episodic', 'serial')),
     language TEXT NOT NULL,
-    website_link_url TEXT,
+    website_link_url TEXT
 );
 
 CREATE TABLE channel_funding (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    url TEXT REQUIRED,
-    label TEXT,
+    url TEXT NOT NULL,
+    label TEXT
 );
 
 CREATE TABLE channel_image (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     url TEXT NOT NULL,
-    image_width_size INTEGER, -- <podcast:image> must have a width specified, but older image tags will not, so allow null.
+    image_width_size INTEGER -- <podcast:image> must have a width specified, but older image tags will not, so allow null.
 );
 
 CREATE TABLE channel_live_item (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    live_start TIMESTAMP NOT NULL,
-    live_end TIMESTAMP,
+    status TEXT NOT NULL CHECK (status IN ('pending', 'live', 'ended')),
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP
+);
+
+CREATE TABLE channel_podroll (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
 );
 
 CREATE TABLE channel_trailer (
@@ -94,7 +107,18 @@ CREATE TABLE channel_trailer (
     pub_date TIMESTAMP NOT NULL,
     length INTEGER,
     type TEXT,
-    season INTEGER,
+    season INTEGER
+);
+
+CREATE TABLE chat (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    item_id INTEGER REFERENCES item(id) ON DELETE CASCADE,
+    channel_live_item_id INTEGER REFERENCES channel_live_item(id) ON DELETE CASCADE,
+    server TEXT NOT NULL,
+    protocol TEXT NOT NULL,
+    account_id TEXT,
+    space TEXT
 );
 
 CREATE TABLE feed_info (
@@ -104,7 +128,7 @@ CREATE TABLE feed_info (
   CHECK (
     (channel_id IS NOT NULL AND publisher_id IS NULL) OR 
     (channel_id IS NULL AND publisher_id IS NOT NULL)
-  )
+  ),
   content_type TEXT,
   last_http_status INTEGER,
   last_crawl_time TIMESTAMP,
@@ -113,7 +137,7 @@ CREATE TABLE feed_info (
   last_update_time TIMESTAMP,
   crawl_errors INTEGER DEFAULT 0,
   parse_errors INTEGER DEFAULT 0,
-  locked BOOLEAN DEFAULT FALSE,
+  locked BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE location (
@@ -134,18 +158,49 @@ CREATE TABLE person (
     item_id INTEGER REFERENCES item(id) ON DELETE CASCADE,
     name TEXT,
     role TEXT,
-    group TEXT DEFAULT 'cast',
+    person_group TEXT DEFAULT 'cast', -- group is a reserved keyword in sql
     img TEXT,
-    href TEXT,
+    href TEXT
+);
+
+-- TODO: write the publisher table schema
+-- see https://github.com/Podcastindex-org/podcast-namespace/blob/ccfb191c98762ba31f98620bd1ba30c1822f6fbd/publishers/publishers.md
+CREATE TABLE publisher (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
+);
+
+CREATE TABLE remote_item (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    podroll_id INTEGER REFERENCES channel_podroll(id),
+    publisher_id INTEGER REFERENCES publisher(id),
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    feed_guid UUID NOT NULL,
+    feed_url TEXT,
+    item_guid TEXT,
+    medium medium_type,
+    title TEXT
+);
+
+CREATE TABLE social_interact (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    item_id INTEGER REFERENCES item(id) ON DELETE CASCADE,
+    protocol TEXT NOT NULL,
+    uri TEXT NOT NULL,
+    account_id TEXT,
+    account_url TEXT,
+    priority INTEGER
 );
 
 CREATE TABLE value_tag (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     item_id INTEGER REFERENCES item(id) ON DELETE CASCADE,
-    type TEXT REQUIRED,
-    method TEXT REQUIRED,
-    suggested numeric_20_11,
+    type TEXT NOT NULL,
+    method TEXT NOT NULL,
+    suggested numeric_20_11
 );
 
 CREATE TABLE value_tag_receipient (
@@ -157,5 +212,14 @@ CREATE TABLE value_tag_receipient (
     name TEXT,
     custom_key TEXT,
     custom_value TEXT,
-    fee BOOLEAN DEFAULT FALSE,
+    fee BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE value_tag_time_split (
+    id SERIAL PRIMARY KEY,
+    value_tag_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    start_time INTEGER NOT NULL,
+    duration INTEGER NOT NULL,
+    remote_start_time INTEGER DEFAULT 0,
+    remote_percentage INTEGER DEFAULT 100
 );
