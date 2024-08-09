@@ -72,6 +72,16 @@ CREATE TABLE item (
     -- TODO: add item columns
 );
 
+CREATE TABLE live_item (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    status TEXT NOT NULL CHECK (status IN ('pending', 'live', 'ended')),
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP,
+    chat_irc_url TEXT
+);
+
 CREATE TABLE channel_about (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -95,15 +105,6 @@ CREATE TABLE channel_internal_settings (
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     embed_approved_media_url_paths TEXT
     flag_status TEXT CHECK (flag_status IN ('none', 'spam', 'takedown', 'other', 'always-allow')),
-);
-
-CREATE TABLE channel_live_item (
-    id SERIAL PRIMARY KEY,
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
-    status TEXT NOT NULL CHECK (status IN ('pending', 'live', 'ended')),
-    start_time TIMESTAMP NOT NULL,
-    end_time TIMESTAMP
 );
 
 CREATE TABLE channel_podroll (
