@@ -32,6 +32,9 @@ CREATE DOMAIN numeric_20_11 AS NUMERIC(20, 11);
 
 -- Init tables
 
+-- TODO: should every table have a created_at and updated_at column?
+-- or only some tables? or none?
+
 CREATE TABLE channel (
     id SERIAL PRIMARY KEY,
     id_text VARCHAR(14) UNIQUE NOT NULL,
@@ -40,10 +43,18 @@ CREATE TABLE channel (
     podcast_guid UUID UNIQUE, -- As defined by the Podcast Index spec.
     guid VARCHAR, -- Deprecated. The older RSS guid style, which is less reliable.
     title TEXT,
+    sortable_title TEXT, -- all lowercase, ignores articles at beginning of title
     description TEXT,
     medium medium_type,
+    
+    -- TODO: should we hash the last parsed feed, so we can compare it to the hash of
+    -- a feed before completely parsing it, to check if it has changed before continuing?
 
     -- TODO: categories, how to best handle to account for sub-categories?
+
+    -- channels that have a PI value tag require special handling to request value_tag data
+    -- from the Podcast Index API.
+    has_podcast_index_value_tags BOOLEAN DEFAULT FALSE,
 
     -- Used to prevent another thread from parsing the same feed.
     -- Set to current time at beginning of parsing, and NULL at end of parsing. 
@@ -79,16 +90,17 @@ CREATE TABLE channel_funding (
     label TEXT
 );
 
-CREATE TABLE channel_image (
+CREATE TABLE channel_internal_settings (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    url TEXT NOT NULL,
-    image_width_size INTEGER -- <podcast:image> must have a width specified, but older image tags will not, so allow null.
+    embed_approved_media_url_paths TEXT
+    flag_status TEXT CHECK (flag_status IN ('none', 'spam', 'takedown', 'other', 'always-allow')),
 );
 
 CREATE TABLE channel_live_item (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     status TEXT NOT NULL CHECK (status IN ('pending', 'live', 'ended')),
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP
@@ -121,7 +133,7 @@ CREATE TABLE chat (
     space TEXT
 );
 
-CREATE TABLE feed_info (
+CREATE TABLE feed (
   id SERIAL PRIMARY KEY,
   channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
   publisher_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -130,6 +142,9 @@ CREATE TABLE feed_info (
     (channel_id IS NULL AND publisher_id IS NOT NULL)
   ),
   content_type TEXT,
+  -- 0 to 5, 0 will only be parsed when PI API reports an update,
+  -- higher parsing_priority will be parsed more frequently on a schedule.
+  parsing_priority INTEGER DEFAULT 0,
   last_http_status INTEGER,
   last_crawl_time TIMESTAMP,
   last_good_http_status_time TIMESTAMP,
@@ -138,6 +153,18 @@ CREATE TABLE feed_info (
   crawl_errors INTEGER DEFAULT 0,
   parse_errors INTEGER DEFAULT 0,
   locked BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE image (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    item_id INTEGER REFERENCES item(id) ON DELETE CASCADE,
+    url TEXT NOT NULL,
+    image_width_size INTEGER, -- <podcast:image> must have a width specified, but older image tags will not, so allow null.
+    -- If true, then the image is hosted by us in a service like S3.
+    -- When is_resized images are deleted, the corresponding image in S3
+    -- should also be deleted.
+    is_resized BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE location (
@@ -151,6 +178,8 @@ CREATE TABLE location (
       (geo IS NULL AND osm IS NOT NULL)
     )
 );
+
+-- TODO: write notifications table
 
 CREATE TABLE person (
     id SERIAL PRIMARY KEY,
@@ -193,6 +222,8 @@ CREATE TABLE social_interact (
     account_url TEXT,
     priority INTEGER
 );
+
+-- TODO: write stats solution (further down the road)
 
 CREATE TABLE value_tag (
     id SERIAL PRIMARY KEY,
