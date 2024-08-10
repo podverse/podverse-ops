@@ -55,7 +55,7 @@ CREATE TABLE channel (
 
     -- channels with seasons need to be rendered in client apps differently.
     -- you can only determine if a channel is in a "season" format is by finding
-    -- the <itunes:season> tag in an item in that channel
+    -- the <itunes:season> tag in an item in that channel.
     has_season BOOLEAN DEFAULT FALSE,
     
     -- TODO: should we hash the last parsed feed, so we can compare it to the hash of
@@ -109,7 +109,7 @@ CREATE TABLE channel_funding (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     url varchar_url NOT NULL,
-    label varchar_medium
+    title varchar_medium
 );
 
 CREATE TABLE channel_internal_settings (
@@ -178,6 +178,30 @@ CREATE TABLE image (
     -- When is_resized images are deleted, the corresponding image in S3
     -- should also be deleted.
     is_resized BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE item_chapters (
+    id SERIAL PRIMARY KEY,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    url varchar_url NOT NULL,
+    type varchar_short NOT NULL,
+    version varchar_short NOT NULL
+);
+
+CREATE TABLE item_chapter (
+    id SERIAL PRIMARY KEY,
+    item_chapters_file_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    start_time numeric_20_11 NOT NULL,
+    title varchar_medium
+);
+
+CREATE TABLE item_soundbite (
+    id SERIAL PRIMARY KEY,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    url varchar_url NOT NULL,
+    start_time INTEGER NOT NULL,
+    duration INTEGER NOT NULL,
+    title varchar_medium
 );
 
 CREATE TABLE item_transcript (
