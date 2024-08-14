@@ -36,12 +36,21 @@ CREATE DOMAIN numeric_20_11 AS NUMERIC(20, 11);
 -- TODO: should every table have a created_at and updated_at column?
 -- or only some tables? or none?
 
+--** FEED > FLAG STATUS
+
+CREATE TABLE feed_flag_status (
+    id SERIAL PRIMARY KEY,
+    status TEXT UNIQUE CHECK (status IN ('none', 'spam', 'takedown', 'other', 'always-allow'))
+);
+
+INSERT INTO feed_flag_status (status) VALUES ('none'), ('spam'), ('takedown'), ('other'), ('always-allow');
+
 --** FEED
 
 CREATE TABLE feed (
   id SERIAL PRIMARY KEY,
   url varchar_url UNIQUE NOT NULL,
-  content_type varchar_short,
+
   -- 0 to 5, 0 will only be parsed when PI API reports an update,
   -- higher parsing_priority will be parsed more frequently on a schedule.
   parsing_priority INTEGER DEFAULT 0,
@@ -52,7 +61,8 @@ CREATE TABLE feed (
   last_update_time TIMESTAMP,
   crawl_errors INTEGER DEFAULT 0,
   parse_errors INTEGER DEFAULT 0,
-  locked BOOLEAN DEFAULT FALSE,
+  
+  feed_flag_status_id INTEGER REFERENCES feed_flag_status(id),
 
   -- Used to prevent another thread from parsing the same feed.
   -- Set to current time at beginning of parsing, and NULL at end of parsing. 
@@ -64,20 +74,15 @@ CREATE TABLE feed (
 
 --** CHANNEL
 
+-- <channel>
 CREATE TABLE channel (
     id SERIAL PRIMARY KEY,
     feed_id INTEGER NOT NULL REFERENCES feed(id) ON DELETE CASCADE,
     id_text short_id UNIQUE NOT NULL,
     podcast_index_id INTEGER UNIQUE NOT NULL,
-    podcast_guid UUID UNIQUE, -- As defined by the Podcast Index spec.
+    podcast_guid UUID UNIQUE, -- <podcast:guid>
     title varchar_normal,
     sortable_title varchar_short, -- all lowercase, ignores articles at beginning of title
-    description varchar_long,
-
-    -- channels with seasons need to be rendered in client apps differently.
-    -- you can only determine if a channel is in a "season" format is by finding
-    -- the <itunes:season> tag in an item in that channel.
-    has_season BOOLEAN DEFAULT FALSE,
     
     -- TODO: should we hash the last parsed feed, so we can compare it to the hash of
     -- a feed before completely parsing it, to check if it has changed before continuing?
@@ -96,17 +101,27 @@ CREATE TABLE channel (
 
 CREATE UNIQUE INDEX channel_podcast_guid_unique ON channel(podcast_guid) WHERE podcast_guid IS NOT NULL;
 
+--** CHANNEL > ABOUT > ITUNES TYPE
+
+-- <itunes:type>
+CREATE TABLE channel_itunes_type (
+    id SERIAL PRIMARY KEY,
+    itunes_type TEXT UNIQUE CHECK (itunes_type IN ('episodic', 'serial'))
+);
+
+INSERT INTO channel_itunes_type (itunes_type) VALUES ('episodic'), ('serial');
+
 --** CHANNEL > ABOUT
 
 CREATE TABLE channel_about (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    author varchar_normal,
-    episode_count INTEGER,
-    explicit BOOLEAN,
-    itunes_type TEXT CHECK (itunes_type IN ('episodic', 'serial')),
-    language varchar_short NOT NULL,
-    website_link_url varchar_url
+    author varchar_normal, -- <itunes:author> and <author>
+    episode_count INTEGER, -- aggregated count for convenience
+    explicit BOOLEAN, -- <itunes:explicit>
+    itunes_type_id INTEGER REFERENCES channel_itunes_type(id),
+    language varchar_short NOT NULL, -- <language>
+    website_link_url varchar_url -- <link>
 );
 
 --** CHANNEL > INTERNAL SETTINGS
@@ -114,8 +129,9 @@ CREATE TABLE channel_about (
 CREATE TABLE channel_internal_settings (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    embed_approved_media_url_paths TEXT,
-    flag_status TEXT CHECK (flag_status IN ('none', 'spam', 'takedown', 'other', 'always-allow'))
+    -- needed to approve which web domains can override the player with query params.
+    -- this prevents malicious parties from misrepresenting the podcast contents on another website.
+    embed_approved_media_url_paths TEXT
 );
 
 --** CHANNEL > PODROLL
@@ -128,13 +144,19 @@ CREATE TABLE channel_podroll (
 
 --** CHANNEL > SEASON
 
+-- channels with seasons need to be rendered in client apps differently.
+-- you can only determine if a channel is in a "season" format is by finding
+-- the <itunes:season> tag in an item in that channel.
+
 -- NOTE: A channel season does not exist in the Podcasting 2.0 spec,
 -- but it is useful for organizing seasons at the channel level,
--- and might be in the P2.0 spec someday.
+-- and could be in the P2.0 spec someday.
+
 CREATE TABLE channel_season (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     number INTEGER NOT NULL,
+    UNIQUE (channel_id, number),
     name varchar_normal
 );
 
@@ -154,33 +176,40 @@ CREATE TABLE channel_trailer (
 
 --** ITEM
 
--- corresponds with <item>
+-- <item>
 CREATE TABLE item (
     id SERIAL PRIMARY KEY,
     id_text short_id UNIQUE NOT NULL,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    guid varchar_uri
-    description varchar_long,
-    pub_date TIMESTAMPTZ,
-    title varchar_normal,
+    guid varchar_uri, -- <guid>
+    pub_date TIMESTAMPTZ, -- <pubDate>
+    title varchar_normal, -- <title>
 
     -- hidden items are no longer available in the rss feed, but are still in the database.
     hidden BOOLEAN DEFAULT FALSE,
     -- markedForDeletion items are no longer available in the rss feed, and may be able to be deleted.
-    marked_for_deletion BOOLEAN DEFAULT FALSE,
-
-    -- TODO: add item columns
+    marked_for_deletion BOOLEAN DEFAULT FALSE
 );
+
+--** ITEM > ABOUT > ITUNES TYPE
+
+-- <itunes:episodeType>
+CREATE TABLE item_itunes_episode_type (
+    id SERIAL PRIMARY KEY,
+    itunes_episode_type TEXT UNIQUE CHECK (itunes_episode_type IN ('full', 'trailer', 'bonus'))
+);
+
+INSERT INTO item_itunes_episode_type (itunes_episode_type) VALUES ('full'), ('trailer'), ('bonus');
 
 --** ITEM > ABOUT
 
 CREATE TABLE item_about (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
-    duration INTEGER,
-    explicit BOOLEAN,
-    website_link_url varchar_url,
-    itunes_episode_type TEXT CHECK (itunes_episode_type IN ('full', 'trailer', 'bonus'))
+    duration INTEGER, -- <itunes:duration>
+    explicit BOOLEAN, -- <itunes:explicit>
+    website_link_url varchar_url, -- <link>
+    item_itunes_episode_type_id INTEGER REFERENCES item_itunes_episode_type(id)
 );
 
 --** ITEM > CONTENT LINK
@@ -237,7 +266,7 @@ CREATE TABLE item_enclosure (
     title varchar_short,
     rel varchar_short,
     codecs varchar_short,
-    default BOOLEAN DEFAULT FALSE
+    item_enclosure_default BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE item_enclosure_source (
@@ -256,7 +285,7 @@ CREATE TABLE item_enclosure_integrity (
 
 --** ITEM > SEASON
 
--- corresponds with <podcast:season>
+-- <podcast:season>
 CREATE TABLE item_season (
     id SERIAL PRIMARY KEY,
     channel_season_id INTEGER NOT NULL REFERENCES channel_season(id) ON DELETE CASCADE,
@@ -266,7 +295,7 @@ CREATE TABLE item_season (
 
 --** ITEM > SEASON > EPISODE
 
--- corresponds with <podcast:episode>
+-- <podcast:episode>
 CREATE TABLE item_season_episode (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -276,6 +305,7 @@ CREATE TABLE item_season_episode (
 
 --** ITEM > SOUNDBITE
 
+-- <podcast:soundbite>
 CREATE TABLE item_soundbite (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -287,6 +317,7 @@ CREATE TABLE item_soundbite (
 
 --** ITEM > TRANSCRIPT
 
+-- <podcast:transcript>
 CREATE TABLE item_transcript (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -296,12 +327,22 @@ CREATE TABLE item_transcript (
     rel VARCHAR(50) CHECK (rel IS NULL OR rel = 'captions')
 );
 
+--** LIVE ITEM > STATUS
+
+CREATE TABLE live_item_status (
+    id SERIAL PRIMARY KEY,
+    status TEXT UNIQUE CHECK (status IN ('pending', 'live', 'ended'))
+);
+
+INSERT INTO live_item_status (status) VALUES ('pending'), ('live'), ('ended');
+
 --** LIVE ITEM
 
+-- <podcast:liveItem>
 CREATE TABLE live_item (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
-    status TEXT NOT NULL CHECK (status IN ('pending', 'live', 'ended')),
+    live_item_status_id INTEGER REFERENCES live_item_status(id),
     start_time TIMESTAMPTZ NOT NULL,
     end_time TIMESTAMPTZ,
     chat_web_url varchar_url
@@ -318,15 +359,31 @@ CREATE TABLE chat_base (
     protocol varchar_short,
     account_id varchar_normal,
     space varchar_normal
-)
+);
 
 CREATE TABLE channel_chat (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
 ) INHERITS (chat_base);
 
 CREATE TABLE item_chat (
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
 ) INHERITS (chat_base);
+
+--** DESCRIPTION
+
+-- <description> AND possibly other tags that contain a description.
+CREATE TABLE description_base (
+    id SERIAL PRIMARY KEY,
+    value varchar_long NOT NULL
+);
+
+CREATE TABLE channel_description (
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
+) INHERITS (description_base);
+
+CREATE TABLE item_description (
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
+) INHERITS (description_base);
 
 --** FUNDING
 
@@ -387,6 +444,7 @@ CREATE TABLE item_license (
 
 --** LOCATION
 
+-- <podcast:location>
 CREATE TABLE location_base (
     id SERIAL PRIMARY KEY,
     chapter_id INTEGER REFERENCES item_chapter(id) ON DELETE CASCADE,
@@ -406,57 +464,9 @@ CREATE TABLE item_location (
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
 ) INHERITS (location_base);
 
---** MEDIUM
-
-CREATE TABLE medium_value (
-    id SERIAL PRIMARY KEY,
-    value TEXT UNIQUE CHECK (VALUE IN (
-        'publisher',
-        'podcast', 'music', 'video', 'film', 'audiobook', 'newsletter', 'blog', 'publisher', 'course',
-        'mixed', 'podcastL', 'musicL', 'videoL', 'filmL', 'audiobookL', 'newsletterL', 'blogL', 'publisherL', 'courseL'
-    ));
-);
-
-INSERT INTO medium_value (value) VALUES
-    ('publisher'),
-    ('podcast'), ('music'), ('video'), ('film'), ('audiobook'), ('newsletter'), ('blog'), ('course'),
-    ('mixed'), ('podcastL'), ('musicL'), ('videoL'), ('filmL'), ('audiobookL'), ('newsletterL'), ('blogL'), ('publisherL'), ('courseL')
-;
-
-CREATE TABLE medium_base (
-    id SERIAL PRIMARY KEY,
-    medium_value_id INTEGER NOT NULL REFERENCES medium_value(id) ON DELETE CASCADE
-);
-
-CREATE TABLE channel_medium (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
-) INHERITS (medium_base);
-
-CREATE TABLE remote_item_medium (
-    remote_item_id INTEGER NOT NULL REFERENCES remote_item(id) ON DELETE CASCADE
-) INHERITS (medium_base);
-
---** PERSON
-
-CREATE TABLE person_base (
-    id SERIAL PRIMARY KEY,
-    name varchar_normal,
-    role varchar_normal,
-    person_group varchar_normal DEFAULT 'cast', -- group is a reserved keyword in sql
-    img varchar_url,
-    href varchar_url
-);
-
-CREATE TABLE channel_person (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
-) INHERITS (person_base);
-
-CREATE TABLE item_person (
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
-) INHERITS (person_base);
-
 --** REMOTE ITEM
 
+-- <podcast:remoteItem>
 CREATE TABLE remote_item_base (
     id SERIAL PRIMARY KEY,
     feed_guid UUID NOT NULL,
@@ -477,8 +487,60 @@ CREATE TABLE podroll_remote_item (
     podroll_id INTEGER NOT NULL REFERENCES channel_podroll(id) ON DELETE CASCADE
 ) INHERITS (remote_item_base);
 
+--** MEDIUM
+
+-- <podcast:medium>
+CREATE TABLE medium_value (
+    id SERIAL PRIMARY KEY,
+    value TEXT UNIQUE CHECK (VALUE IN (
+        'publisher',
+        'podcast', 'music', 'video', 'film', 'audiobook', 'newsletter', 'blog', 'publisher', 'course',
+        'mixed', 'podcastL', 'musicL', 'videoL', 'filmL', 'audiobookL', 'newsletterL', 'blogL', 'publisherL', 'courseL'
+    ))
+);
+
+INSERT INTO medium_value (value) VALUES
+    ('publisher'),
+    ('podcast'), ('music'), ('video'), ('film'), ('audiobook'), ('newsletter'), ('blog'), ('course'),
+    ('mixed'), ('podcastL'), ('musicL'), ('videoL'), ('filmL'), ('audiobookL'), ('newsletterL'), ('blogL'), ('publisherL'), ('courseL')
+;
+
+CREATE TABLE medium_base (
+    id SERIAL PRIMARY KEY,
+    medium_value_id INTEGER NOT NULL REFERENCES medium_value(id) ON DELETE CASCADE
+);
+
+CREATE TABLE channel_medium (
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
+) INHERITS (medium_base);
+
+CREATE TABLE remote_item_medium (
+    remote_item_id INTEGER NOT NULL REFERENCES remote_item_base(id) ON DELETE CASCADE
+) INHERITS (medium_base);
+
+--** PERSON
+
+-- <podcast:person>
+CREATE TABLE person_base (
+    id SERIAL PRIMARY KEY,
+    name varchar_normal,
+    role varchar_normal,
+    person_group varchar_normal DEFAULT 'cast', -- group is a reserved keyword in sql
+    img varchar_url,
+    href varchar_url
+);
+
+CREATE TABLE channel_person (
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
+) INHERITS (person_base);
+
+CREATE TABLE item_person (
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
+) INHERITS (person_base);
+
 --** SOCIAL INTERACT
 
+-- <podcast:socialInteract>
 CREATE TABLE social_interact_base (
     id SERIAL PRIMARY KEY,
     protocol varchar_short NOT NULL,
@@ -498,6 +560,7 @@ CREATE TABLE item_social_interact (
 
 --** TXT
 
+-- <podcast:txt>
 CREATE TABLE txt_tag_base (
     id SERIAL PRIMARY KEY,
     verify varchar_normal NOT NULL,
@@ -514,6 +577,7 @@ CREATE TABLE item_txt_tag (
 
 --** VALUE TAG
 
+-- <podcast:value>
 CREATE TABLE value_tag_base (
     id SERIAL PRIMARY KEY,
     type varchar_short NOT NULL,
@@ -531,6 +595,7 @@ CREATE TABLE item_value_tag (
 
 --** VALUE TAG > RECEIPIENT
 
+-- <podcast:valueRecipient>
 CREATE TABLE value_tag_receipient (
     id SERIAL PRIMARY KEY,
     value_tag_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -545,6 +610,7 @@ CREATE TABLE value_tag_receipient (
 
 --** VALUE TAG > TIME SPLIT
 
+-- <podcast:valueTimeSplit>
 CREATE TABLE value_tag_time_split (
     id SERIAL PRIMARY KEY,
     value_tag_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
