@@ -6,5 +6,5 @@ CREATE TABLE clip (
     end_time numeric_20_11,
     title varchar_normal,
     description varchar_long,
-    isPublic BOOLEAN DEFAULT FALSE
+    sharable_status_id INTEGER NOT NULL REFERENCES sharable_status(id)
 );
