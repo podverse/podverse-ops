@@ -24,7 +24,7 @@ PODCASTING 2.0 DATABASE SCHEMA
 CREATE DOMAIN short_id AS VARCHAR(14);
 CREATE DOMAIN varchar_short AS VARCHAR(50);
 CREATE DOMAIN varchar_normal AS VARCHAR(255);
-CREATE DOMAIN varchar_long AS VARCHAR(5000);
+CREATE DOMAIN varchar_long AS VARCHAR(2500);
 
 CREATE DOMAIN varchar_email AS VARCHAR(255) CHECK (VALUE ~ '^.+@.+\..+$');
 CREATE DOMAIN varchar_fqdn AS VARCHAR(253);
@@ -265,10 +265,14 @@ CREATE TABLE item_chapter (
     id SERIAL PRIMARY KEY,
     text_id short_id UNIQUE NOT NULL,
     item_chapters_file_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+
+    -- the hash is used for comparison, to determine if new chapters should be inserted
+    -- after re-parsing an existing chapters file. 
+    hash varchar_guid NOT NULL,
+
     start_time numeric_20_11 NOT NULL,
     end_time numeric_20_11,
     title varchar_normal,
-    img varchar_url,
     web_url varchar_url,
     table_of_contents BOOLEAN DEFAULT TRUE
 );
@@ -442,6 +446,10 @@ CREATE TABLE image_base (
 
 CREATE TABLE channel_image (
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
+) INHERITS (image_base);
+
+CREATE TABLE chapter_image (
+    chapter_id INTEGER NOT NULL REFERENCES chapter(id) ON DELETE CASCADE
 ) INHERITS (image_base);
 
 CREATE TABLE item_image (
