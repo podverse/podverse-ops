@@ -451,7 +451,7 @@ CREATE TABLE channel_image (
 ) INHERITS (image_base);
 
 CREATE TABLE chapter_image (
-    chapter_id INTEGER NOT NULL REFERENCES chapter(id) ON DELETE CASCADE
+    chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE
 ) INHERITS (image_base);
 
 CREATE TABLE item_image (
