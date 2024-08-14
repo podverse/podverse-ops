@@ -29,13 +29,13 @@ CREATE TABLE playlist_item_item (
 ) INHERITS (playlist_item_base);
 
 CREATE TABLE playlist_item_chapter (
-    chapter_id INTEGER NOT NULL REFERENCES chapter(id) ON DELETE CASCADE
+    chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE
 ) INHERITS (playlist_item_base);
 
 CREATE TABLE playlist_item_clip (
-    clip_id INTEGER NOT NULL REFERENCES clip(id) ON DELETE CASCADE
+    clip_id INTEGER NOT NULL REFERENCES item_clip(id) ON DELETE CASCADE
 ) INHERITS (playlist_item_base);
 
 CREATE TABLE playlist_item_soundbite (
-    soundbite_id INTEGER NOT NULL REFERENCES soundbite(id) ON DELETE CASCADE
+    soundbite_id INTEGER NOT NULL REFERENCES item_soundbite(id) ON DELETE CASCADE
 ) INHERITS (playlist_item_base);

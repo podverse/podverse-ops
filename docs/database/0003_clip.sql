@@ -1,4 +1,4 @@
-CREATE TABLE clip (
+CREATE TABLE item_clip (
     id SERIAL PRIMARY KEY,
     id_text short_id UNIQUE NOT NULL,
     account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
