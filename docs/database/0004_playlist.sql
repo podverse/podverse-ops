@@ -1,5 +1,3 @@
-
-
 CREATE TABLE playlist (
     id SERIAL PRIMARY KEY,
     id_text short_id UNIQUE NOT NULL,
