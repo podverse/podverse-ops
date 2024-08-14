@@ -405,11 +405,13 @@ CREATE TABLE description_base (
 );
 
 CREATE TABLE channel_description (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    UNIQUE (channel_id)
 ) INHERITS (description_base);
 
 CREATE TABLE item_description (
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    UNIQUE (item_id)
 ) INHERITS (description_base);
 
 --** FUNDING
@@ -466,11 +468,13 @@ CREATE TABLE license_base (
 );
 
 CREATE TABLE channel_license (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    UNIQUE (channel_id)
 ) INHERITS (license_base);
 
 CREATE TABLE item_license (
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    UNIQUE (item_id)
 ) INHERITS (license_base);
 
 --** LOCATION
@@ -545,11 +549,13 @@ CREATE TABLE medium_base (
 );
 
 CREATE TABLE channel_medium (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    UNIQUE (channel_id)
 ) INHERITS (medium_base);
 
 CREATE TABLE remote_item_medium (
-    remote_item_id INTEGER NOT NULL REFERENCES remote_item_base(id) ON DELETE CASCADE
+    remote_item_id INTEGER NOT NULL REFERENCES remote_item_base(id) ON DELETE CASCADE,
+    UNIQUE (remote_item_id)
 ) INHERITS (medium_base);
 
 --** PERSON
