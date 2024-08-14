@@ -25,7 +25,12 @@ CREATE DOMAIN short_id AS VARCHAR(14);
 CREATE DOMAIN varchar_short AS VARCHAR(50);
 CREATE DOMAIN varchar_normal AS VARCHAR(255);
 CREATE DOMAIN varchar_long AS VARCHAR(5000);
+
+CREATE DOMAIN varchar_email AS VARCHAR(255) CHECK (VALUE ~ '^.+@.+\..+$');
 CREATE DOMAIN varchar_fqdn AS VARCHAR(253);
+CREATE DOMAIN varchar_guid AS VARCHAR(36);
+CREATE DOMAIN varchar_password AS VARCHAR(36);
+CREATE DOMAIN varchar_slug AS VARCHAR(100);
 CREATE DOMAIN varchar_uri AS VARCHAR(2083);
 CREATE DOMAIN varchar_url AS VARCHAR(2083) CHECK (VALUE ~ '^https?://|^http?://');
 
@@ -62,7 +67,7 @@ CREATE TABLE feed (
   crawl_errors INTEGER DEFAULT 0,
   parse_errors INTEGER DEFAULT 0,
   
-  feed_flag_status_id INTEGER REFERENCES feed_flag_status(id),
+  feed_flag_status_id INTEGER NOT NULL REFERENCES feed_flag_status(id),
 
   -- Used to prevent another thread from parsing the same feed.
   -- Set to current time at beginning of parsing, and NULL at end of parsing. 
@@ -77,13 +82,13 @@ CREATE TABLE feed (
 -- <channel>
 CREATE TABLE channel (
     id SERIAL PRIMARY KEY,
-    feed_id INTEGER NOT NULL REFERENCES feed(id) ON DELETE CASCADE,
     id_text short_id UNIQUE NOT NULL,
+    slug varchar_slug,
+    feed_id INTEGER NOT NULL REFERENCES feed(id) ON DELETE CASCADE,
     podcast_index_id INTEGER UNIQUE NOT NULL,
     podcast_guid UUID UNIQUE, -- <podcast:guid>
     title varchar_normal,
     sortable_title varchar_short, -- all lowercase, ignores articles at beginning of title
-    
     -- TODO: should we hash the last parsed feed, so we can compare it to the hash of
     -- a feed before completely parsing it, to check if it has changed before continuing?
 
@@ -100,6 +105,7 @@ CREATE TABLE channel (
 );
 
 CREATE UNIQUE INDEX channel_podcast_guid_unique ON channel(podcast_guid) WHERE podcast_guid IS NOT NULL;
+CREATE UNIQUE INDEX channel_slug ON channel(slug) WHERE slug IS NOT NULL;
 
 --** CHANNEL > ABOUT > ITUNES TYPE
 
@@ -122,6 +128,18 @@ CREATE TABLE channel_about (
     itunes_type_id INTEGER REFERENCES channel_itunes_type(id),
     language varchar_short NOT NULL, -- <language>
     website_link_url varchar_url -- <link>
+);
+
+CREATE TABLE category (
+    node_text varchar_normal NOT NULL, -- <itunes:category>
+    display_name varchar_normal NOT NULL, -- our own display name for the category
+    slug varchar_normal NOT NULL
+);
+
+CREATE TABLE channel_category (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    parent_id INTEGER REFERENCES channel_category(id) ON DELETE CASCADE
 );
 
 --** CHANNEL > INTERNAL SETTINGS
@@ -180,6 +198,7 @@ CREATE TABLE channel_trailer (
 CREATE TABLE item (
     id SERIAL PRIMARY KEY,
     id_text short_id UNIQUE NOT NULL,
+    slug varchar_slug,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     guid varchar_uri, -- <guid>
     pub_date TIMESTAMPTZ, -- <pubDate>
@@ -190,6 +209,8 @@ CREATE TABLE item (
     -- markedForDeletion items are no longer available in the rss feed, and may be able to be deleted.
     marked_for_deletion BOOLEAN DEFAULT FALSE
 );
+
+CREATE UNIQUE INDEX item_slug ON item(slug) WHERE slug IS NOT NULL;
 
 --** ITEM > ABOUT > ITUNES TYPE
 
@@ -217,7 +238,7 @@ CREATE TABLE item_about (
 -- <podcast:contentLink>
 CREATE TABLE content_link (
     id SERIAL PRIMARY KEY,
-    item_id INTEGER REFERENCES item(id) ON DELETE CASCADE,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     href varchar_url NOT NULL,
     title varchar_normal
 );
@@ -242,6 +263,7 @@ CREATE TABLE item_chapters (
 -- corresponds with jsonChapters.md example file
 CREATE TABLE item_chapter (
     id SERIAL PRIMARY KEY,
+    text_id short_id UNIQUE NOT NULL,
     item_chapters_file_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     start_time numeric_20_11 NOT NULL,
     end_time numeric_20_11,
@@ -308,6 +330,7 @@ CREATE TABLE item_season_episode (
 -- <podcast:soundbite>
 CREATE TABLE item_soundbite (
     id SERIAL PRIMARY KEY,
+    id_text short_id UNIQUE NOT NULL,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     url varchar_url NOT NULL,
     start_time INTEGER NOT NULL,
@@ -342,7 +365,7 @@ INSERT INTO live_item_status (status) VALUES ('pending'), ('live'), ('ended');
 CREATE TABLE live_item (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
-    live_item_status_id INTEGER REFERENCES live_item_status(id),
+    live_item_status_id INTEGER NOT NULL REFERENCES live_item_status(id),
     start_time TIMESTAMPTZ NOT NULL,
     end_time TIMESTAMPTZ,
     chat_web_url varchar_url
@@ -447,7 +470,6 @@ CREATE TABLE item_license (
 -- <podcast:location>
 CREATE TABLE location_base (
     id SERIAL PRIMARY KEY,
-    chapter_id INTEGER REFERENCES item_chapter(id) ON DELETE CASCADE,
     geo varchar_normal,
     osm varchar_normal,
     CHECK (
@@ -455,6 +477,10 @@ CREATE TABLE location_base (
       (geo IS NULL AND osm IS NOT NULL)
     )
 );
+
+CREATE TABLE item_chapter_location (
+    item_chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE
+) INHERITS (location_base);
 
 CREATE TABLE channel_location (
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
