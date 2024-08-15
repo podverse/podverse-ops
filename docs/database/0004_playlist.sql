@@ -26,6 +26,10 @@ CREATE TABLE playlist_item_item (
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
 ) INHERITS (playlist_item_base);
 
+CREATE TABLE playlist_item_item_add_by_rss (
+    item_data jsonb NOT NULL
+) INHERITS (playlist_item_base);
+
 CREATE TABLE playlist_item_chapter (
     chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE
 ) INHERITS (playlist_item_base);
