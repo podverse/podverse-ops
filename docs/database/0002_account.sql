@@ -7,7 +7,7 @@ INSERT INTO sharable_status (status) VALUES ('public'), ('unlisted'), ('private'
 
 CREATE TABLE account (
     id SERIAL PRIMARY KEY,
-    id_text short_id UNIQUE NOT NULL,
+    id_text short_id_v2 UNIQUE NOT NULL,
     verified BOOLEAN DEFAULT FALSE,
     sharable_status_id INTEGER NOT NULL REFERENCES sharable_status(id)
 );

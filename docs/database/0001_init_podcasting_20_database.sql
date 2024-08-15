@@ -21,7 +21,11 @@ PODCASTING 2.0 DATABASE SCHEMA
 
 -- Helpers
 
-CREATE DOMAIN short_id AS VARCHAR(14);
+-- In the previous version of the app, short_id was 7-14 characters long.
+-- To make migration to v2 easier, we will use a 15 character long short_id,
+-- so we can easily distinguish between v1 and v2 short_ids.
+CREATE DOMAIN short_id_v2 AS VARCHAR(15);
+
 CREATE DOMAIN varchar_short AS VARCHAR(50);
 CREATE DOMAIN varchar_normal AS VARCHAR(255);
 CREATE DOMAIN varchar_long AS VARCHAR(2500);
@@ -82,7 +86,7 @@ CREATE TABLE feed (
 -- <channel>
 CREATE TABLE channel (
     id SERIAL PRIMARY KEY,
-    id_text short_id UNIQUE NOT NULL,
+    id_text short_id_v2 UNIQUE NOT NULL,
     slug varchar_slug,
     feed_id INTEGER NOT NULL REFERENCES feed(id) ON DELETE CASCADE,
     podcast_index_id INTEGER UNIQUE NOT NULL,
@@ -197,7 +201,7 @@ CREATE TABLE channel_trailer (
 -- <item>
 CREATE TABLE item (
     id SERIAL PRIMARY KEY,
-    id_text short_id UNIQUE NOT NULL,
+    id_text short_id_v2 UNIQUE NOT NULL,
     slug varchar_slug,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     guid varchar_uri, -- <guid>
@@ -263,7 +267,7 @@ CREATE TABLE item_chapters (
 -- corresponds with jsonChapters.md example file
 CREATE TABLE item_chapter (
     id SERIAL PRIMARY KEY,
-    text_id short_id UNIQUE NOT NULL,
+    text_id short_id_v2 UNIQUE NOT NULL,
     item_chapters_file_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
 
     -- the hash is used for comparison, to determine if new chapters should be inserted
@@ -334,7 +338,7 @@ CREATE TABLE item_season_episode (
 -- <podcast:soundbite>
 CREATE TABLE item_soundbite (
     id SERIAL PRIMARY KEY,
-    id_text short_id UNIQUE NOT NULL,
+    id_text short_id_v2 UNIQUE NOT NULL,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     url varchar_url NOT NULL,
     start_time INTEGER NOT NULL,
