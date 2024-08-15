@@ -30,8 +30,8 @@ CREATE TABLE playlist_item_chapter (
     chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE
 ) INHERITS (playlist_item_base);
 
-CREATE TABLE playlist_item_clip (
-    clip_id INTEGER NOT NULL REFERENCES item_clip(id) ON DELETE CASCADE
+CREATE TABLE playlist_clip (
+    clip_id INTEGER NOT NULL REFERENCES clip(id) ON DELETE CASCADE
 ) INHERITS (playlist_item_base);
 
 CREATE TABLE playlist_item_soundbite (
