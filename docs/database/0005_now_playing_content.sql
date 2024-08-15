@@ -43,7 +43,7 @@ BEGIN
         UNION
         SELECT 1 FROM now_playing_content_clip WHERE account_id = NEW.account_id
         UNION
-        SELECT 1 FROM now_playing_content_soundbite WHERE account_id = NEW.account_id
+        SELECT 1 FROM now_playing_content_item_soundbite WHERE account_id = NEW.account_id
     ) THEN
         RAISE EXCEPTION 'account_id % already exists in another table', NEW.account_id;
     END IF;
@@ -68,5 +68,5 @@ BEFORE INSERT ON now_playing_content_clip
 FOR EACH ROW EXECUTE FUNCTION check_account_id_uniqueness();
 
 CREATE TRIGGER check_account_id_uniqueness_soundbite
-BEFORE INSERT ON now_playing_content_soundbite
+BEFORE INSERT ON now_playing_content_item_soundbite
 FOR EACH ROW EXECUTE FUNCTION check_account_id_uniqueness();

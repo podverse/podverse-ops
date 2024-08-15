@@ -31,7 +31,7 @@ CREATE TABLE feed_flag_status (
 );
 
 CREATE TRIGGER set_updated_at_feed_flag_status
-BEFORE UPDATE ON feed
+BEFORE UPDATE ON feed_flag_status
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at_field();
 
