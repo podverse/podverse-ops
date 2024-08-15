@@ -19,67 +19,57 @@ PODCASTING 2.0 DATABASE SCHEMA
 
 */
 
--- Helpers
-
--- In the previous version of the app, short_id was 7-14 characters long.
--- To make migration to v2 easier, we will use a 15 character long short_id,
--- so we can easily distinguish between v1 and v2 short_ids.
-CREATE DOMAIN short_id_v2 AS VARCHAR(15);
-
-CREATE DOMAIN varchar_short AS VARCHAR(50);
-CREATE DOMAIN varchar_normal AS VARCHAR(255);
-CREATE DOMAIN varchar_long AS VARCHAR(2500);
-
-CREATE DOMAIN varchar_email AS VARCHAR(255) CHECK (VALUE ~ '^.+@.+\..+$');
-CREATE DOMAIN varchar_fqdn AS VARCHAR(253);
-CREATE DOMAIN varchar_guid AS VARCHAR(36);
-CREATE DOMAIN varchar_password AS VARCHAR(36);
-CREATE DOMAIN varchar_slug AS VARCHAR(100);
-CREATE DOMAIN varchar_uri AS VARCHAR(2083);
-CREATE DOMAIN varchar_url AS VARCHAR(2083) CHECK (VALUE ~ '^https?://|^http?://');
-
-CREATE DOMAIN numeric_20_11 AS NUMERIC(20, 11);
-
 -- Init tables
-
--- TODO: should every table have a created_at and updated_at column?
--- or only some tables? or none?
 
 --** FEED > FLAG STATUS
 
 CREATE TABLE feed_flag_status (
     id SERIAL PRIMARY KEY,
-    status TEXT UNIQUE CHECK (status IN ('none', 'spam', 'takedown', 'other', 'always-allow'))
+    status TEXT UNIQUE CHECK (status IN ('none', 'spam', 'takedown', 'other', 'always-allow')),
+    created_at server_time_with_default,
+    updated_at server_time_with_default
 );
+
+CREATE TRIGGER set_updated_at_feed_flag_status
+BEFORE UPDATE ON feed
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at_field();
 
 INSERT INTO feed_flag_status (status) VALUES ('none'), ('spam'), ('takedown'), ('other'), ('always-allow');
 
 --** FEED
 
 CREATE TABLE feed (
-  id SERIAL PRIMARY KEY,
-  url varchar_url UNIQUE NOT NULL,
+    id SERIAL PRIMARY KEY,
+    url varchar_url UNIQUE NOT NULL,
 
-  -- 0 to 5, 0 will only be parsed when PI API reports an update,
-  -- higher parsing_priority will be parsed more frequently on a schedule.
-  parsing_priority INTEGER DEFAULT 0,
-  last_http_status INTEGER,
-  last_crawl_time TIMESTAMP,
-  last_good_http_status_time TIMESTAMP,
-  last_parse_time TIMESTAMP,
-  last_update_time TIMESTAMP,
-  crawl_errors INTEGER DEFAULT 0,
-  parse_errors INTEGER DEFAULT 0,
-  
-  feed_flag_status_id INTEGER NOT NULL REFERENCES feed_flag_status(id),
+    -- 0 to 5, 0 will only be parsed when PI API reports an update,
+    -- higher parsing_priority will be parsed more frequently on a schedule.
+    parsing_priority INTEGER DEFAULT 0,
+    last_http_status INTEGER,
+    last_crawl_time server_time,
+    last_good_http_status_time server_time,
+    last_parse_time server_time,
+    last_update_time server_time,
+    crawl_errors INTEGER DEFAULT 0,
+    parse_errors INTEGER DEFAULT 0,
 
-  -- Used to prevent another thread from parsing the same feed.
-  -- Set to current time at beginning of parsing, and NULL at end of parsing. 
-  -- This is to prevent multiple threads from parsing the same feed.
-  -- If is_parsing is over X minutes old, assume last parsing failed and proceed to parse.
-  is_parsing TIMESTAMP,
-  container_id VARCHAR(12)
+    feed_flag_status_id INTEGER NOT NULL REFERENCES feed_flag_status(id),
+
+    -- Used to prevent another thread from parsing the same feed.
+    -- Set to current time at beginning of parsing, and NULL at end of parsing. 
+    -- This is to prevent multiple threads from parsing the same feed.
+    -- If is_parsing is over X minutes old, assume last parsing failed and proceed to parse.
+    is_parsing server_time,
+    container_id VARCHAR(12),
+    created_at server_time_with_default,
+    updated_at server_time_with_default
 );
+
+CREATE TRIGGER set_updated_at_feed
+BEFORE UPDATE ON feed
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at_field();
 
 --** CHANNEL
 
@@ -256,10 +246,10 @@ CREATE TABLE item_chapters (
     url varchar_url NOT NULL,
     type varchar_short NOT NULL,
     last_http_status INTEGER,
-    last_crawl_time TIMESTAMP,
-    last_good_http_status_time TIMESTAMP,
-    last_parse_time TIMESTAMP,
-    last_update_time TIMESTAMP,
+    last_crawl_time server_time,
+    last_good_http_status_time server_time,
+    last_parse_time server_time,
+    last_update_time server_time,
     crawl_errors INTEGER DEFAULT 0,
     parse_errors INTEGER DEFAULT 0
 );
