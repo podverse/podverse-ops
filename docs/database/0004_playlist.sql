@@ -15,29 +15,29 @@ CREATE TABLE playlist_medium (
     UNIQUE (playlist_id)
 ) INHERITS (medium_base);
 
-CREATE TABLE playlist_item_base (
+CREATE TABLE playlist_content_base (
     id SERIAL PRIMARY KEY,
     playlist_id INTEGER NOT NULL REFERENCES playlist(id) ON DELETE CASCADE,
     position numeric_20_11 NOT NULL,
     UNIQUE (playlist_id, position)
 );
 
-CREATE TABLE playlist_item_item (
+CREATE TABLE playlist_content_item (
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
-) INHERITS (playlist_item_base);
+) INHERITS (playlist_content_base);
 
-CREATE TABLE playlist_item_item_add_by_rss (
+CREATE TABLE playlist_content_item_add_by_rss (
     item_data jsonb NOT NULL
-) INHERITS (playlist_item_base);
+) INHERITS (playlist_content_base);
 
-CREATE TABLE playlist_item_chapter (
+CREATE TABLE playlist_content_chapter (
     chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE
-) INHERITS (playlist_item_base);
+) INHERITS (playlist_content_base);
 
 CREATE TABLE playlist_clip (
     clip_id INTEGER NOT NULL REFERENCES clip(id) ON DELETE CASCADE
-) INHERITS (playlist_item_base);
+) INHERITS (playlist_content_base);
 
-CREATE TABLE playlist_item_soundbite (
+CREATE TABLE playlist_content_soundbite (
     soundbite_id INTEGER NOT NULL REFERENCES item_soundbite(id) ON DELETE CASCADE
-) INHERITS (playlist_item_base);
+) INHERITS (playlist_content_base);
