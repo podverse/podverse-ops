@@ -20,6 +20,8 @@ CREATE DOMAIN varchar_url AS VARCHAR(2083) CHECK (VALUE ~ '^https?://|^http?://'
 CREATE DOMAIN server_time AS BIGINT;
 CREATE DOMAIN server_time_with_default AS BIGINT DEFAULT EXTRACT(EPOCH FROM NOW());
 
+CREATE DOMAIN media_player_time AS NUMERIC(10, 2);
+CREATE DOMAIN list_position AS NUMERIC(22, 21);
 CREATE DOMAIN numeric_20_11 AS NUMERIC(20, 11);
 
 -- Function to set created_at and updated_at

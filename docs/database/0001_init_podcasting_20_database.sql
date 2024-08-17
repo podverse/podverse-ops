@@ -264,8 +264,8 @@ CREATE TABLE item_chapter (
     -- after re-parsing an existing chapters file. 
     hash varchar_guid NOT NULL,
 
-    start_time numeric_20_11 NOT NULL,
-    end_time numeric_20_11,
+    start_time media_player_time NOT NULL,
+    end_time media_player_time,
     title varchar_normal,
     web_url varchar_url,
     table_of_contents BOOLEAN DEFAULT TRUE
@@ -280,7 +280,7 @@ CREATE TABLE item_enclosure (
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     type varchar_short NOT NULL,
     length INTEGER,
-    bitrate numeric_20_11,
+    bitrate INTEGER,
     height INTEGER,
     language varchar_short,
     title varchar_short,
@@ -320,7 +320,7 @@ CREATE TABLE item_season_episode (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     display varchar_short,
-    episode_number numeric_20_11 NOT NULL
+    episode_number FLOAT NOT NULL
 );
 
 --** ITEM > SOUNDBITE
@@ -616,7 +616,7 @@ CREATE TABLE value_tag_base (
     id SERIAL PRIMARY KEY,
     type varchar_short NOT NULL,
     method varchar_short NOT NULL,
-    suggested numeric_20_11
+    suggested FLOAT
 );
 
 CREATE TABLE channel_value_tag (
@@ -635,7 +635,7 @@ CREATE TABLE value_tag_receipient (
     value_tag_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     type varchar_short NOT NULL,
     address varchar_long NOT NULL,
-    split numeric_20_11 NOT NULL,
+    split FLOAT NOT NULL,
     name varchar_normal,
     custom_key varchar_long,
     custom_value varchar_long,

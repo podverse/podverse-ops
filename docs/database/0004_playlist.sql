@@ -18,8 +18,8 @@ CREATE TABLE playlist_medium (
 CREATE TABLE playlist_content_base (
     id SERIAL PRIMARY KEY,
     playlist_id INTEGER NOT NULL REFERENCES playlist(id) ON DELETE CASCADE,
-    position numeric_20_11 NOT NULL,
-    UNIQUE (playlist_id, position)
+    list_position list_position NOT NULL CHECK (list_position != 0 OR list_position = 0::numeric),
+    UNIQUE (playlist_id, list_position)
 );
 
 CREATE TABLE playlist_content_item (
@@ -34,8 +34,8 @@ CREATE TABLE playlist_content_chapter (
     chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE
 ) INHERITS (playlist_content_base);
 
-CREATE TABLE playlist_clip (
-    clip_id INTEGER NOT NULL REFERENCES clip(id) ON DELETE CASCADE
+CREATE TABLE playlist_content_account_clip (
+    account_clip_id INTEGER NOT NULL REFERENCES account_clip(id) ON DELETE CASCADE
 ) INHERITS (playlist_content_base);
 
 CREATE TABLE playlist_content_soundbite (
