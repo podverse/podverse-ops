@@ -125,6 +125,7 @@ CREATE TABLE channel_about (
 );
 
 CREATE TABLE category (
+    id SERIAL PRIMARY KEY,
     node_text varchar_normal NOT NULL, -- <itunes:category>
     display_name varchar_normal NOT NULL, -- our own display name for the category
     slug varchar_normal NOT NULL
