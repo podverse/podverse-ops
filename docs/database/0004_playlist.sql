@@ -15,29 +15,29 @@ CREATE TABLE playlist_medium (
     UNIQUE (playlist_id)
 ) INHERITS (medium_base);
 
-CREATE TABLE playlist_content_base (
+CREATE TABLE playlist_resource_base (
     id SERIAL PRIMARY KEY,
     playlist_id INTEGER NOT NULL REFERENCES playlist(id) ON DELETE CASCADE,
     list_position list_position NOT NULL CHECK (list_position != 0 OR list_position = 0::numeric),
     UNIQUE (playlist_id, list_position)
 );
 
-CREATE TABLE playlist_content_item (
+CREATE TABLE playlist_resource_item (
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
-) INHERITS (playlist_content_base);
+) INHERITS (playlist_resource_base);
 
-CREATE TABLE playlist_content_item_add_by_rss (
+CREATE TABLE playlist_resource_item_add_by_rss (
     item_data jsonb NOT NULL
-) INHERITS (playlist_content_base);
+) INHERITS (playlist_resource_base);
 
-CREATE TABLE playlist_content_chapter (
+CREATE TABLE playlist_resource_chapter (
     chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE
-) INHERITS (playlist_content_base);
+) INHERITS (playlist_resource_base);
 
-CREATE TABLE playlist_content_account_clip (
+CREATE TABLE playlist_resource_account_clip (
     account_clip_id INTEGER NOT NULL REFERENCES account_clip(id) ON DELETE CASCADE
-) INHERITS (playlist_content_base);
+) INHERITS (playlist_resource_base);
 
-CREATE TABLE playlist_content_soundbite (
+CREATE TABLE playlist_resource_soundbite (
     soundbite_id INTEGER NOT NULL REFERENCES item_soundbite(id) ON DELETE CASCADE
-) INHERITS (playlist_content_base);
+) INHERITS (playlist_resource_base);
