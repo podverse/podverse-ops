@@ -14,7 +14,7 @@ CREATE TABLE queue_resource_item (
 ) INHERITS (queue_resource_base);
 
 CREATE TABLE queue_resource_item_add_by_rss (
-    item_data jsonb NOT NULL,
+    resource_data jsonb NOT NULL,
     UNIQUE (account_id)
 ) INHERITS (queue_resource_base);
 
@@ -23,8 +23,8 @@ CREATE TABLE queue_resource_item_chapter (
     UNIQUE (account_id)
 ) INHERITS (queue_resource_base);
 
-CREATE TABLE queue_resource_account_clip (
-    account_clip_id INTEGER NOT NULL REFERENCES account_clip(id) ON DELETE CASCADE,
+CREATE TABLE queue_resource_clip (
+    clip_id INTEGER NOT NULL REFERENCES clip(id) ON DELETE CASCADE,
     UNIQUE (account_id)
 ) INHERITS (queue_resource_base);
 
@@ -32,3 +32,36 @@ CREATE TABLE queue_resource_item_soundbite (
     soundbite_id INTEGER NOT NULL REFERENCES item_soundbite(id) ON DELETE CASCADE,
     UNIQUE (account_id)
 ) INHERITS (queue_resource_base);
+
+CREATE OR REPLACE FUNCTION delete_queue_resource_base()
+RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM queue_resource_base WHERE id = OLD.id;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER delete_queue_resource_base_trigger_item
+BEFORE DELETE ON queue_resource_item
+FOR EACH ROW
+EXECUTE FUNCTION delete_queue_resource_base();
+
+CREATE TRIGGER delete_queue_resource_base_trigger_item_add_by_rss
+BEFORE DELETE ON queue_resource_item_add_by_rss
+FOR EACH ROW
+EXECUTE FUNCTION delete_queue_resource_base();
+
+CREATE TRIGGER delete_queue_resource_base_trigger_item_chapter
+BEFORE DELETE ON queue_resource_item_chapter
+FOR EACH ROW
+EXECUTE FUNCTION delete_queue_resource_base();
+
+CREATE TRIGGER delete_queue_resource_base_trigger_clip
+BEFORE DELETE ON queue_resource_clip
+FOR EACH ROW
+EXECUTE FUNCTION delete_queue_resource_base();
+
+CREATE TRIGGER delete_queue_resource_base_trigger_item_soundbite
+BEFORE DELETE ON queue_resource_item_soundbite
+FOR EACH ROW
+EXECUTE FUNCTION delete_queue_resource_base();

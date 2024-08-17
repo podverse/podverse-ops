@@ -19,10 +19,44 @@ PODCASTING 2.0 DATABASE SCHEMA
 
 */
 
--- Init tables
+----------** DICTIONARY REFERENCE TABLES **----------
+--** --** These tables need to be instantiated before the tables that reference them,
+--** --** and they will only have a specified set of values, like an enum.
+
+--** CATEGORY
+
+-- Allowed category values align with the standard categories and subcategories
+-- supported by Apple iTunes through the <itunes:category> tag.
+CREATE TABLE category (
+    id SERIAL PRIMARY KEY,
+    node_text varchar_normal NOT NULL, -- <itunes:category>
+    display_name varchar_normal NOT NULL, -- our own display name for the category
+    slug varchar_normal NOT NULL
+);
+
+--** MEDIUM VALUE (referenced by many tables)
+
+-- <podcast:medium>
+CREATE TABLE medium_value (
+    id SERIAL PRIMARY KEY,
+    value TEXT UNIQUE CHECK (VALUE IN (
+        'publisher',
+        'podcast', 'music', 'video', 'film', 'audiobook', 'newsletter', 'blog', 'publisher', 'course',
+        'mixed', 'podcastL', 'musicL', 'videoL', 'filmL', 'audiobookL', 'newsletterL', 'blogL', 'publisherL', 'courseL'
+    ))
+);
+
+INSERT INTO medium_value (value) VALUES
+    ('publisher'),
+    ('podcast'), ('music'), ('video'), ('film'), ('audiobook'), ('newsletter'), ('blog'), ('course'),
+    ('mixed'), ('podcastL'), ('musicL'), ('videoL'), ('filmL'), ('audiobookL'), ('newsletterL'), ('blogL'), ('publisherL'), ('courseL')
+;
+
+----------** TABLES **----------
 
 --** FEED > FLAG STATUS
 
+-- used internally for identifying and handling spam and other special flag statuses.
 CREATE TABLE feed_flag_status (
     id SERIAL PRIMARY KEY,
     status TEXT UNIQUE CHECK (status IN ('none', 'spam', 'takedown', 'other', 'always-allow')),
@@ -39,6 +73,7 @@ INSERT INTO feed_flag_status (status) VALUES ('none'), ('spam'), ('takedown'), (
 
 --** FEED
 
+-- The top-level table for storing feed data, and internal parsing data.
 CREATE TABLE feed (
     id SERIAL PRIMARY KEY,
     url varchar_url UNIQUE NOT NULL,
@@ -83,10 +118,10 @@ CREATE TABLE channel (
     podcast_guid UUID UNIQUE, -- <podcast:guid>
     title varchar_normal,
     sortable_title varchar_short, -- all lowercase, ignores articles at beginning of title
+    medium_value_id INTEGER REFERENCES medium_value(id),
+
     -- TODO: should we hash the last parsed feed, so we can compare it to the hash of
     -- a feed before completely parsing it, to check if it has changed before continuing?
-
-    -- TODO: categories, how to best handle to account for sub-categories?
 
     -- channels that have a PI value tag require special handling to request value_tag data
     -- from the Podcast Index API.
@@ -103,7 +138,7 @@ CREATE UNIQUE INDEX channel_slug ON channel(slug) WHERE slug IS NOT NULL;
 
 --** CHANNEL > ABOUT > ITUNES TYPE
 
--- <itunes:type>
+-- <channel> -> <itunes:type>
 CREATE TABLE channel_itunes_type (
     id SERIAL PRIMARY KEY,
     itunes_type TEXT UNIQUE CHECK (itunes_type IN ('episodic', 'serial'))
@@ -113,6 +148,7 @@ INSERT INTO channel_itunes_type (itunes_type) VALUES ('episodic'), ('serial');
 
 --** CHANNEL > ABOUT
 
+-- various channel data from multiple tags
 CREATE TABLE channel_about (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -124,17 +160,59 @@ CREATE TABLE channel_about (
     website_link_url varchar_url -- <link>
 );
 
-CREATE TABLE category (
-    id SERIAL PRIMARY KEY,
-    node_text varchar_normal NOT NULL, -- <itunes:category>
-    display_name varchar_normal NOT NULL, -- our own display name for the category
-    slug varchar_normal NOT NULL
-);
+--** CHANNEL > CATEGORY
 
 CREATE TABLE channel_category (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     parent_id INTEGER REFERENCES channel_category(id) ON DELETE CASCADE
+);
+
+--** CHANNEL > CHAT
+
+-- <podcast:chat>
+CREATE TABLE channel_chat (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    server varchar_fqdn NOT NULL,
+    protocol varchar_short,
+    account_id varchar_normal,
+    space varchar_normal
+);
+
+--** CHANNEL > DESCRIPTION
+
+-- <description> AND possibly other tags that contain a description.
+CREATE TABLE channel_description (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    UNIQUE (channel_id),
+    value varchar_long NOT NULL
+);
+
+--** CHANNEL > FUNDING
+
+-- <podcast:funding>
+CREATE TABLE channel_funding (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    url varchar_url NOT NULL,
+    title varchar_normal
+);
+
+--** CHANNEL > IMAGE
+
+-- <podcast:image> AND all other image tags in the rss feed
+CREATE TABLE channel_image (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    url varchar_url NOT NULL,
+    image_width_size INTEGER, -- <podcast:image> must have a width specified, but older image tags will not, so allow null.
+
+    -- If true, then the image is hosted by us in a service like S3.
+    -- When is_resized images are deleted, the corresponding image in S3
+    -- should also be deleted.
+    is_resized BOOLEAN DEFAULT FALSE
 );
 
 --** CHANNEL > INTERNAL SETTINGS
@@ -147,12 +225,99 @@ CREATE TABLE channel_internal_settings (
     embed_approved_media_url_paths TEXT
 );
 
+--** CHANNEL > LICENSE
+
+-- <podcast:license>
+CREATE TABLE channel_license (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    UNIQUE (channel_id),
+    type varchar_normal NOT NULL,
+    url varchar_url NOT NULL
+);
+
+--** CHANNEL > LOCATION
+
+-- <podcast:location>
+CREATE TABLE channel_location (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    geo varchar_normal,
+    osm varchar_normal,
+    CHECK (
+      (geo IS NOT NULL AND osm IS NULL) OR 
+      (geo IS NULL AND osm IS NOT NULL)
+    )
+);
+
+--** CHANNEL > PERSON
+
+-- <podcast:person>
+CREATE TABLE channel_person (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    name varchar_normal,
+    role varchar_normal,
+    person_group varchar_normal DEFAULT 'cast', -- group is a reserved keyword in sql
+    img varchar_url,
+    href varchar_url
+);
+
 --** CHANNEL > PODROLL
 
 -- <podcast:podroll>
 CREATE TABLE channel_podroll (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
+);
+
+--** CHANNEL > PODROLL > REMOTE ITEM
+
+-- <podcast:podroll> --> <podcast:remoteItem>
+CREATE TABLE channel_podroll_remote_item (
+    id SERIAL PRIMARY KEY,
+    channel_podroll_id INTEGER NOT NULL REFERENCES channel_podroll(id) ON DELETE CASCADE,
+    feed_guid UUID NOT NULL,
+    feed_url varchar_url,
+    item_guid varchar_uri,
+    title varchar_normal,
+    medium_value_id INTEGER REFERENCES medium_value(id)
+);
+
+--** CHANNEL > PUBLISHER
+
+-- <channel> -> <podcast:publisher>
+CREATE TABLE channel_publisher (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
+);
+
+--** CHANNEL > PUBLISHER > REMOTE ITEM
+
+-- <channel> -> <podcast:publisher> -> <podcast:remoteItem>
+CREATE TABLE channel_publisher_remote_item (
+    id SERIAL PRIMARY KEY,
+    channel_publisher_id INTEGER NOT NULL REFERENCES channel_publisher(id) ON DELETE CASCADE,
+    feed_guid UUID NOT NULL,
+    feed_url varchar_url,
+    item_guid varchar_uri,
+    title varchar_normal,
+    medium_value_id INTEGER REFERENCES medium_value(id)
+);
+
+--** CHANNEL > REMOTE ITEM
+
+--** <channel> -> <podcast:remoteItem>
+--** Remote items at the channel level are only used when the <podcast:medium> for the channel
+--** is set to 'mixed' or another list medium like 'podcastL'.
+CREATE TABLE channel_remote_item (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    feed_guid UUID NOT NULL,
+    feed_url varchar_url,
+    item_guid varchar_uri,
+    title varchar_normal,
+    medium_value_id INTEGER REFERENCES medium_value(id)
 );
 
 --** CHANNEL > SEASON
@@ -173,6 +338,18 @@ CREATE TABLE channel_season (
     name varchar_normal
 );
 
+--** CHANNEL > SOCIAL INTERACT
+
+CREATE TABLE channel_social_interact (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    protocol varchar_short NOT NULL,
+    uri varchar_uri NOT NULL,
+    account_id varchar_normal,
+    account_url varchar_url,
+    priority INTEGER
+);
+
 --** CHANNEL > TRAILER
 
 -- <podcast:trailer>
@@ -187,7 +364,80 @@ CREATE TABLE channel_trailer (
     season INTEGER
 );
 
+--** CHANNEL > TXT TAG
+
+CREATE TABLE channel_txt_tag (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    verify varchar_normal NOT NULL,
+    value varchar_long NOT NULL
+);
+
+--** CHANNEL > VALUE TAG
+
+-- <podcast:value>
+CREATE TABLE channel_value_tag (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    type varchar_short NOT NULL,
+    method varchar_short NOT NULL,
+    suggested FLOAT
+);
+
+--** CHANNEL > VALUE TAG > RECEIPIENT
+
+-- <podcast:valueRecipient>
+CREATE TABLE channel_value_tag_receipient (
+    id SERIAL PRIMARY KEY,
+    channel_value_tag_id INTEGER NOT NULL REFERENCES channel_value_tag(id) ON DELETE CASCADE,
+    type varchar_short NOT NULL,
+    address varchar_long NOT NULL,
+    split FLOAT NOT NULL,
+    name varchar_normal,
+    custom_key varchar_long,
+    custom_value varchar_long,
+    fee BOOLEAN DEFAULT FALSE
+);
+
+--** CHANNEL > VALUE TAG > TIME SPLIT
+
+-- <podcast:valueTimeSplit>
+CREATE TABLE channel_value_tag_time_split (
+    id SERIAL PRIMARY KEY,
+    channel_value_tag_id INTEGER NOT NULL REFERENCES channel_value_tag(id) ON DELETE CASCADE,
+    start_time INTEGER NOT NULL,
+    duration INTEGER NOT NULL,
+    remote_start_time INTEGER DEFAULT 0,
+    remote_percentage INTEGER DEFAULT 100
+);
+
+--** ITEM > VALUE TAG > TIME SPLIT > REMOTE ITEM
+
+CREATE TABLE channel_value_tag_time_split_remote_item (
+    id SERIAL PRIMARY KEY,
+    channel_value_tag_time_split_id INTEGER NOT NULL REFERENCES channel_value_tag_time_split(id) ON DELETE CASCADE,
+    feed_guid UUID NOT NULL,
+    feed_url varchar_url,
+    item_guid varchar_uri,
+    title varchar_normal
+);
+
+--** ITEM > VALUE TAG > TIME SPLIT > VALUE RECIPEINT
+
+CREATE TABLE channel_value_tag_time_split_receipient (
+    id SERIAL PRIMARY KEY,
+    channel_value_tag_time_split_id INTEGER NOT NULL REFERENCES channel_value_tag_time_split(id) ON DELETE CASCADE,
+    type varchar_short NOT NULL,
+    address varchar_long NOT NULL,
+    split FLOAT NOT NULL,
+    name varchar_normal,
+    custom_key varchar_long,
+    custom_value varchar_long,
+    fee BOOLEAN DEFAULT FALSE
+);
+
 --** ITEM
+--** Technically the item table could be named channel_item, but it seems easier to understand as item.
 
 -- <item>
 CREATE TABLE item (
@@ -272,6 +522,56 @@ CREATE TABLE item_chapter (
     table_of_contents BOOLEAN DEFAULT TRUE
 );
 
+--** ITEM > CHAPTER > IMAGE
+
+-- <podcast:image> AND all other image tags in the rss feed
+CREATE TABLE item_chapter_image (
+    id SERIAL PRIMARY KEY,
+    item_chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE,
+    url varchar_url NOT NULL,
+    image_width_size INTEGER, -- <podcast:image> must have a width specified, but older image tags will not, so allow null.
+
+    -- If true, then the image is hosted by us in a service like S3.
+    -- When is_resized images are deleted, the corresponding image in S3
+    -- should also be deleted.
+    is_resized BOOLEAN DEFAULT FALSE
+);
+
+--** ITEM > CHAPTER > LOCATION
+
+CREATE TABLE item_chapter_location (
+    id SERIAL PRIMARY KEY,
+    item_chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE,
+    geo varchar_normal,
+    osm varchar_normal,
+    CHECK (
+      (geo IS NOT NULL AND osm IS NULL) OR 
+      (geo IS NULL AND osm IS NOT NULL)
+    )
+);
+
+--** ITEM > CHAT
+
+-- <podcast:chat>
+CREATE TABLE item_chat (
+    id SERIAL PRIMARY KEY,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    server varchar_fqdn NOT NULL,
+    protocol varchar_short,
+    account_id varchar_normal,
+    space varchar_normal
+);
+
+--** ITEM > DESCRIPTION
+
+-- <description> AND possibly other tags that contain a description.
+CREATE TABLE item_description (
+    id SERIAL PRIMARY KEY,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    UNIQUE (item_id),
+    value varchar_long NOT NULL
+);
+
 --** ITEM > ENCLOSURE (AKA ALTERNATE ENCLOSURE)
 
 -- <podcast:alternateEnclosure>
@@ -304,6 +604,68 @@ CREATE TABLE item_enclosure_integrity (
     value varchar_long NOT NULL
 );
 
+--** ITEM > FUNDING
+
+-- <podcast:funding>
+CREATE TABLE item_funding (
+    id SERIAL PRIMARY KEY,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    url varchar_url NOT NULL,
+    title varchar_normal
+);
+
+--** ITEM > IMAGE
+
+-- <podcast:image> AND all other image tags in the rss feed
+CREATE TABLE item_image (
+    id SERIAL PRIMARY KEY,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    url varchar_url NOT NULL,
+    image_width_size INTEGER, -- <podcast:image> must have a width specified, but older image tags will not, so allow null.
+
+    -- If true, then the image is hosted by us in a service like S3.
+    -- When is_resized images are deleted, the corresponding image in S3
+    -- should also be deleted.
+    is_resized BOOLEAN DEFAULT FALSE
+);
+
+--** ITEM > LICENSE
+
+-- <podcast:license>
+CREATE TABLE item_license (
+    id SERIAL PRIMARY KEY,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    UNIQUE (item_id),
+    type varchar_normal NOT NULL,
+    url varchar_url NOT NULL
+);
+
+--** ITEM > LOCATION
+
+CREATE TABLE item_location (
+    id SERIAL PRIMARY KEY,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    geo varchar_normal,
+    osm varchar_normal,
+    CHECK (
+      (geo IS NOT NULL AND osm IS NULL) OR 
+      (geo IS NULL AND osm IS NOT NULL)
+    )
+);
+
+--** ITEM > PERSON
+
+-- <podcast:person>
+CREATE TABLE item_person (
+    id SERIAL PRIMARY KEY,
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    name varchar_normal,
+    role varchar_normal,
+    person_group varchar_normal DEFAULT 'cast', -- group is a reserved keyword in sql
+    img varchar_url,
+    href varchar_url
+);
+
 --** ITEM > SEASON
 
 -- <podcast:season>
@@ -322,6 +684,18 @@ CREATE TABLE item_season_episode (
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     display varchar_short,
     episode_number FLOAT NOT NULL
+);
+
+--** ITEM > SOCIAL INTERACT
+
+CREATE TABLE item_social_interact (
+    id SERIAL PRIMARY KEY,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    protocol varchar_short NOT NULL,
+    uri varchar_uri NOT NULL,
+    account_id varchar_normal,
+    account_url varchar_url,
+    priority INTEGER
 );
 
 --** ITEM > SOUNDBITE
@@ -349,6 +723,77 @@ CREATE TABLE item_transcript (
     rel VARCHAR(50) CHECK (rel IS NULL OR rel = 'captions')
 );
 
+--** ITEM > TXT TAG
+
+CREATE TABLE item_txt_tag (
+    id SERIAL PRIMARY KEY,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    verify varchar_normal NOT NULL,
+    value varchar_long NOT NULL
+);
+
+--** ITEM > VALUE TAG
+
+CREATE TABLE item_value_tag (
+    id SERIAL PRIMARY KEY,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    type varchar_short NOT NULL,
+    method varchar_short NOT NULL,
+    suggested FLOAT
+);
+
+--** ITEM > VALUE TAG > RECEIPIENT
+
+-- <podcast:valueRecipient>
+CREATE TABLE item_value_tag_receipient (
+    id SERIAL PRIMARY KEY,
+    item_value_tag_id INTEGER NOT NULL REFERENCES item_value_tag(id) ON DELETE CASCADE,
+    type varchar_short NOT NULL,
+    address varchar_long NOT NULL,
+    split FLOAT NOT NULL,
+    name varchar_normal,
+    custom_key varchar_long,
+    custom_value varchar_long,
+    fee BOOLEAN DEFAULT FALSE
+);
+
+--** ITEM > VALUE TAG > TIME SPLIT
+
+-- <item> -> <podcast:value> -> <podcast:valueTimeSplit>
+CREATE TABLE item_value_tag_time_split (
+    id SERIAL PRIMARY KEY,
+    item_value_tag_id INTEGER NOT NULL REFERENCES item_value_tag(id) ON DELETE CASCADE,
+    start_time INTEGER NOT NULL,
+    duration INTEGER NOT NULL,
+    remote_start_time INTEGER DEFAULT 0,
+    remote_percentage INTEGER DEFAULT 100
+);
+
+--** ITEM > VALUE TAG > TIME SPLIT > REMOTE ITEM
+
+CREATE TABLE item_value_tag_time_split_remote_item (
+    id SERIAL PRIMARY KEY,
+    item_value_tag_time_split_id INTEGER NOT NULL REFERENCES item_value_tag_time_split(id) ON DELETE CASCADE,
+    feed_guid UUID NOT NULL,
+    feed_url varchar_url,
+    item_guid varchar_uri,
+    title varchar_normal
+);
+
+--** ITEM > VALUE TAG > TIME SPLIT > VALUE RECIPEINT
+
+CREATE TABLE item_value_tag_time_split_receipient (
+    id SERIAL PRIMARY KEY,
+    item_value_tag_time_split_id INTEGER NOT NULL REFERENCES item_value_tag_time_split(id) ON DELETE CASCADE,
+    type varchar_short NOT NULL,
+    address varchar_long NOT NULL,
+    split FLOAT NOT NULL,
+    name varchar_normal,
+    custom_key varchar_long,
+    custom_value varchar_long,
+    fee BOOLEAN DEFAULT FALSE
+);
+
 --** LIVE ITEM > STATUS
 
 CREATE TABLE live_item_status (
@@ -370,287 +815,3 @@ CREATE TABLE live_item (
     chat_web_url varchar_url
 );
 
---** CROSS-CUTTING INHERITANCE TABLES
-
---** CHAT
-
--- <podcast:chat>
-CREATE TABLE chat_base (
-    id SERIAL PRIMARY KEY,
-    server varchar_fqdn NOT NULL,
-    protocol varchar_short,
-    account_id varchar_normal,
-    space varchar_normal
-);
-
-CREATE TABLE channel_chat (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
-) INHERITS (chat_base);
-
-CREATE TABLE item_chat (
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
-) INHERITS (chat_base);
-
---** DESCRIPTION
-
--- <description> AND possibly other tags that contain a description.
-CREATE TABLE description_base (
-    id SERIAL PRIMARY KEY,
-    value varchar_long NOT NULL
-);
-
-CREATE TABLE channel_description (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    UNIQUE (channel_id)
-) INHERITS (description_base);
-
-CREATE TABLE item_description (
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
-    UNIQUE (item_id)
-) INHERITS (description_base);
-
---** FUNDING
-
--- <podcast:funding>
-CREATE TABLE funding_base (
-    id SERIAL PRIMARY KEY,
-    url varchar_url NOT NULL,
-    title varchar_normal
-);
-
-CREATE TABLE channel_funding (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
-) INHERITS (funding_base);
-
-CREATE TABLE item_funding (
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
-) INHERITS (funding_base);
-
---** IMAGE
-
--- <podcast:image> AND all other image tags in the rss feed.
--- older image tag data will be adapted into the image_base table.
-CREATE TABLE image_base (
-    id SERIAL PRIMARY KEY,
-    url varchar_url NOT NULL,
-    image_width_size INTEGER, -- <podcast:image> must have a width specified, but older image tags will not, so allow null.
-
-    -- If true, then the image is hosted by us in a service like S3.
-    -- When is_resized images are deleted, the corresponding image in S3
-    -- should also be deleted.
-    is_resized BOOLEAN DEFAULT FALSE
-);
-
-CREATE TABLE channel_image (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
-) INHERITS (image_base);
-
-CREATE TABLE chapter_image (
-    chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE
-) INHERITS (image_base);
-
-CREATE TABLE item_image (
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
-) INHERITS (image_base);
-
---** LICENSE
-
--- <podcast:license>
-CREATE TABLE license_base (
-    id SERIAL PRIMARY KEY,
-    type varchar_normal NOT NULL,
-    url varchar_url NOT NULL
-);
-
-CREATE TABLE channel_license (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    UNIQUE (channel_id)
-) INHERITS (license_base);
-
-CREATE TABLE item_license (
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
-    UNIQUE (item_id)
-) INHERITS (license_base);
-
---** LOCATION
-
--- <podcast:location>
-CREATE TABLE location_base (
-    id SERIAL PRIMARY KEY,
-    geo varchar_normal,
-    osm varchar_normal,
-    CHECK (
-      (geo IS NOT NULL AND osm IS NULL) OR 
-      (geo IS NULL AND osm IS NOT NULL)
-    )
-);
-
-CREATE TABLE item_chapter_location (
-    item_chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE
-) INHERITS (location_base);
-
-CREATE TABLE channel_location (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
-) INHERITS (location_base);
-
-CREATE TABLE item_location (
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
-) INHERITS (location_base);
-
---** REMOTE ITEM
-
--- <podcast:remoteItem>
-CREATE TABLE remote_item_base (
-    id SERIAL PRIMARY KEY,
-    feed_guid UUID NOT NULL,
-    feed_url varchar_url,
-    item_guid varchar_uri,
-    title varchar_normal
-);
-
-CREATE TABLE channel_remote_item (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
-) INHERITS (remote_item_base);
-
-CREATE TABLE item_remote_item (
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
-) INHERITS (remote_item_base);
-
-CREATE TABLE podroll_remote_item (
-    podroll_id INTEGER NOT NULL REFERENCES channel_podroll(id) ON DELETE CASCADE
-) INHERITS (remote_item_base);
-
---** MEDIUM
-
--- <podcast:medium>
-CREATE TABLE medium_value (
-    id SERIAL PRIMARY KEY,
-    value TEXT UNIQUE CHECK (VALUE IN (
-        'publisher',
-        'podcast', 'music', 'video', 'film', 'audiobook', 'newsletter', 'blog', 'publisher', 'course',
-        'mixed', 'podcastL', 'musicL', 'videoL', 'filmL', 'audiobookL', 'newsletterL', 'blogL', 'publisherL', 'courseL'
-    ))
-);
-
-INSERT INTO medium_value (value) VALUES
-    ('publisher'),
-    ('podcast'), ('music'), ('video'), ('film'), ('audiobook'), ('newsletter'), ('blog'), ('course'),
-    ('mixed'), ('podcastL'), ('musicL'), ('videoL'), ('filmL'), ('audiobookL'), ('newsletterL'), ('blogL'), ('publisherL'), ('courseL')
-;
-
-CREATE TABLE medium_base (
-    id SERIAL PRIMARY KEY,
-    medium_value_id INTEGER NOT NULL REFERENCES medium_value(id) ON DELETE CASCADE
-);
-
-CREATE TABLE channel_medium (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    UNIQUE (channel_id)
-) INHERITS (medium_base);
-
-CREATE TABLE remote_item_medium (
-    remote_item_id INTEGER NOT NULL REFERENCES remote_item_base(id) ON DELETE CASCADE,
-    UNIQUE (remote_item_id)
-) INHERITS (medium_base);
-
---** PERSON
-
--- <podcast:person>
-CREATE TABLE person_base (
-    id SERIAL PRIMARY KEY,
-    name varchar_normal,
-    role varchar_normal,
-    person_group varchar_normal DEFAULT 'cast', -- group is a reserved keyword in sql
-    img varchar_url,
-    href varchar_url
-);
-
-CREATE TABLE channel_person (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
-) INHERITS (person_base);
-
-CREATE TABLE item_person (
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
-) INHERITS (person_base);
-
---** SOCIAL INTERACT
-
--- <podcast:socialInteract>
-CREATE TABLE social_interact_base (
-    id SERIAL PRIMARY KEY,
-    protocol varchar_short NOT NULL,
-    uri varchar_uri NOT NULL,
-    account_id varchar_normal,
-    account_url varchar_url,
-    priority INTEGER
-);
-
-CREATE TABLE channel_social_interact (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
-) INHERITS (social_interact_base);
-
-CREATE TABLE item_social_interact (
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
-) INHERITS (social_interact_base);
-
---** TXT
-
--- <podcast:txt>
-CREATE TABLE txt_tag_base (
-    id SERIAL PRIMARY KEY,
-    verify varchar_normal NOT NULL,
-    value varchar_long NOT NULL
-);
-
-CREATE TABLE channel_txt_tag (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
-) INHERITS (txt_tag_base);
-
-CREATE TABLE item_txt_tag (
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
-) INHERITS (txt_tag_base);
-
---** VALUE TAG
-
--- <podcast:value>
-CREATE TABLE value_tag_base (
-    id SERIAL PRIMARY KEY,
-    type varchar_short NOT NULL,
-    method varchar_short NOT NULL,
-    suggested FLOAT
-);
-
-CREATE TABLE channel_value_tag (
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
-) INHERITS (value_tag_base);
-
-CREATE TABLE item_value_tag (
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE
-) INHERITS (value_tag_base);
-
---** VALUE TAG > RECEIPIENT
-
--- <podcast:valueRecipient>
-CREATE TABLE value_tag_receipient (
-    id SERIAL PRIMARY KEY,
-    value_tag_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    type varchar_short NOT NULL,
-    address varchar_long NOT NULL,
-    split FLOAT NOT NULL,
-    name varchar_normal,
-    custom_key varchar_long,
-    custom_value varchar_long,
-    fee BOOLEAN DEFAULT FALSE
-);
-
---** VALUE TAG > TIME SPLIT
-
--- <podcast:valueTimeSplit>
-CREATE TABLE value_tag_time_split (
-    id SERIAL PRIMARY KEY,
-    value_tag_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    start_time INTEGER NOT NULL,
-    duration INTEGER NOT NULL,
-    remote_start_time INTEGER DEFAULT 0,
-    remote_percentage INTEGER DEFAULT 100
-);
