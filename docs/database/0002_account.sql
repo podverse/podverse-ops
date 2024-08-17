@@ -14,28 +14,28 @@ CREATE TABLE account (
 
 CREATE TABLE account_credentials (
     id SERIAL PRIMARY KEY,
-    account_id integer REFERENCES account(id),
+    account_id integer REFERENCES account(id) ON DELETE CASCADE,
     email varchar_email UNIQUE NOT NULL,
     password varchar_password NOT NULL
 );
 
 CREATE TABLE account_profile (
     id SERIAL PRIMARY KEY,
-    account_id integer REFERENCES account(id),
+    account_id integer REFERENCES account(id) ON DELETE CASCADE,
     display_name varchar_normal,
     bio varchar_long
 );
 
 CREATE TABLE account_reset_password (
     id SERIAL PRIMARY KEY,
-    account_id integer REFERENCES account(id),
+    account_id integer REFERENCES account(id) ON DELETE CASCADE,
     reset_token varchar_guid,
     reset_token_expires_at TIMESTAMP
 );
 
 CREATE TABLE account_verification (
     id SERIAL PRIMARY KEY,
-    account_id integer REFERENCES account(id),
+    account_id integer REFERENCES account(id) ON DELETE CASCADE,
     verification_token varchar_guid,
     verification_token_expires_at TIMESTAMP
 );
@@ -49,14 +49,14 @@ INSERT INTO account_membership (tier) VALUES ('trial'), ('basic');
 
 CREATE TABLE account_membership_status (
     id SERIAL PRIMARY KEY,
-    account_id INTEGER NOT NULL REFERENCES account(id),
+    account_id integer REFERENCES account(id) ON DELETE CASCADE,
     account_membership_id INTEGER NOT NULL REFERENCES account_membership(id),
     membership_expires_at TIMESTAMP
 );
 
 CREATE TABLE account_admin_roles (
     id SERIAL PRIMARY KEY,
-    account_id INTEGER NOT NULL REFERENCES account(id),
+    account_id integer REFERENCES account(id) ON DELETE CASCADE,
     dev_admin BOOLEAN DEFAULT FALSE,
     podping_admin BOOLEAN DEFAULT FALSE
 );
