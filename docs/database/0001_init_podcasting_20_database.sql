@@ -12,29 +12,24 @@ PODCASTING 2.0 DATABASE SCHEMA
 
 - The `podcast_index_id` ensures that our database only contains feed data that is available in the Podcast Index API.
 
-- The columns that are within top-level tables, like channel, are intended to be the most essential information,
-  and information that is useful for identifying what the channel corresponds with if you are viewing the database
-  in a tool like pgAdmin. Example: title makes it easy to see which id corresponds with a podcast you are looking for,
-  and description and author can help identify different podcasts with the same title.
-
 */
 
-----------** DICTIONARY REFERENCE TABLES **----------
---** --** These tables need to be instantiated before the tables that reference them,
---** --** and they will only have a specified set of values, like an enum.
+----------** GLOBAL REFERENCE TABLES **----------
+-- These tables are referenced across many tables, and must be created first.
 
 --** CATEGORY
 
 -- Allowed category values align with the standard categories and subcategories
 -- supported by Apple iTunes through the <itunes:category> tag.
+-- 
 CREATE TABLE category (
     id SERIAL PRIMARY KEY,
     node_text varchar_normal NOT NULL, -- <itunes:category>
     display_name varchar_normal NOT NULL, -- our own display name for the category
-    slug varchar_normal NOT NULL
+    slug varchar_normal NOT NULL -- our own slug for the category
 );
 
---** MEDIUM VALUE (referenced by many tables)
+--** MEDIUM VALUE
 
 -- <podcast:medium>
 CREATE TABLE medium_value (
@@ -78,25 +73,24 @@ CREATE TABLE feed (
     id SERIAL PRIMARY KEY,
     url varchar_url UNIQUE NOT NULL,
 
-    -- 0 to 5, 0 will only be parsed when PI API reports an update,
-    -- higher parsing_priority will be parsed more frequently on a schedule.
-    parsing_priority INTEGER DEFAULT 0,
-    last_http_status INTEGER,
-    last_crawl_time server_time,
-    last_good_http_status_time server_time,
-    last_parse_time server_time,
-    last_update_time server_time,
-    crawl_errors INTEGER DEFAULT 0,
-    parse_errors INTEGER DEFAULT 0,
-
+    -- feed flag
     feed_flag_status_id INTEGER NOT NULL REFERENCES feed_flag_status(id),
+
+    -- internal
 
     -- Used to prevent another thread from parsing the same feed.
     -- Set to current time at beginning of parsing, and NULL at end of parsing. 
     -- This is to prevent multiple threads from parsing the same feed.
     -- If is_parsing is over X minutes old, assume last parsing failed and proceed to parse.
     is_parsing server_time,
+
+    -- 0 will only be parsed when PI API reports an update.
+    -- higher parsing_priority will be parsed more frequently on a schedule.
+    parsing_priority INTEGER DEFAULT 0 CHECK (parsing_priority BETWEEN 0 AND 5),
+
+    -- the run-time environment container id
     container_id VARCHAR(12),
+
     created_at server_time_with_default,
     updated_at server_time_with_default
 );
@@ -105,6 +99,18 @@ CREATE TRIGGER set_updated_at_feed
 BEFORE UPDATE ON feed
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at_field();
+
+CREATE TABLE feed_log (
+    id SERIAL PRIMARY KEY,
+    feed_id INTEGER NOT NULL REFERENCES feed(id) ON DELETE CASCADE,
+    last_http_status INTEGER,
+    last_crawl_time server_time,
+    last_good_http_status_time server_time,
+    last_parse_time server_time,
+    last_update_time server_time,
+    crawl_errors INTEGER DEFAULT 0,
+    parse_errors INTEGER DEFAULT 0
+);
 
 --** CHANNEL
 
@@ -148,7 +154,7 @@ INSERT INTO channel_itunes_type (itunes_type) VALUES ('episodic'), ('serial');
 
 --** CHANNEL > ABOUT
 
--- various channel data from multiple tags
+-- various <channel> child data from multiple tags
 CREATE TABLE channel_about (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -170,7 +176,7 @@ CREATE TABLE channel_category (
 
 --** CHANNEL > CHAT
 
--- <podcast:chat>
+-- <channel> -> <podcast:chat>
 CREATE TABLE channel_chat (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -182,7 +188,7 @@ CREATE TABLE channel_chat (
 
 --** CHANNEL > DESCRIPTION
 
--- <description> AND possibly other tags that contain a description.
+-- <channel> -> <description> AND possibly other tags that contain a description
 CREATE TABLE channel_description (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -192,7 +198,7 @@ CREATE TABLE channel_description (
 
 --** CHANNEL > FUNDING
 
--- <podcast:funding>
+-- <channel> -> <podcast:funding>
 CREATE TABLE channel_funding (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -202,7 +208,7 @@ CREATE TABLE channel_funding (
 
 --** CHANNEL > IMAGE
 
--- <podcast:image> AND all other image tags in the rss feed
+-- <channel> -> <podcast:image> AND all other image tags in the rss feed
 CREATE TABLE channel_image (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -227,7 +233,7 @@ CREATE TABLE channel_internal_settings (
 
 --** CHANNEL > LICENSE
 
--- <podcast:license>
+-- <channel> -> <podcast:license>
 CREATE TABLE channel_license (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -238,7 +244,7 @@ CREATE TABLE channel_license (
 
 --** CHANNEL > LOCATION
 
--- <podcast:location>
+-- <channel> -> <podcast:location>
 CREATE TABLE channel_location (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -252,7 +258,7 @@ CREATE TABLE channel_location (
 
 --** CHANNEL > PERSON
 
--- <podcast:person>
+-- <channel> -> <podcast:person>
 CREATE TABLE channel_person (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -265,7 +271,7 @@ CREATE TABLE channel_person (
 
 --** CHANNEL > PODROLL
 
--- <podcast:podroll>
+-- <channel> -> <podcast:podroll>
 CREATE TABLE channel_podroll (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
@@ -273,7 +279,7 @@ CREATE TABLE channel_podroll (
 
 --** CHANNEL > PODROLL > REMOTE ITEM
 
--- <podcast:podroll> --> <podcast:remoteItem>
+-- <channel> -> <podcast:podroll> --> <podcast:remoteItem>
 CREATE TABLE channel_podroll_remote_item (
     id SERIAL PRIMARY KEY,
     channel_podroll_id INTEGER NOT NULL REFERENCES channel_podroll(id) ON DELETE CASCADE,
@@ -307,9 +313,10 @@ CREATE TABLE channel_publisher_remote_item (
 
 --** CHANNEL > REMOTE ITEM
 
---** <channel> -> <podcast:remoteItem>
---** Remote items at the channel level are only used when the <podcast:medium> for the channel
---** is set to 'mixed' or another list medium like 'podcastL'.
+-- Remote items at the channel level are only used when the <podcast:medium> for the channel
+-- is set to 'mixed' or another list medium like 'podcastL'.
+
+-- <channel> -> <podcast:remoteItem>
 CREATE TABLE channel_remote_item (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -340,6 +347,7 @@ CREATE TABLE channel_season (
 
 --** CHANNEL > SOCIAL INTERACT
 
+-- <channel> -> <podcast:socialInteract>
 CREATE TABLE channel_social_interact (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -352,7 +360,7 @@ CREATE TABLE channel_social_interact (
 
 --** CHANNEL > TRAILER
 
--- <podcast:trailer>
+-- <channel> -> <podcast:trailer>
 CREATE TABLE channel_trailer (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -366,6 +374,7 @@ CREATE TABLE channel_trailer (
 
 --** CHANNEL > TXT TAG
 
+-- <channel> -> <podcast:txt>
 CREATE TABLE channel_txt_tag (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -375,7 +384,7 @@ CREATE TABLE channel_txt_tag (
 
 --** CHANNEL > VALUE TAG
 
--- <podcast:value>
+-- <channel> -> <podcast:value>
 CREATE TABLE channel_value_tag (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -386,7 +395,7 @@ CREATE TABLE channel_value_tag (
 
 --** CHANNEL > VALUE TAG > RECEIPIENT
 
--- <podcast:valueRecipient>
+-- <channel> -> <podcast:value> -> <podcast:valueRecipient>
 CREATE TABLE channel_value_tag_receipient (
     id SERIAL PRIMARY KEY,
     channel_value_tag_id INTEGER NOT NULL REFERENCES channel_value_tag(id) ON DELETE CASCADE,
@@ -401,7 +410,7 @@ CREATE TABLE channel_value_tag_receipient (
 
 --** CHANNEL > VALUE TAG > TIME SPLIT
 
--- <podcast:valueTimeSplit>
+-- <channel> -> <podcast:valueTimeSplit>
 CREATE TABLE channel_value_tag_time_split (
     id SERIAL PRIMARY KEY,
     channel_value_tag_id INTEGER NOT NULL REFERENCES channel_value_tag(id) ON DELETE CASCADE,
@@ -411,8 +420,9 @@ CREATE TABLE channel_value_tag_time_split (
     remote_percentage INTEGER DEFAULT 100
 );
 
---** ITEM > VALUE TAG > TIME SPLIT > REMOTE ITEM
+--** CHANNEL > VALUE TAG > TIME SPLIT > REMOTE ITEM
 
+-- <channel> -> <podcast:value> -> <podcast:valueTimeSplit> -> <podcast:remoteItem>
 CREATE TABLE channel_value_tag_time_split_remote_item (
     id SERIAL PRIMARY KEY,
     channel_value_tag_time_split_id INTEGER NOT NULL REFERENCES channel_value_tag_time_split(id) ON DELETE CASCADE,
@@ -422,8 +432,9 @@ CREATE TABLE channel_value_tag_time_split_remote_item (
     title varchar_normal
 );
 
---** ITEM > VALUE TAG > TIME SPLIT > VALUE RECIPEINT
+--** CHANNEL > VALUE TAG > TIME SPLIT > VALUE RECIPEINT
 
+-- <channel> -> <podcast:value> -> <podcast:valueTimeSplit> -> <podcast:valueRecipient>
 CREATE TABLE channel_value_tag_time_split_receipient (
     id SERIAL PRIMARY KEY,
     channel_value_tag_time_split_id INTEGER NOT NULL REFERENCES channel_value_tag_time_split(id) ON DELETE CASCADE,
@@ -437,9 +448,10 @@ CREATE TABLE channel_value_tag_time_split_receipient (
 );
 
 --** ITEM
---** Technically the item table could be named channel_item, but it seems easier to understand as item.
 
--- <item>
+-- Technically the item table could be named channel_item, but it seems easier to understand as item.
+
+-- <channel> -> <item>
 CREATE TABLE item (
     id SERIAL PRIMARY KEY,
     id_text short_id_v2 UNIQUE NOT NULL,
@@ -459,7 +471,7 @@ CREATE UNIQUE INDEX item_slug ON item(slug) WHERE slug IS NOT NULL;
 
 --** ITEM > ABOUT > ITUNES TYPE
 
--- <itunes:episodeType>
+-- <item> -> <itunes:episodeType>
 CREATE TABLE item_itunes_episode_type (
     id SERIAL PRIMARY KEY,
     itunes_episode_type TEXT UNIQUE CHECK (itunes_episode_type IN ('full', 'trailer', 'bonus'))
@@ -475,12 +487,12 @@ CREATE TABLE item_about (
     duration INTEGER, -- <itunes:duration>
     explicit BOOLEAN, -- <itunes:explicit>
     website_link_url varchar_url, -- <link>
-    item_itunes_episode_type_id INTEGER REFERENCES item_itunes_episode_type(id)
+    item_itunes_episode_type_id INTEGER REFERENCES item_itunes_episode_type(id) -- <itunes:episodeType>
 );
 
 --** ITEM > CONTENT LINK
 
--- <podcast:contentLink>
+-- <item> -> <podcast:contentLink>
 CREATE TABLE content_link (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -490,7 +502,7 @@ CREATE TABLE content_link (
 
 --** ITEM > CHAPTERS
 
--- <podcast:chapters>
+-- <item> -> <podcast:chapters>
 CREATE TABLE item_chapters (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -505,7 +517,7 @@ CREATE TABLE item_chapters (
     parse_errors INTEGER DEFAULT 0
 );
 
--- corresponds with jsonChapters.md example file
+-- -- <item> -> <podcast:chapters> -> chapter items correspond with jsonChapters.md example file
 CREATE TABLE item_chapter (
     id SERIAL PRIMARY KEY,
     text_id short_id_v2 UNIQUE NOT NULL,
@@ -524,7 +536,7 @@ CREATE TABLE item_chapter (
 
 --** ITEM > CHAPTER > IMAGE
 
--- <podcast:image> AND all other image tags in the rss feed
+-- <item> -> <podcast:chapters> -> chapter items correspond with jsonChapters.md example file
 CREATE TABLE item_chapter_image (
     id SERIAL PRIMARY KEY,
     item_chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE,
@@ -539,6 +551,7 @@ CREATE TABLE item_chapter_image (
 
 --** ITEM > CHAPTER > LOCATION
 
+-- <item> -> <podcast:chapters> -> chapter items correspond with jsonChapters.md example file
 CREATE TABLE item_chapter_location (
     id SERIAL PRIMARY KEY,
     item_chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE,
@@ -552,7 +565,7 @@ CREATE TABLE item_chapter_location (
 
 --** ITEM > CHAT
 
--- <podcast:chat>
+-- <item> -> <podcast:chat>
 CREATE TABLE item_chat (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -564,7 +577,7 @@ CREATE TABLE item_chat (
 
 --** ITEM > DESCRIPTION
 
--- <description> AND possibly other tags that contain a description.
+-- <item> -> <description> AND possibly other tags that contain a description
 CREATE TABLE item_description (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -574,8 +587,9 @@ CREATE TABLE item_description (
 
 --** ITEM > ENCLOSURE (AKA ALTERNATE ENCLOSURE)
 
--- <podcast:alternateEnclosure>
 -- NOTE: the older <enclosure> tag style is integrated into the item_enclosure table.
+
+-- <item> -> <podcast:alternateEnclosure> AND <item> -> <enclosure>
 CREATE TABLE item_enclosure (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -590,6 +604,7 @@ CREATE TABLE item_enclosure (
     item_enclosure_default BOOLEAN DEFAULT FALSE
 );
 
+-- <item> -> <podcast:alternateEnclosure> -> <podcast:source>
 CREATE TABLE item_enclosure_source (
     id SERIAL PRIMARY KEY,
     item_enclosure_id INTEGER NOT NULL REFERENCES item_enclosure(id) ON DELETE CASCADE,
@@ -597,6 +612,7 @@ CREATE TABLE item_enclosure_source (
     content_type varchar_short
 );
 
+-- <item> -> <podcast:alternateEnclosure> -> <podcast:integrity>
 CREATE TABLE item_enclosure_integrity (
     id SERIAL PRIMARY KEY,
     item_enclosure_id INTEGER NOT NULL REFERENCES item_enclosure_source(id) ON DELETE CASCADE,
@@ -606,7 +622,7 @@ CREATE TABLE item_enclosure_integrity (
 
 --** ITEM > FUNDING
 
--- <podcast:funding>
+-- <item> -> <podcast:funding>
 CREATE TABLE item_funding (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -616,7 +632,7 @@ CREATE TABLE item_funding (
 
 --** ITEM > IMAGE
 
--- <podcast:image> AND all other image tags in the rss feed
+-- <item> -> <podcast:image> AND all other image tags in the rss feed
 CREATE TABLE item_image (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -631,7 +647,7 @@ CREATE TABLE item_image (
 
 --** ITEM > LICENSE
 
--- <podcast:license>
+-- <item> -> <podcast:license>
 CREATE TABLE item_license (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -642,6 +658,7 @@ CREATE TABLE item_license (
 
 --** ITEM > LOCATION
 
+-- <item> -> <podcast:location>
 CREATE TABLE item_location (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -655,7 +672,7 @@ CREATE TABLE item_location (
 
 --** ITEM > PERSON
 
--- <podcast:person>
+-- <item> -> <podcast:person>
 CREATE TABLE item_person (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
@@ -668,7 +685,7 @@ CREATE TABLE item_person (
 
 --** ITEM > SEASON
 
--- <podcast:season>
+-- <item> -> <podcast:season>
 CREATE TABLE item_season (
     id SERIAL PRIMARY KEY,
     channel_season_id INTEGER NOT NULL REFERENCES channel_season(id) ON DELETE CASCADE,
@@ -678,7 +695,7 @@ CREATE TABLE item_season (
 
 --** ITEM > SEASON > EPISODE
 
--- <podcast:episode>
+-- <item> -> <podcast:season> -> <podcast:episode>
 CREATE TABLE item_season_episode (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -688,6 +705,7 @@ CREATE TABLE item_season_episode (
 
 --** ITEM > SOCIAL INTERACT
 
+-- <item> -> <podcast:socialInteract>
 CREATE TABLE item_social_interact (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -700,7 +718,7 @@ CREATE TABLE item_social_interact (
 
 --** ITEM > SOUNDBITE
 
--- <podcast:soundbite>
+-- <item> -> <podcast:soundbite>
 CREATE TABLE item_soundbite (
     id SERIAL PRIMARY KEY,
     id_text short_id_v2 UNIQUE NOT NULL,
@@ -713,7 +731,7 @@ CREATE TABLE item_soundbite (
 
 --** ITEM > TRANSCRIPT
 
--- <podcast:transcript>
+-- <item> -> <podcast:transcript>
 CREATE TABLE item_transcript (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -725,6 +743,7 @@ CREATE TABLE item_transcript (
 
 --** ITEM > TXT TAG
 
+-- <item> -> <podcast:txt>
 CREATE TABLE item_txt_tag (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -734,6 +753,7 @@ CREATE TABLE item_txt_tag (
 
 --** ITEM > VALUE TAG
 
+-- <item> -> <podcast:value>
 CREATE TABLE item_value_tag (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
@@ -744,7 +764,7 @@ CREATE TABLE item_value_tag (
 
 --** ITEM > VALUE TAG > RECEIPIENT
 
--- <podcast:valueRecipient>
+-- <item> -> <podcast:value> -> <podcast:valueRecipient>
 CREATE TABLE item_value_tag_receipient (
     id SERIAL PRIMARY KEY,
     item_value_tag_id INTEGER NOT NULL REFERENCES item_value_tag(id) ON DELETE CASCADE,
@@ -771,6 +791,7 @@ CREATE TABLE item_value_tag_time_split (
 
 --** ITEM > VALUE TAG > TIME SPLIT > REMOTE ITEM
 
+-- <item> -> <podcast:value> -> <podcast:valueTimeSplit> -> <podcast:remoteItem>
 CREATE TABLE item_value_tag_time_split_remote_item (
     id SERIAL PRIMARY KEY,
     item_value_tag_time_split_id INTEGER NOT NULL REFERENCES item_value_tag_time_split(id) ON DELETE CASCADE,
@@ -782,6 +803,7 @@ CREATE TABLE item_value_tag_time_split_remote_item (
 
 --** ITEM > VALUE TAG > TIME SPLIT > VALUE RECIPEINT
 
+-- <item> -> <podcast:value> -> <podcast:valueTimeSplit> -> <podcast:valueRecipient>
 CREATE TABLE item_value_tag_time_split_receipient (
     id SERIAL PRIMARY KEY,
     item_value_tag_time_split_id INTEGER NOT NULL REFERENCES item_value_tag_time_split(id) ON DELETE CASCADE,
@@ -805,7 +827,10 @@ INSERT INTO live_item_status (status) VALUES ('pending'), ('live'), ('ended');
 
 --** LIVE ITEM
 
--- <podcast:liveItem>
+-- Technically the live_item table could be named channel_live_item,
+-- but for consistency with the item table, it is called live_item.
+
+-- <channel> -> <podcast:liveItem>
 CREATE TABLE live_item (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
