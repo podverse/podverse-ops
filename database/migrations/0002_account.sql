@@ -1,3 +1,5 @@
+-- 0002 migration
+
 CREATE TABLE sharable_status (
     id SERIAL PRIMARY KEY,
     status TEXT UNIQUE CHECK (status IN ('public', 'unlisted', 'private'))

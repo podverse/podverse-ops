@@ -1,3 +1,5 @@
+-- 0000 migration
+
 -- Helpers
 
 -- In the previous version of the app, short_id was 7-14 characters long.

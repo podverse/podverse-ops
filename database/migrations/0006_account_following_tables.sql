@@ -1,3 +1,5 @@
+-- 0006 migration
+
 CREATE TABLE account_following_account (
     account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     following_account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,

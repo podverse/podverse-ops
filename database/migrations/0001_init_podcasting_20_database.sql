@@ -1,3 +1,5 @@
+-- 0001 migration
+
 /*
 
 PODCASTING 2.0 DATABASE SCHEMA

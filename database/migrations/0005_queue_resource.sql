@@ -1,3 +1,5 @@
+-- 0005 migration
+
 CREATE TABLE queue_resource_base (
     id SERIAL PRIMARY KEY,
     account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,

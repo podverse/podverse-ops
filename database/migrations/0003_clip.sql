@@ -1,3 +1,5 @@
+-- 0003 migration
+
 CREATE TABLE clip (
     id SERIAL PRIMARY KEY,
     id_text short_id_v2 UNIQUE NOT NULL,

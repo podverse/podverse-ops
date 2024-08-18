@@ -1,3 +1,5 @@
+-- 0004 migration
+
 CREATE TABLE playlist (
     id SERIAL PRIMARY KEY,
     id_text short_id_v2 UNIQUE NOT NULL,
