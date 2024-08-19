@@ -529,16 +529,6 @@ CREATE TABLE item_about (
     item_itunes_episode_type_id INTEGER REFERENCES item_itunes_episode_type(id) -- <itunes:episodeType>
 );
 
---** ITEM > CONTENT LINK
-
--- <item> -> <podcast:contentLink>
-CREATE TABLE content_link (
-    id SERIAL PRIMARY KEY,
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
-    href varchar_url NOT NULL,
-    title varchar_normal
-);
-
 --** ITEM > CHAPTERS
 
 -- <item> -> <podcast:chapters>
@@ -614,6 +604,16 @@ CREATE TABLE item_chat (
     space varchar_normal
 );
 
+--** ITEM > CONTENT LINK
+
+-- <item> -> <podcast:contentLink>
+CREATE TABLE item_content_link (
+    id SERIAL PRIMARY KEY,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    href varchar_url NOT NULL,
+    title varchar_normal
+);
+
 --** ITEM > DESCRIPTION
 
 -- <item> -> <description> AND possibly other tags that contain a description
@@ -643,20 +643,20 @@ CREATE TABLE item_enclosure (
     item_enclosure_default BOOLEAN DEFAULT FALSE
 );
 
--- <item> -> <podcast:alternateEnclosure> -> <podcast:source>
-CREATE TABLE item_enclosure_source (
-    id SERIAL PRIMARY KEY,
-    item_enclosure_id INTEGER NOT NULL REFERENCES item_enclosure(id) ON DELETE CASCADE,
-    uri varchar_uri NOT NULL,
-    content_type varchar_short
-);
-
 -- <item> -> <podcast:alternateEnclosure> -> <podcast:integrity>
 CREATE TABLE item_enclosure_integrity (
     id SERIAL PRIMARY KEY,
     item_enclosure_id INTEGER NOT NULL REFERENCES item_enclosure_source(id) ON DELETE CASCADE,
     type TEXT NOT NULL CHECK (type IN ('sri', 'pgp-signature')),
     value varchar_long NOT NULL
+);
+
+-- <item> -> <podcast:alternateEnclosure> -> <podcast:source>
+CREATE TABLE item_enclosure_source (
+    id SERIAL PRIMARY KEY,
+    item_enclosure_id INTEGER NOT NULL REFERENCES item_enclosure(id) ON DELETE CASCADE,
+    uri varchar_uri NOT NULL,
+    content_type varchar_short
 );
 
 --** ITEM > FUNDING
@@ -1036,11 +1036,18 @@ EXECUTE FUNCTION delete_playlist_resource_base();
 
 -- 0005 migration
 
-CREATE TABLE queue_resource_base (
+CREATE TABLE queue (
     id SERIAL PRIMARY KEY,
     account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    medium_value_id INTEGER NOT NULL REFERENCES medium_value(id),
+    UNIQUE (account_id, medium_value_id)
+);
+
+CREATE TABLE queue_resource_base (
+    id SERIAL PRIMARY KEY,
+    queue_id INTEGER NOT NULL REFERENCES queue(id) ON DELETE CASCADE,
+    UNIQUE (queue_id, list_position),
     list_position list_position NOT NULL CHECK (list_position != 0 OR list_position = 0::numeric),
-    UNIQUE (account_id, list_position),
     playback_position media_player_time NOT NULL DEFAULT 0,
     media_file_duration FLOAT NOT NULL DEFAULT 0,
     completed BOOLEAN NOT NULL DEFAULT FALSE
@@ -1048,27 +1055,27 @@ CREATE TABLE queue_resource_base (
 
 CREATE TABLE queue_resource_item (
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
-    UNIQUE (account_id)
+    UNIQUE (queue_id)
 ) INHERITS (queue_resource_base);
 
 CREATE TABLE queue_resource_item_add_by_rss (
     resource_data jsonb NOT NULL,
-    UNIQUE (account_id)
+    UNIQUE (queue_id)
 ) INHERITS (queue_resource_base);
 
 CREATE TABLE queue_resource_item_chapter (
     item_chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE,
-    UNIQUE (account_id)
+    UNIQUE (queue_id)
 ) INHERITS (queue_resource_base);
 
 CREATE TABLE queue_resource_clip (
     clip_id INTEGER NOT NULL REFERENCES clip(id) ON DELETE CASCADE,
-    UNIQUE (account_id)
+    UNIQUE (queue_id)
 ) INHERITS (queue_resource_base);
 
 CREATE TABLE queue_resource_item_soundbite (
     soundbite_id INTEGER NOT NULL REFERENCES item_soundbite(id) ON DELETE CASCADE,
-    UNIQUE (account_id)
+    UNIQUE (queue_id)
 ) INHERITS (queue_resource_base);
 
 CREATE OR REPLACE FUNCTION delete_queue_resource_base()
@@ -1135,41 +1142,35 @@ CREATE TABLE account_following_add_by_rss_channel (
 -- 0007
 
 CREATE TABLE account_notification (
-    channel_id INTEGER NOT NULL,
-    account_id INTEGER NOT NULL,
-    PRIMARY KEY (channel_id, account_id),
-    CONSTRAINT fk_channel FOREIGN KEY (channel_id) REFERENCES channel(id) ON DELETE CASCADE,
-    CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES account(id) ON DELETE CASCADE
+    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    PRIMARY KEY (channel_id, account_id)
 );
 
 CREATE TABLE account_up_device (
-    account_id INTEGER NOT NULL,
+    account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     up_endpoint varchar_url PRIMARY KEY,
     up_public_key varchar_long NOT NULL,
-    up_auth_key varchar_long NOT NULL,
-    CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES account(id) ON DELETE CASCADE
+    up_auth_key varchar_long NOT NULL
 );
 
 CREATE DOMAIN varchar_fcm_token AS VARCHAR(255);
 
 CREATE TABLE account_fcm_device (
     fcm_token varchar_fcm_token PRIMARY KEY,
-    account_id INT NOT NULL,
-    CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES account(id) ON DELETE CASCADE
+    account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE
 );
 
 -- 0008
 
 CREATE TABLE account_paypal_order (
-    account_id INT NOT NULL,
-    CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES account(id) ON DELETE CASCADE,
+    account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     payment_id VARCHAR PRIMARY KEY,
     state VARCHAR
 );
 
 CREATE TABLE account_app_store_purchase (
-    account_id INT NOT NULL,
-    CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES account(id) ON DELETE CASCADE,
+    account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     transaction_id VARCHAR PRIMARY KEY,
     cancellation_date VARCHAR,
     cancellation_date_ms VARCHAR,
@@ -1194,8 +1195,7 @@ CREATE TABLE account_app_store_purchase (
 );
 
 CREATE TABLE account_google_play_purchase (
-    account_id INT NOT NULL,
-    CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES account(id) ON DELETE CASCADE,
+    account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     transaction_id VARCHAR PRIMARY KEY,
     acknowledgement_state INT NULL,
     consumption_state INT NULL,
@@ -1210,9 +1210,10 @@ CREATE TABLE account_google_play_purchase (
 
 -- 0009
 
-CREATE TABLE account_claim_token (
+CREATE TABLE membership_claim_token (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     claimed BOOLEAN DEFAULT FALSE,
-    years_to_add INT DEFAULT 1
+    years_to_add INT DEFAULT 1,
+    account_membership_id INT REFERENCES account_membership(id) ON DELETE CASCADE
 );
 

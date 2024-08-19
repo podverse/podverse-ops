@@ -1,15 +1,13 @@
 -- 0008
 
 CREATE TABLE account_paypal_order (
-    account_id INT NOT NULL,
-    CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES account(id) ON DELETE CASCADE,
+    account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     payment_id VARCHAR PRIMARY KEY,
     state VARCHAR
 );
 
 CREATE TABLE account_app_store_purchase (
-    account_id INT NOT NULL,
-    CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES account(id) ON DELETE CASCADE,
+    account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     transaction_id VARCHAR PRIMARY KEY,
     cancellation_date VARCHAR,
     cancellation_date_ms VARCHAR,
@@ -34,8 +32,7 @@ CREATE TABLE account_app_store_purchase (
 );
 
 CREATE TABLE account_google_play_purchase (
-    account_id INT NOT NULL,
-    CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES account(id) ON DELETE CASCADE,
+    account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     transaction_id VARCHAR PRIMARY KEY,
     acknowledgement_state INT NULL,
     consumption_state INT NULL,

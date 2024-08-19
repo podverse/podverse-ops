@@ -492,16 +492,6 @@ CREATE TABLE item_about (
     item_itunes_episode_type_id INTEGER REFERENCES item_itunes_episode_type(id) -- <itunes:episodeType>
 );
 
---** ITEM > CONTENT LINK
-
--- <item> -> <podcast:contentLink>
-CREATE TABLE content_link (
-    id SERIAL PRIMARY KEY,
-    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
-    href varchar_url NOT NULL,
-    title varchar_normal
-);
-
 --** ITEM > CHAPTERS
 
 -- <item> -> <podcast:chapters>
@@ -577,6 +567,16 @@ CREATE TABLE item_chat (
     space varchar_normal
 );
 
+--** ITEM > CONTENT LINK
+
+-- <item> -> <podcast:contentLink>
+CREATE TABLE item_content_link (
+    id SERIAL PRIMARY KEY,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    href varchar_url NOT NULL,
+    title varchar_normal
+);
+
 --** ITEM > DESCRIPTION
 
 -- <item> -> <description> AND possibly other tags that contain a description
@@ -606,20 +606,20 @@ CREATE TABLE item_enclosure (
     item_enclosure_default BOOLEAN DEFAULT FALSE
 );
 
--- <item> -> <podcast:alternateEnclosure> -> <podcast:source>
-CREATE TABLE item_enclosure_source (
-    id SERIAL PRIMARY KEY,
-    item_enclosure_id INTEGER NOT NULL REFERENCES item_enclosure(id) ON DELETE CASCADE,
-    uri varchar_uri NOT NULL,
-    content_type varchar_short
-);
-
 -- <item> -> <podcast:alternateEnclosure> -> <podcast:integrity>
 CREATE TABLE item_enclosure_integrity (
     id SERIAL PRIMARY KEY,
     item_enclosure_id INTEGER NOT NULL REFERENCES item_enclosure_source(id) ON DELETE CASCADE,
     type TEXT NOT NULL CHECK (type IN ('sri', 'pgp-signature')),
     value varchar_long NOT NULL
+);
+
+-- <item> -> <podcast:alternateEnclosure> -> <podcast:source>
+CREATE TABLE item_enclosure_source (
+    id SERIAL PRIMARY KEY,
+    item_enclosure_id INTEGER NOT NULL REFERENCES item_enclosure(id) ON DELETE CASCADE,
+    uri varchar_uri NOT NULL,
+    content_type varchar_short
 );
 
 --** ITEM > FUNDING
