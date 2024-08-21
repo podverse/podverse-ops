@@ -606,20 +606,20 @@ CREATE TABLE item_enclosure (
     item_enclosure_default BOOLEAN DEFAULT FALSE
 );
 
--- <item> -> <podcast:alternateEnclosure> -> <podcast:integrity>
-CREATE TABLE item_enclosure_integrity (
-    id SERIAL PRIMARY KEY,
-    item_enclosure_id INTEGER NOT NULL REFERENCES item_enclosure_source(id) ON DELETE CASCADE,
-    type TEXT NOT NULL CHECK (type IN ('sri', 'pgp-signature')),
-    value varchar_long NOT NULL
-);
-
 -- <item> -> <podcast:alternateEnclosure> -> <podcast:source>
 CREATE TABLE item_enclosure_source (
     id SERIAL PRIMARY KEY,
     item_enclosure_id INTEGER NOT NULL REFERENCES item_enclosure(id) ON DELETE CASCADE,
     uri varchar_uri NOT NULL,
     content_type varchar_short
+);
+
+-- <item> -> <podcast:alternateEnclosure> -> <podcast:integrity>
+CREATE TABLE item_enclosure_integrity (
+    id SERIAL PRIMARY KEY,
+    item_enclosure_id INTEGER NOT NULL REFERENCES item_enclosure_source(id) ON DELETE CASCADE,
+    type TEXT NOT NULL CHECK (type IN ('sri', 'pgp-signature')),
+    value varchar_long NOT NULL
 );
 
 --** ITEM > FUNDING

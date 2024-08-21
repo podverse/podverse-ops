@@ -19,18 +19,18 @@ CREATE DOMAIN varchar_slug AS VARCHAR(100);
 CREATE DOMAIN varchar_uri AS VARCHAR(2083);
 CREATE DOMAIN varchar_url AS VARCHAR(2083) CHECK (VALUE ~ '^https?://|^http?://');
 
-CREATE DOMAIN server_time AS BIGINT;
-CREATE DOMAIN server_time_with_default AS BIGINT DEFAULT EXTRACT(EPOCH FROM NOW());
+CREATE DOMAIN server_time AS TIMESTAMP;
+CREATE DOMAIN server_time_with_default AS TIMESTAMP DEFAULT NOW();
 
 CREATE DOMAIN media_player_time AS NUMERIC(10, 2);
 CREATE DOMAIN list_position AS NUMERIC(22, 21);
 CREATE DOMAIN numeric_20_11 AS NUMERIC(20, 11);
 
--- Function to set created_at and updated_at
+-- Function to set updated_at
 CREATE OR REPLACE FUNCTION set_updated_at_field()
 RETURNS TRIGGER AS $$
 BEGIN
-    NEW.updated_at := EXTRACT(EPOCH FROM NOW());
+    NEW.updated_at := NOW();
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -643,20 +643,20 @@ CREATE TABLE item_enclosure (
     item_enclosure_default BOOLEAN DEFAULT FALSE
 );
 
--- <item> -> <podcast:alternateEnclosure> -> <podcast:integrity>
-CREATE TABLE item_enclosure_integrity (
-    id SERIAL PRIMARY KEY,
-    item_enclosure_id INTEGER NOT NULL REFERENCES item_enclosure_source(id) ON DELETE CASCADE,
-    type TEXT NOT NULL CHECK (type IN ('sri', 'pgp-signature')),
-    value varchar_long NOT NULL
-);
-
 -- <item> -> <podcast:alternateEnclosure> -> <podcast:source>
 CREATE TABLE item_enclosure_source (
     id SERIAL PRIMARY KEY,
     item_enclosure_id INTEGER NOT NULL REFERENCES item_enclosure(id) ON DELETE CASCADE,
     uri varchar_uri NOT NULL,
     content_type varchar_short
+);
+
+-- <item> -> <podcast:alternateEnclosure> -> <podcast:integrity>
+CREATE TABLE item_enclosure_integrity (
+    id SERIAL PRIMARY KEY,
+    item_enclosure_id INTEGER NOT NULL REFERENCES item_enclosure_source(id) ON DELETE CASCADE,
+    type TEXT NOT NULL CHECK (type IN ('sri', 'pgp-signature')),
+    value varchar_long NOT NULL
 );
 
 --** ITEM > FUNDING
