@@ -161,8 +161,8 @@ CREATE TABLE channel (
     feed_id INTEGER NOT NULL REFERENCES feed(id) ON DELETE CASCADE,
     podcast_index_id INTEGER UNIQUE NOT NULL,
     podcast_guid UUID UNIQUE, -- <podcast:guid>
-    title varchar_normal NOT NULL,
-    sortable_title varchar_short NOT NULL, -- all lowercase, ignores articles at beginning of title
+    title varchar_normal,
+    sortable_title varchar_short, -- all lowercase, ignores articles at beginning of title
     medium_value_id INTEGER REFERENCES medium_value(id),
 
     -- TODO: should we hash the last parsed feed, so we can compare it to the hash of
