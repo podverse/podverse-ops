@@ -201,7 +201,7 @@ CREATE TABLE channel_about (
     episode_count INTEGER, -- aggregated count for convenience
     explicit BOOLEAN, -- <itunes:explicit>
     itunes_type_id INTEGER REFERENCES channel_itunes_type(id),
-    language varchar_short NOT NULL, -- <language>
+    language varchar_short, -- <language>
     website_link_url varchar_url -- <link>
 );
 
@@ -277,8 +277,8 @@ CREATE TABLE channel_license (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     UNIQUE (channel_id),
-    type varchar_normal NOT NULL,
-    url varchar_url NOT NULL
+    identifier varchar_normal NOT NULL,
+    url varchar_url
 );
 
 --** CHANNEL > LOCATION
@@ -289,10 +289,8 @@ CREATE TABLE channel_location (
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     geo varchar_normal,
     osm varchar_normal,
-    CHECK (
-      (geo IS NOT NULL AND osm IS NULL) OR 
-      (geo IS NULL AND osm IS NOT NULL)
-    )
+    CHECK (geo IS NOT NULL OR osm IS NOT NULL),
+    name varchar_normal
 );
 
 --** CHANNEL > PERSON
@@ -301,7 +299,7 @@ CREATE TABLE channel_location (
 CREATE TABLE channel_person (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    name varchar_normal,
+    name varchar_normal NOT NULL,
     role varchar_normal,
     person_group varchar_normal DEFAULT 'cast', -- group is a reserved keyword in sql
     img varchar_url,
@@ -586,10 +584,8 @@ CREATE TABLE item_chapter_location (
     item_chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE,
     geo varchar_normal,
     osm varchar_normal,
-    CHECK (
-      (geo IS NOT NULL AND osm IS NULL) OR 
-      (geo IS NULL AND osm IS NOT NULL)
-    )
+    CHECK (geo IS NOT NULL OR osm IS NOT NULL),
+    name varchar_normal
 );
 
 --** ITEM > CHAT
@@ -691,8 +687,8 @@ CREATE TABLE item_license (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     UNIQUE (item_id),
-    type varchar_normal NOT NULL,
-    url varchar_url NOT NULL
+    identifier varchar_normal NOT NULL,
+    url varchar_url
 );
 
 --** ITEM > LOCATION
@@ -703,10 +699,8 @@ CREATE TABLE item_location (
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     geo varchar_normal,
     osm varchar_normal,
-    CHECK (
-      (geo IS NOT NULL AND osm IS NULL) OR 
-      (geo IS NULL AND osm IS NOT NULL)
-    )
+    CHECK (geo IS NOT NULL OR osm IS NOT NULL),
+    name varchar_normal
 );
 
 --** ITEM > PERSON
@@ -715,7 +709,7 @@ CREATE TABLE item_location (
 CREATE TABLE item_person (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    name varchar_normal,
+    name varchar_normal NOT NULL,
     role varchar_normal,
     person_group varchar_normal DEFAULT 'cast', -- group is a reserved keyword in sql
     img varchar_url,
