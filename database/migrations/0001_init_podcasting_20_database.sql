@@ -131,9 +131,9 @@ CREATE TABLE channel (
     -- TODO: should we hash the last parsed feed, so we can compare it to the hash of
     -- a feed before completely parsing it, to check if it has changed before continuing?
 
-    -- channels that have a PI value tag require special handling to request value_tag data
+    -- channels that have a PI value tag require special handling to request value data
     -- from the Podcast Index API.
-    has_podcast_index_value_tags BOOLEAN DEFAULT FALSE,
+    has_podcast_index_value BOOLEAN DEFAULT FALSE,
 
     -- hidden items are no longer available in the rss feed, but are still in the database.
     hidden BOOLEAN DEFAULT FALSE,
@@ -373,7 +373,7 @@ CREATE TABLE channel_trailer (
     UNIQUE (channel_id, url)
 );
 
---** CHANNEL > TXT TAG
+--** CHANNEL > TXT
 
 -- <channel> -> <podcast:txt>
 CREATE TABLE channel_txt (
@@ -383,10 +383,10 @@ CREATE TABLE channel_txt (
     value varchar_long NOT NULL
 );
 
---** CHANNEL > VALUE TAG
+--** CHANNEL > VALUE
 
 -- <channel> -> <podcast:value>
-CREATE TABLE channel_value_tag (
+CREATE TABLE channel_value (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     type varchar_short NOT NULL,
@@ -394,12 +394,12 @@ CREATE TABLE channel_value_tag (
     suggested FLOAT
 );
 
---** CHANNEL > VALUE TAG > RECEIPIENT
+--** CHANNEL > VALUE > RECEIPIENT
 
 -- <channel> -> <podcast:value> -> <podcast:valueRecipient>
-CREATE TABLE channel_value_tag_receipient (
+CREATE TABLE channel_value_receipient (
     id SERIAL PRIMARY KEY,
-    channel_value_tag_id INTEGER NOT NULL REFERENCES channel_value_tag(id) ON DELETE CASCADE,
+    channel_value_id INTEGER NOT NULL REFERENCES channel_value(id) ON DELETE CASCADE,
     type varchar_short NOT NULL,
     address varchar_long NOT NULL,
     split FLOAT NOT NULL,
@@ -409,36 +409,36 @@ CREATE TABLE channel_value_tag_receipient (
     fee BOOLEAN DEFAULT FALSE
 );
 
---** CHANNEL > VALUE TAG > TIME SPLIT
+--** CHANNEL > VALUE > TIME SPLIT
 
 -- <channel> -> <podcast:valueTimeSplit>
-CREATE TABLE channel_value_tag_time_split (
+CREATE TABLE channel_value_time_split (
     id SERIAL PRIMARY KEY,
-    channel_value_tag_id INTEGER NOT NULL REFERENCES channel_value_tag(id) ON DELETE CASCADE,
+    channel_value_id INTEGER NOT NULL REFERENCES channel_value(id) ON DELETE CASCADE,
     start_time INTEGER NOT NULL,
     duration INTEGER NOT NULL,
     remote_start_time INTEGER DEFAULT 0,
     remote_percentage INTEGER DEFAULT 100
 );
 
---** CHANNEL > VALUE TAG > TIME SPLIT > REMOTE ITEM
+--** CHANNEL > VALUE > TIME SPLIT > REMOTE ITEM
 
 -- <channel> -> <podcast:value> -> <podcast:valueTimeSplit> -> <podcast:remoteItem>
-CREATE TABLE channel_value_tag_time_split_remote_item (
+CREATE TABLE channel_value_time_split_remote_item (
     id SERIAL PRIMARY KEY,
-    channel_value_tag_time_split_id INTEGER NOT NULL REFERENCES channel_value_tag_time_split(id) ON DELETE CASCADE,
+    channel_value_time_split_id INTEGER NOT NULL REFERENCES channel_value_time_split(id) ON DELETE CASCADE,
     feed_guid UUID NOT NULL,
     feed_url varchar_url,
     item_guid varchar_uri,
     title varchar_normal
 );
 
---** CHANNEL > VALUE TAG > TIME SPLIT > VALUE RECIPEINT
+--** CHANNEL > VALUE > TIME SPLIT > VALUE RECIPEINT
 
 -- <channel> -> <podcast:value> -> <podcast:valueTimeSplit> -> <podcast:valueRecipient>
-CREATE TABLE channel_value_tag_time_split_receipient (
+CREATE TABLE channel_value_time_split_receipient (
     id SERIAL PRIMARY KEY,
-    channel_value_tag_time_split_id INTEGER NOT NULL REFERENCES channel_value_tag_time_split(id) ON DELETE CASCADE,
+    channel_value_time_split_id INTEGER NOT NULL REFERENCES channel_value_time_split(id) ON DELETE CASCADE,
     type varchar_short NOT NULL,
     address varchar_long NOT NULL,
     split FLOAT NOT NULL,
@@ -738,7 +738,7 @@ CREATE TABLE item_transcript (
     rel VARCHAR(50) CHECK (rel IS NULL OR rel = 'captions')
 );
 
---** ITEM > TXT TAG
+--** ITEM > TXT
 
 -- <item> -> <podcast:txt>
 CREATE TABLE item_txt (
@@ -748,10 +748,10 @@ CREATE TABLE item_txt (
     value varchar_long NOT NULL
 );
 
---** ITEM > VALUE TAG
+--** ITEM > VALUE
 
 -- <item> -> <podcast:value>
-CREATE TABLE item_value_tag (
+CREATE TABLE item_value (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     type varchar_short NOT NULL,
@@ -759,12 +759,12 @@ CREATE TABLE item_value_tag (
     suggested FLOAT
 );
 
---** ITEM > VALUE TAG > RECEIPIENT
+--** ITEM > VALUE > RECEIPIENT
 
 -- <item> -> <podcast:value> -> <podcast:valueRecipient>
-CREATE TABLE item_value_tag_receipient (
+CREATE TABLE item_value_receipient (
     id SERIAL PRIMARY KEY,
-    item_value_tag_id INTEGER NOT NULL REFERENCES item_value_tag(id) ON DELETE CASCADE,
+    item_value_id INTEGER NOT NULL REFERENCES item_value(id) ON DELETE CASCADE,
     type varchar_short NOT NULL,
     address varchar_long NOT NULL,
     split FLOAT NOT NULL,
@@ -774,36 +774,36 @@ CREATE TABLE item_value_tag_receipient (
     fee BOOLEAN DEFAULT FALSE
 );
 
---** ITEM > VALUE TAG > TIME SPLIT
+--** ITEM > VALUE > TIME SPLIT
 
 -- <item> -> <podcast:value> -> <podcast:valueTimeSplit>
-CREATE TABLE item_value_tag_time_split (
+CREATE TABLE item_value_time_split (
     id SERIAL PRIMARY KEY,
-    item_value_tag_id INTEGER NOT NULL REFERENCES item_value_tag(id) ON DELETE CASCADE,
+    item_value_id INTEGER NOT NULL REFERENCES item_value(id) ON DELETE CASCADE,
     start_time INTEGER NOT NULL,
     duration INTEGER NOT NULL,
     remote_start_time INTEGER DEFAULT 0,
     remote_percentage INTEGER DEFAULT 100
 );
 
---** ITEM > VALUE TAG > TIME SPLIT > REMOTE ITEM
+--** ITEM > VALUE > TIME SPLIT > REMOTE ITEM
 
 -- <item> -> <podcast:value> -> <podcast:valueTimeSplit> -> <podcast:remoteItem>
-CREATE TABLE item_value_tag_time_split_remote_item (
+CREATE TABLE item_value_time_split_remote_item (
     id SERIAL PRIMARY KEY,
-    item_value_tag_time_split_id INTEGER NOT NULL REFERENCES item_value_tag_time_split(id) ON DELETE CASCADE,
+    item_value_time_split_id INTEGER NOT NULL REFERENCES item_value_time_split(id) ON DELETE CASCADE,
     feed_guid UUID NOT NULL,
     feed_url varchar_url,
     item_guid varchar_uri,
     title varchar_normal
 );
 
---** ITEM > VALUE TAG > TIME SPLIT > VALUE RECIPEINT
+--** ITEM > VALUE > TIME SPLIT > VALUE RECIPEINT
 
 -- <item> -> <podcast:value> -> <podcast:valueTimeSplit> -> <podcast:valueRecipient>
-CREATE TABLE item_value_tag_time_split_receipient (
+CREATE TABLE item_value_time_split_receipient (
     id SERIAL PRIMARY KEY,
-    item_value_tag_time_split_id INTEGER NOT NULL REFERENCES item_value_tag_time_split(id) ON DELETE CASCADE,
+    item_value_time_split_id INTEGER NOT NULL REFERENCES item_value_time_split(id) ON DELETE CASCADE,
     type varchar_short NOT NULL,
     address varchar_long NOT NULL,
     split FLOAT NOT NULL,
