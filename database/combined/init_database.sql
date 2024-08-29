@@ -401,21 +401,22 @@ CREATE TABLE channel_social_interact (
 CREATE TABLE channel_trailer (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    title varchar_normal,
     url varchar_url NOT NULL,
-    pub_date TIMESTAMPTZ NOT NULL,
+    title varchar_normal,
+    pubdate TIMESTAMPTZ NOT NULL,
     length INTEGER,
     type varchar_short,
-    season INTEGER
+    season INTEGER,
+    UNIQUE (channel_id, url)
 );
 
 --** CHANNEL > TXT TAG
 
 -- <channel> -> <podcast:txt>
-CREATE TABLE channel_txt_tag (
+CREATE TABLE channel_txt (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    verify varchar_normal NOT NULL,
+    purpose varchar_normal,
     value varchar_long NOT NULL
 );
 
@@ -495,7 +496,7 @@ CREATE TABLE item (
     slug varchar_slug,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     guid varchar_uri, -- <guid>
-    pub_date TIMESTAMPTZ, -- <pubDate>
+    pubdate TIMESTAMPTZ, -- <pubDate>
     title varchar_normal, -- <title>
 
     -- hidden items are no longer available in the rss feed, but are still in the database.
@@ -777,10 +778,10 @@ CREATE TABLE item_transcript (
 --** ITEM > TXT TAG
 
 -- <item> -> <podcast:txt>
-CREATE TABLE item_txt_tag (
+CREATE TABLE item_txt (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
-    verify varchar_normal NOT NULL,
+    purpose varchar_normal,
     value varchar_long NOT NULL
 );
 
