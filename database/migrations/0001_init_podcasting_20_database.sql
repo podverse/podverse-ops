@@ -409,45 +409,6 @@ CREATE TABLE channel_value_receipient (
     fee BOOLEAN DEFAULT FALSE
 );
 
---** CHANNEL > VALUE > TIME SPLIT
-
--- <channel> -> <podcast:valueTimeSplit>
-CREATE TABLE channel_value_time_split (
-    id SERIAL PRIMARY KEY,
-    channel_value_id INTEGER NOT NULL REFERENCES channel_value(id) ON DELETE CASCADE,
-    start_time INTEGER NOT NULL,
-    duration INTEGER NOT NULL,
-    remote_start_time INTEGER DEFAULT 0,
-    remote_percentage INTEGER DEFAULT 100
-);
-
---** CHANNEL > VALUE > TIME SPLIT > REMOTE ITEM
-
--- <channel> -> <podcast:value> -> <podcast:valueTimeSplit> -> <podcast:remoteItem>
-CREATE TABLE channel_value_time_split_remote_item (
-    id SERIAL PRIMARY KEY,
-    channel_value_time_split_id INTEGER NOT NULL REFERENCES channel_value_time_split(id) ON DELETE CASCADE,
-    feed_guid UUID NOT NULL,
-    feed_url varchar_url,
-    item_guid varchar_uri,
-    title varchar_normal
-);
-
---** CHANNEL > VALUE > TIME SPLIT > VALUE RECIPEINT
-
--- <channel> -> <podcast:value> -> <podcast:valueTimeSplit> -> <podcast:valueRecipient>
-CREATE TABLE channel_value_time_split_receipient (
-    id SERIAL PRIMARY KEY,
-    channel_value_time_split_id INTEGER NOT NULL REFERENCES channel_value_time_split(id) ON DELETE CASCADE,
-    type varchar_short NOT NULL,
-    address varchar_long NOT NULL,
-    split FLOAT NOT NULL,
-    name varchar_normal,
-    custom_key varchar_long,
-    custom_value varchar_long,
-    fee BOOLEAN DEFAULT FALSE
-);
-
 --** ITEM
 
 -- Technically the item table could be named channel_item, but it seems easier to understand as item.
