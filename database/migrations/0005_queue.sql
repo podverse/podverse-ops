@@ -3,8 +3,8 @@
 CREATE TABLE queue (
     id SERIAL PRIMARY KEY,
     account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
-    medium_value_id INTEGER NOT NULL REFERENCES medium_value(id),
-    UNIQUE (account_id, medium_value_id)
+    medium_id INTEGER NOT NULL REFERENCES medium(id),
+    UNIQUE (account_id, medium_id)
 );
 
 CREATE TABLE queue_resource_base (

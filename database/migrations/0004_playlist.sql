@@ -10,7 +10,7 @@ CREATE TABLE playlist (
     is_default_favorites BOOLEAN DEFAULT FALSE,
     is_public BOOLEAN DEFAULT FALSE,
     item_count INTEGER DEFAULT 0,
-    medium_value_id INTEGER NOT NULL REFERENCES medium_value(id)
+    medium_id INTEGER NOT NULL REFERENCES medium(id)
 );
 
 CREATE TABLE playlist_resource_base (
