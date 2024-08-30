@@ -13,7 +13,7 @@ CREATE TABLE queue_resource_base (
     UNIQUE (queue_id, list_position),
     list_position list_position NOT NULL CHECK (list_position != 0 OR list_position = 0::numeric),
     playback_position media_player_time NOT NULL DEFAULT 0,
-    media_file_duration FLOAT NOT NULL DEFAULT 0,
+    media_file_duration media_player_time NOT NULL DEFAULT 0,
     completed BOOLEAN NOT NULL DEFAULT FALSE
 );
 

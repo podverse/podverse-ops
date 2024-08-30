@@ -447,7 +447,7 @@ INSERT INTO item_itunes_episode_type (itunes_episode_type) VALUES ('full'), ('tr
 CREATE TABLE item_about (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
-    duration INTEGER, -- <itunes:duration>
+    duration media_player_time, -- <itunes:duration>
     explicit BOOLEAN, -- <itunes:explicit>
     website_link_url varchar_url, -- <link>
     item_itunes_episode_type_id INTEGER REFERENCES item_itunes_episode_type(id) -- <itunes:episodeType>
@@ -694,8 +694,8 @@ CREATE TABLE item_soundbite (
     id SERIAL PRIMARY KEY,
     id_text short_id_v2 UNIQUE NOT NULL,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
-    start_time INTEGER NOT NULL,
-    duration INTEGER NOT NULL,
+    start_time media_player_time NOT NULL,
+    duration media_player_time NOT NULL,
     title varchar_normal
 );
 
@@ -753,10 +753,10 @@ CREATE TABLE item_value_receipient (
 CREATE TABLE item_value_time_split (
     id SERIAL PRIMARY KEY,
     item_value_id INTEGER NOT NULL REFERENCES item_value(id) ON DELETE CASCADE,
-    start_time INTEGER NOT NULL,
-    duration INTEGER NOT NULL,
-    remote_start_time INTEGER DEFAULT 0,
-    remote_percentage INTEGER DEFAULT 100
+    start_time media_player_time NOT NULL,
+    duration media_player_time NOT NULL,
+    remote_start_time media_player_time DEFAULT 0,
+    remote_percentage media_player_time DEFAULT 100
 );
 
 --** ITEM > VALUE > TIME SPLIT > REMOTE ITEM
