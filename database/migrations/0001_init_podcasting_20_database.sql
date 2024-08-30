@@ -34,7 +34,7 @@ CREATE TABLE category (
 --** MEDIUM VALUE
 
 -- <podcast:medium>
-CREATE TABLE medium_value (
+CREATE TABLE medium (
     id SERIAL PRIMARY KEY,
     value TEXT UNIQUE CHECK (VALUE IN (
         'publisher',
@@ -43,7 +43,7 @@ CREATE TABLE medium_value (
     ))
 );
 
-INSERT INTO medium_value (value) VALUES
+INSERT INTO medium (value) VALUES
     ('publisher'),
     ('podcast'), ('music'), ('video'), ('film'), ('audiobook'), ('newsletter'), ('blog'), ('course'),
     ('mixed'), ('podcastL'), ('musicL'), ('videoL'), ('filmL'), ('audiobookL'), ('newsletterL'), ('blogL'), ('publisherL'), ('courseL')
@@ -126,7 +126,7 @@ CREATE TABLE channel (
     podcast_guid UUID UNIQUE, -- <podcast:guid>
     title varchar_normal,
     sortable_title varchar_short, -- all lowercase, ignores articles at beginning of title
-    medium_value_id INTEGER REFERENCES medium_value(id),
+    medium_id INTEGER REFERENCES medium(id),
 
     -- TODO: should we hash the last parsed feed, so we can compare it to the hash of
     -- a feed before completely parsing it, to check if it has changed before continuing?
@@ -287,7 +287,7 @@ CREATE TABLE channel_podroll_remote_item (
     feed_url varchar_url,
     item_guid varchar_uri,
     title varchar_normal,
-    medium_value_id INTEGER REFERENCES medium_value(id)
+    medium_id INTEGER REFERENCES medium(id)
 );
 
 --** CHANNEL > PUBLISHER
@@ -308,7 +308,7 @@ CREATE TABLE channel_publisher_remote_item (
     feed_url varchar_url,
     item_guid varchar_uri,
     title varchar_normal,
-    medium_value_id INTEGER REFERENCES medium_value(id)
+    medium_id INTEGER REFERENCES medium(id)
 );
 
 --** CHANNEL > REMOTE ITEM
@@ -324,7 +324,7 @@ CREATE TABLE channel_remote_item (
     feed_url varchar_url,
     item_guid varchar_uri,
     title varchar_normal,
-    medium_value_id INTEGER REFERENCES medium_value(id)
+    medium_id INTEGER REFERENCES medium(id)
 );
 
 --** CHANNEL > SEASON
@@ -420,6 +420,7 @@ CREATE TABLE item (
     slug varchar_slug,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     guid varchar_uri, -- <guid>
+    guid_enclosure_url varchar_url, -- <guid> enclosure url
     pubdate TIMESTAMPTZ, -- <pubDate>
     title varchar_normal, -- <title>
 
