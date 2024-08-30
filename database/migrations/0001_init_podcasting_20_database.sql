@@ -456,7 +456,7 @@ CREATE TABLE item_about (
 --** ITEM > CHAPTERS
 
 -- <item> -> <podcast:chapters>
-CREATE TABLE item_chapters (
+CREATE TABLE item_chapters_feed (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     url varchar_url NOT NULL,
@@ -470,11 +470,29 @@ CREATE TABLE item_chapters (
     parse_errors INTEGER DEFAULT 0
 );
 
+--** ITEM > CHAPTERS > LOG
+
+-- <item> -> <podcast:chapters> -> parsing logs
+
+CREATE TABLE item_chapters_feed_log (
+    id SERIAL PRIMARY KEY,
+    item_chapters_feed_id INTEGER NOT NULL REFERENCES item_chapters_feed(id) ON DELETE CASCADE,
+    last_http_status INTEGER,
+    last_crawl_time server_time,
+    last_good_http_status_time server_time,
+    last_parse_time server_time,
+    last_update_time server_time,
+    crawl_errors INTEGER DEFAULT 0,
+    parse_errors INTEGER DEFAULT 0
+);
+
+--** ITEM > CHAPTERS > CHAPTER
+
 -- -- <item> -> <podcast:chapters> -> chapter items correspond with jsonChapters.md example file
 CREATE TABLE item_chapter (
     id SERIAL PRIMARY KEY,
     text_id short_id_v2 UNIQUE NOT NULL,
-    item_chapters_file_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
+    item_chapters_feed_id INTEGER NOT NULL REFERENCES item_chapters_feed(id) ON DELETE CASCADE,
 
     -- the hash is used for comparison, to determine if new chapters should be inserted
     -- after re-parsing an existing chapters file. 
