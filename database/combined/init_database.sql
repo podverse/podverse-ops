@@ -457,7 +457,7 @@ CREATE TABLE item (
     slug varchar_slug,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     guid varchar_uri, -- <guid>
-    guid_enclosure_url varchar_url, -- <guid> enclosure url
+    guid_enclosure_url varchar_url NOT NULL, -- enclosure url
     pubdate TIMESTAMPTZ, -- <pubDate>
     title varchar_normal, -- <title>
 
