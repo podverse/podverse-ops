@@ -645,7 +645,7 @@ CREATE TABLE item_location (
 -- <item> -> <podcast:person>
 CREATE TABLE item_person (
     id SERIAL PRIMARY KEY,
-    channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
+    item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     name varchar_normal NOT NULL,
     role varchar_normal,
     person_group varchar_normal DEFAULT 'cast', -- group is a reserved keyword in sql
@@ -668,6 +668,7 @@ CREATE TABLE item_season (
 -- <item> -> <podcast:season> -> <podcast:episode>
 CREATE TABLE item_season_episode (
     id SERIAL PRIMARY KEY,
+    channel_season_id INTEGER NOT NULL REFERENCES channel_season(id) ON DELETE CASCADE,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     display varchar_short,
     episode_number FLOAT NOT NULL
