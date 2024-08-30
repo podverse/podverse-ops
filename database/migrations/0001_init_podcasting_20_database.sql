@@ -460,14 +460,7 @@ CREATE TABLE item_chapters_feed (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     url varchar_url NOT NULL,
-    type varchar_short NOT NULL,
-    last_http_status INTEGER,
-    last_crawl_time server_time,
-    last_good_http_status_time server_time,
-    last_parse_time server_time,
-    last_update_time server_time,
-    crawl_errors INTEGER DEFAULT 0,
-    parse_errors INTEGER DEFAULT 0
+    type varchar_short NOT NULL
 );
 
 --** ITEM > CHAPTERS > LOG
