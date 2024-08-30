@@ -731,7 +731,6 @@ CREATE TABLE item_soundbite (
     id SERIAL PRIMARY KEY,
     id_text short_id_v2 UNIQUE NOT NULL,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
-    url varchar_url NOT NULL,
     start_time INTEGER NOT NULL,
     duration INTEGER NOT NULL,
     title varchar_normal
