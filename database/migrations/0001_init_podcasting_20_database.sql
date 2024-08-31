@@ -668,10 +668,9 @@ CREATE TABLE item_season (
 -- <item> -> <podcast:season> -> <podcast:episode>
 CREATE TABLE item_season_episode (
     id SERIAL PRIMARY KEY,
-    channel_season_id INTEGER NOT NULL REFERENCES channel_season(id) ON DELETE CASCADE,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     display varchar_short,
-    episode_number FLOAT NOT NULL
+    number FLOAT NOT NULL
 );
 
 --** ITEM > SOCIAL INTERACT
