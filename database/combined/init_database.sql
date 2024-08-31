@@ -220,7 +220,7 @@ CREATE TABLE channel_chat (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     server varchar_fqdn NOT NULL,
-    protocol varchar_short,
+    protocol varchar_short NOT NULL,
     account_id varchar_normal,
     space varchar_normal
 );
@@ -569,7 +569,7 @@ CREATE TABLE item_chat (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     server varchar_fqdn NOT NULL,
-    protocol varchar_short,
+    protocol varchar_short NOT NULL,
     account_id varchar_normal,
     space varchar_normal
 );
