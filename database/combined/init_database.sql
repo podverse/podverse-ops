@@ -406,7 +406,7 @@ CREATE TABLE channel_trailer (
     pubdate TIMESTAMPTZ NOT NULL,
     length INTEGER,
     type varchar_short,
-    season INTEGER,
+    channel_season_id INTEGER REFERENCES channel_season(id),
     UNIQUE (channel_id, url)
 );
 
@@ -434,7 +434,7 @@ CREATE TABLE channel_value (
 --** CHANNEL > VALUE > RECEIPIENT
 
 -- <channel> -> <podcast:value> -> <podcast:valueRecipient>
-CREATE TABLE channel_value_receipient (
+CREATE TABLE channel_value_recipient (
     id SERIAL PRIMARY KEY,
     channel_value_id INTEGER NOT NULL REFERENCES channel_value(id) ON DELETE CASCADE,
     type varchar_short NOT NULL,
@@ -772,7 +772,7 @@ CREATE TABLE item_value (
 --** ITEM > VALUE > RECEIPIENT
 
 -- <item> -> <podcast:value> -> <podcast:valueRecipient>
-CREATE TABLE item_value_receipient (
+CREATE TABLE item_value_recipient (
     id SERIAL PRIMARY KEY,
     item_value_id INTEGER NOT NULL REFERENCES item_value(id) ON DELETE CASCADE,
     type varchar_short NOT NULL,
@@ -811,7 +811,7 @@ CREATE TABLE item_value_time_split_remote_item (
 --** ITEM > VALUE > TIME SPLIT > VALUE RECIPEINT
 
 -- <item> -> <podcast:value> -> <podcast:valueTimeSplit> -> <podcast:valueRecipient>
-CREATE TABLE item_value_time_split_receipient (
+CREATE TABLE item_value_time_split_recipient (
     id SERIAL PRIMARY KEY,
     item_value_time_split_id INTEGER NOT NULL REFERENCES item_value_time_split(id) ON DELETE CASCADE,
     type varchar_short NOT NULL,
