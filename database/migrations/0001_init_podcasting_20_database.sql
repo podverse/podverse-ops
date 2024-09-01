@@ -90,6 +90,10 @@ CREATE TABLE feed (
     -- higher parsing_priority will be parsed more frequently on a schedule.
     parsing_priority INTEGER DEFAULT 0 CHECK (parsing_priority BETWEEN 0 AND 5),
 
+    -- the hash of the last parsed feed file.
+    -- used for comparison to determine if full re-parsing is needed.
+    last_parsed_file_hash varchar_md5,
+
     -- the run-time environment container id
     container_id VARCHAR(12),
 

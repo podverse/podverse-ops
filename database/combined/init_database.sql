@@ -14,6 +14,7 @@ CREATE DOMAIN varchar_long AS VARCHAR(2500);
 CREATE DOMAIN varchar_email AS VARCHAR(255) CHECK (VALUE ~ '^.+@.+\..+$');
 CREATE DOMAIN varchar_fqdn AS VARCHAR(253);
 CREATE DOMAIN varchar_guid AS VARCHAR(36);
+CREATE DOMAIN varchar_md5 AS VARCHAR(32);
 CREATE DOMAIN varchar_password AS VARCHAR(36);
 CREATE DOMAIN varchar_slug AS VARCHAR(100);
 CREATE DOMAIN varchar_uri AS VARCHAR(2083);
@@ -126,6 +127,10 @@ CREATE TABLE feed (
     -- 0 will only be parsed when PI API reports an update.
     -- higher parsing_priority will be parsed more frequently on a schedule.
     parsing_priority INTEGER DEFAULT 0 CHECK (parsing_priority BETWEEN 0 AND 5),
+
+    -- the hash of the last parsed feed file.
+    -- used for comparison to determine if full re-parsing is needed.
+    last_parsed_file_hash varchar_md5,
 
     -- the run-time environment container id
     container_id VARCHAR(12),
