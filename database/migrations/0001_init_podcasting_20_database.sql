@@ -490,31 +490,12 @@ CREATE TABLE item_chapter (
     id SERIAL PRIMARY KEY,
     id_text short_id_v2 UNIQUE NOT NULL,
     item_chapters_feed_id INTEGER NOT NULL REFERENCES item_chapters_feed(id) ON DELETE CASCADE,
-
-    -- the hash is used for comparison, to determine if new chapters should be inserted
-    -- after re-parsing an existing chapters file. 
-    hash varchar_guid NOT NULL,
-
     start_time media_player_time NOT NULL,
     end_time media_player_time,
     title varchar_normal,
+    img varchar_url,
     web_url varchar_url,
     table_of_contents BOOLEAN DEFAULT TRUE
-);
-
---** ITEM > CHAPTER > IMAGE
-
--- <item> -> <podcast:chapters> -> chapter items correspond with jsonChapters.md example file
-CREATE TABLE item_chapter_image (
-    id SERIAL PRIMARY KEY,
-    item_chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE,
-    url varchar_url NOT NULL,
-    image_width_size INTEGER, -- <podcast:image> must have a width specified, but older image tags will not, so allow null.
-
-    -- If true, then the image is hosted by us in a service like S3.
-    -- When is_resized images are deleted, the corresponding image in S3
-    -- should also be deleted.
-    is_resized BOOLEAN DEFAULT FALSE
 );
 
 --** ITEM > CHAPTER > LOCATION
