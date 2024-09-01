@@ -110,11 +110,9 @@ CREATE TABLE feed_log (
     id SERIAL PRIMARY KEY,
     feed_id INTEGER NOT NULL REFERENCES feed(id) ON DELETE CASCADE,
     last_http_status INTEGER,
-    last_crawl_time server_time,
     last_good_http_status_time server_time,
     last_parse_time server_time,
     last_update_time server_time,
-    crawl_errors INTEGER DEFAULT 0,
     parse_errors INTEGER DEFAULT 0
 );
 
@@ -131,9 +129,6 @@ CREATE TABLE channel (
     title varchar_normal,
     sortable_title varchar_short, -- all lowercase, ignores articles at beginning of title
     medium_id INTEGER REFERENCES medium(id),
-
-    -- TODO: should we hash the last parsed feed, so we can compare it to the hash of
-    -- a feed before completely parsing it, to check if it has changed before continuing?
 
     -- channels that have a PI value tag require special handling to request value data
     -- from the Podcast Index API.
@@ -169,6 +164,7 @@ CREATE TABLE channel_about (
     explicit BOOLEAN, -- <itunes:explicit>
     itunes_type_id INTEGER REFERENCES channel_itunes_type(id),
     language varchar_short, -- <language>
+    last_pub_date server_time_with_default, -- <pubDate>
     website_link_url varchar_url -- <link>
 );
 
@@ -475,11 +471,9 @@ CREATE TABLE item_chapters_feed_log (
     id SERIAL PRIMARY KEY,
     item_chapters_feed_id INTEGER NOT NULL REFERENCES item_chapters_feed(id) ON DELETE CASCADE,
     last_http_status INTEGER,
-    last_crawl_time server_time,
     last_good_http_status_time server_time,
     last_parse_time server_time,
     last_update_time server_time,
-    crawl_errors INTEGER DEFAULT 0,
     parse_errors INTEGER DEFAULT 0
 );
 
