@@ -488,7 +488,7 @@ CREATE TABLE item_chapters_feed_log (
 -- -- <item> -> <podcast:chapters> -> chapter items correspond with jsonChapters.md example file
 CREATE TABLE item_chapter (
     id SERIAL PRIMARY KEY,
-    text_id short_id_v2 UNIQUE NOT NULL,
+    id_text short_id_v2 UNIQUE NOT NULL,
     item_chapters_feed_id INTEGER NOT NULL REFERENCES item_chapters_feed(id) ON DELETE CASCADE,
 
     -- the hash is used for comparison, to determine if new chapters should be inserted
