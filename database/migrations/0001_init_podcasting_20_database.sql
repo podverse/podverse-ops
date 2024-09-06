@@ -111,8 +111,7 @@ CREATE TABLE feed_log (
     feed_id INTEGER NOT NULL REFERENCES feed(id) ON DELETE CASCADE,
     last_http_status INTEGER,
     last_good_http_status_time server_time,
-    last_parse_time server_time,
-    last_update_time server_time,
+    last_finished_parse_time server_time,
     parse_errors INTEGER DEFAULT 0
 );
 
@@ -472,8 +471,7 @@ CREATE TABLE item_chapters_feed_log (
     item_chapters_feed_id INTEGER NOT NULL REFERENCES item_chapters_feed(id) ON DELETE CASCADE,
     last_http_status INTEGER,
     last_good_http_status_time server_time,
-    last_parse_time server_time,
-    last_update_time server_time,
+    last_finished_parse_time server_time,
     parse_errors INTEGER DEFAULT 0
 );
 

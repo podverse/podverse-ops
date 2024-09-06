@@ -40,6 +40,12 @@ local_nginx_proxy:
 local_up_db:
 	docker-compose -f docker-compose/local/docker-compose.yml up podverse_db -d
 
+.PHONY: local_up_all
+local_up_all:
+	docker-compose -f docker-compose/local/docker-compose.yml up podverse_db -d
+	docker-compose -f docker-compose/local/docker-compose.yml up podverse_queue -d
+	docker-compose -f docker-compose/local/docker-compose.yml up podverse_workers -d
+
 .PHONY: local_down
 local_down:
 	docker-compose -f docker-compose/local/docker-compose.yml down

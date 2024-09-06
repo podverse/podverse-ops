@@ -2,6 +2,7 @@ version: "3.9"
 
 volumes:
   vhost:
+  rabbitmq_data:
 
 services:
   podverse_db:
@@ -29,6 +30,38 @@ services:
                -c max_parallel_workers_per_gather=2
                -c max_parallel_workers=4
     restart: always
+    shm_size: 1gb
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'
+
+  podverse_queue:
+    image: rabbitmq:3-management
+    container_name: podverse_queue_local
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    env_file:
+      - ../../config/podverse-queue-local.env
+    restart: always
+    shm_size: 1gb
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  podverse_workers:
+    image: podverse-workers:latest
+    container_name: podverse_workers_local
+    env_file:
+      - ../../config/podverse-workers-local.env
+    depends_on:
+      - podverse_db
     shm_size: 1gb
     logging:
       driver: 'json-file'
