@@ -71,6 +71,26 @@ services:
       - podverse_network
     depends_on:
       - podverse_db
+      - podverse_amqp
+    shm_size: 1gb
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'
+
+  podverse_workers_debug:
+    image: podverse-workers:latest
+    container_name: podverse_workers_debug
+    env_file:
+      - ../../config/podverse-workers-local.env
+    networks:
+      - podverse_network
+    depends_on:
+      - podverse_db
+      - podverse_amqp
+    volumes:
+      - /home/mitch/logs/podverse-workers:/var/logs/pv-workers
     shm_size: 1gb
     logging:
       driver: 'json-file'
