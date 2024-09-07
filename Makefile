@@ -43,7 +43,7 @@ local_up_db:
 .PHONY: local_up_all
 local_up_all:
 	docker-compose -f docker-compose/local/docker-compose.yml up podverse_db -d
-	docker-compose -f docker-compose/local/docker-compose.yml up podverse_queue -d
+	docker-compose -f docker-compose/local/docker-compose.yml up podverse_amqp -d
 
 .PHONY: local_down
 local_down:
