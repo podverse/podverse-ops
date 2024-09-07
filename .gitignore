@@ -6,6 +6,7 @@ truffle.log
 
 .vscode/terminals.json
 
+config/podverse-amqp-local.env
 config/podverse-api-local.env
 config/podverse-db-local.env
 config/podverse-web-local.env

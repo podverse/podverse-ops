@@ -37,14 +37,14 @@ services:
         max-file: '1'
         max-size: '50m'
 
-  podverse_queue:
+  podverse_amqp:
     image: rabbitmq:3-management
-    container_name: podverse_queue_local
+    container_name: podverse_amqp_local
     ports:
       - '5672:5672'
       - '15672:15672'
     env_file:
-      - ../../config/podverse-queue-local.env
+      - ../../config/podverse-amqp-local.env
     restart: always
     shm_size: 1gb
     logging:
