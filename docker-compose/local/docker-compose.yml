@@ -17,6 +17,8 @@ services:
       - '5432:5432'
     networks:
       - podverse_network
+    volumes:
+      - ../../database/combined/init_database.sql:/opt/database/combined/init_database.sql
     command: >
       postgres -c max_connections=200
                -c superuser_reserved_connections=20
