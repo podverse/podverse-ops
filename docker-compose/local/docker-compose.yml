@@ -10,9 +10,9 @@ networks:
 services:
   podverse_db:
     image: postgres:16.3
-    container_name: podverse_db_local
+    container_name: podverse_db
     env_file:
-      - ../../config/podverse-db-local.env
+      - ../../config/podverse-db.env
     ports:
       - '5432:5432'
     networks:
@@ -44,9 +44,9 @@ services:
 
   podverse_amqp:
     image: rabbitmq:3-management
-    container_name: podverse_amqp_local
+    container_name: podverse_amqp
     env_file:
-      - ../../config/podverse-amqp-local.env
+      - ../../config/podverse-amqp.env
     ports:
       - '5672:5672'
       - '15672:15672'
@@ -64,9 +64,9 @@ services:
 
   podverse_workers:
     image: podverse-workers:latest
-    container_name: podverse_workers_local
+    container_name: podverse_workers
     env_file:
-      - ../../config/podverse-workers-local.env
+      - ../../config/podverse-workers.env
     networks:
       - podverse_network
     depends_on:
@@ -83,7 +83,7 @@ services:
     image: podverse-workers:latest
     container_name: podverse_workers_debug
     env_file:
-      - ../../config/podverse-workers-local.env
+      - ../../config/podverse-workers.env
     networks:
       - podverse_network
     depends_on:

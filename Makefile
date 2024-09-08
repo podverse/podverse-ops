@@ -14,21 +14,21 @@ endif
 say_hello:
 	@echo "Hello Podverse"
 
-.PHONY: local_validate_init
-local_validate_init: config/podverse-api-local.env config/podverse-db-local.env
+.PHONY: validate_init
+validate_init: config/podverse-api.env config/podverse-db.env
 
-config/podverse-api-local.env:
+config/podverse-api.env:
 	@echo "Missing: $@"
 	@echo "Copying from example file"
 	cp ./$@.example ./$@
 
-config/podverse-db-local.env:
+config/podverse-db.env:
 	@echo "Missing: $@"
 	@echo "Copying from example file"
 	cp ./$@.example ./$@
 
-.PHONY: local_nginx_proxy
-local_nginx_proxy:
+.PHONY: nginx_proxy
+nginx_proxy:
 	@echo 'Generate new cert'
 	test -d proxy/local/certs || mkdir -p proxy/local/certs
 	cd proxy/local/certs && openssl genrsa -out podverse-server.key 4096
@@ -36,17 +36,17 @@ local_nginx_proxy:
 	cd proxy/local/certs && openssl req -new -sha256 -key podverse-server.key -subj "/C=US/ST=Jefferson/L=Grand/O=EXA/OU=MPL/CN=podverse.local" -reqexts SAN -config <(cat /etc/ssl/openssl.cnf <(printf "[SAN]\nsubjectAltName=DNS:podverse.local,DNS:www.podverse.local,DNS:api.podverse.local")) -out podverse-server.csr
 	cd proxy/local/certs && openssl x509 -req -days 365 -in podverse-server.csr -signkey podverse-server.key -out podverse-server.crt
 
-.PHONY: local_up_db
-local_up_db:
+.PHONY: up_db
+up_db:
 	docker-compose -f docker-compose/local/docker-compose.yml up podverse_db -d
 
-.PHONY: local_up_all
-local_up_all:
+.PHONY: up_all
+up_all:
 	docker-compose -f docker-compose/local/docker-compose.yml up podverse_db -d
 	docker-compose -f docker-compose/local/docker-compose.yml up podverse_amqp -d
 
-.PHONY: local_down
-local_down:
+.PHONY: down
+down:
 	docker-compose -f docker-compose/local/docker-compose.yml down
 
 proxy/local/certs:
@@ -64,6 +64,6 @@ proxy/local/certs/podverse-server.csr: proxy/local/certs/podverse-server.key
 proxy/local/certs/podverse-server.crt: proxy/local/certs/podverse-server.csr
 	openssl x509 -req -days 365 -in $< -signkey proxy/local/certs/podverse-server.key -out $@
 
-.PHONY: local_nginx_proxy_cert
-local_nginx_proxy_cert: proxy/local/certs proxy/local/certs/podverse-server.key proxy/local/certs/podverse-server.key.insecure proxy/local/certs/podverse-server.csr proxy/local/certs/podverse-server.crt
+.PHONY: nginx_proxy_cert
+nginx_proxy_cert: proxy/local/certs proxy/local/certs/podverse-server.key proxy/local/certs/podverse-server.key.insecure proxy/local/certs/podverse-server.csr proxy/local/certs/podverse-server.crt
 	@echo 'Generate new cert'
