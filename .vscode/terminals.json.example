@@ -5,19 +5,28 @@
       "name": "Podverse API",
       "description": "podverse-api",
       "cwd": "~/repos/podverse-api",
-      "open": true
+      "open": true,
+      "command": "npm run dev:watch"
     },
     {
       "name": "Podverse External Services",
       "description": "podverse-external-services",
       "cwd": "~/repos/podverse-external-services",
-      "open": true
+      "open": true,
+      "command": "npm run build:watch"
     },
     {
       "name": "Podverse F-Droid",
       "description": "podverse-fdroid",
       "cwd": "~/repos/podverse-fdroid",
       "open": true
+    },
+    {
+      "name": "Podverse Helpers",
+      "description": "podverse-helpers",
+      "cwd": "~/repos/podverse-helpers",
+      "open": true,
+      "command": "npm run build:watch"
     },
     {
       "name": "Podverse Ops",
@@ -29,36 +38,27 @@
       "name": "Podverse ORM",
       "description": "podverse-orm",
       "cwd": "~/repos/podverse-orm",
-      "open": true
+      "open": true,
+      "command": "npm run build:watch"
     },
     {
       "name": "Podverse Parser",
       "description": "podverse-parser",
       "cwd": "~/repos/podverse-parser",
-      "open": true
+      "open": true,
+      "command": "npm run build:watch"
     },
     {
       "name": "Podverse Queue",
       "description": "podverse-queue",
       "cwd": "~/repos/podverse-queue",
-      "open": true
+      "open": true,
+      "command": "npm run build:watch"
     },
     {
       "name": "Podverse RN",
       "description": "podverse-rn",
       "cwd": "~/repos/podverse-rn",
-      "open": true
-    },
-    {
-      "name": "Podverse Serverless",
-      "description": "podverse-serverless",
-      "cwd": "~/repos/podverse-serverless",
-      "open": true
-    },
-    {
-      "name": "Podverse Shared",
-      "description": "podverse-shared",
-      "cwd": "~/repos/podverse-shared",
       "open": true
     },
     {
