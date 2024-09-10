@@ -20,6 +20,7 @@ services:
     hostname: podverse_api
     volumes:
       - ../../../config/google/jwt.keys.json:/tmp/src/config/google/jwt.keys.json
+      - ../../../config/google/firebase-podverse-app-key.json:/mnt/config/google/firebase-podverse-app-key.json
     command: npm start
     networks:
       - nginx-proxy

@@ -10,6 +10,8 @@ services:
     container_name: podverse_api_worker_prod
     env_file:
       - ../../../config/podverse-api-prod.env
+    volumes:
+      - ../../../config/google/firebase-podverse-app-key.json:/mnt/config/google/firebase-podverse-app-key.json
     logging:
       driver: "syslog"
       options:
