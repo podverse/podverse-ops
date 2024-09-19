@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Delete and reinstall all node_modules
+
 echo "Clearing npm cache..."
 npm cache clean --force
 
@@ -12,7 +14,6 @@ echo "Installing podverse-external-services dependencies..."
 cd ../podverse-external-services
 rm -rf node_modules
 npm install
-
 
 echo "Installing podverse-helpers dependencies..."
 cd ../podverse-helpers
@@ -39,7 +40,7 @@ cd ../podverse-workers
 rm -rf node_modules
 npm install
 
-
+# Link dependencies to npm
 
 echo "Linking podverse-external-services dependency..."
 cd ../podverse-external-services
@@ -61,7 +62,7 @@ echo "Linking podverse-queue dependency..."
 cd ../podverse-queue
 npm link
 
-
+# Link dependencies to conuming projects
 
 echo "Linking podverse-api dependencies..."
 cd ../podverse-api
