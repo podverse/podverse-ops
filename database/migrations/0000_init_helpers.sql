@@ -12,6 +12,7 @@ CREATE DOMAIN varchar_normal AS VARCHAR(255);
 CREATE DOMAIN varchar_long AS VARCHAR(2500);
 
 CREATE DOMAIN varchar_email AS VARCHAR(255) CHECK (VALUE ~ '^.+@.+\..+$');
+CREATE DOMAIN varchar_fcm_token AS VARCHAR(255);
 CREATE DOMAIN varchar_fqdn AS VARCHAR(253);
 CREATE DOMAIN varchar_guid AS VARCHAR(36);
 CREATE DOMAIN varchar_md5 AS VARCHAR(32);

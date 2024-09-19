@@ -6,6 +6,8 @@ CREATE TABLE account_paypal_order (
     state VARCHAR
 );
 
+CREATE INDEX idx_account_paypal_order_account_id ON account_paypal_order(account_id);
+
 CREATE TABLE account_app_store_purchase (
     account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     transaction_id VARCHAR PRIMARY KEY,
@@ -31,6 +33,8 @@ CREATE TABLE account_app_store_purchase (
     web_order_line_item_id VARCHAR
 );
 
+CREATE INDEX idx_account_app_store_purchase_account_id ON account_app_store_purchase(account_id);
+
 CREATE TABLE account_google_play_purchase (
     account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     transaction_id VARCHAR PRIMARY KEY,
@@ -44,3 +48,4 @@ CREATE TABLE account_google_play_purchase (
     purchase_token VARCHAR UNIQUE NOT NULL
 );
 
+CREATE INDEX idx_account_google_play_purchase_account_id ON account_google_play_purchase(account_id);

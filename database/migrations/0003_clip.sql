@@ -11,3 +11,7 @@ CREATE TABLE clip (
     description varchar_long,
     sharable_status_id INTEGER NOT NULL REFERENCES sharable_status(id)
 );
+
+CREATE INDEX idx_clip_account_id ON clip(account_id);
+CREATE INDEX idx_clip_item_id ON clip(item_id);
+CREATE INDEX idx_clip_sharable_status_id ON clip(sharable_status_id);

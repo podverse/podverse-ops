@@ -101,6 +101,8 @@ CREATE TABLE feed (
     updated_at server_time_with_default
 );
 
+CREATE INDEX idx_feed_feed_flag_status_id ON feed(feed_flag_status_id);
+
 CREATE TRIGGER set_updated_at_feed
 BEFORE UPDATE ON feed
 FOR EACH ROW
@@ -114,6 +116,8 @@ CREATE TABLE feed_log (
     last_finished_parse_time server_time,
     parse_errors INTEGER DEFAULT 0
 );
+
+CREATE INDEX idx_feed_log_feed_id ON feed_log(feed_id);
 
 --** CHANNEL
 
@@ -141,6 +145,8 @@ CREATE TABLE channel (
 
 CREATE UNIQUE INDEX channel_podcast_guid_unique ON channel(podcast_guid) WHERE podcast_guid IS NOT NULL;
 CREATE UNIQUE INDEX channel_slug ON channel(slug) WHERE slug IS NOT NULL;
+CREATE INDEX idx_channel_feed_id ON channel(feed_id);
+CREATE INDEX idx_channel_medium_id ON channel(medium_id);
 
 --** CHANNEL > ABOUT > ITUNES TYPE
 
@@ -167,6 +173,9 @@ CREATE TABLE channel_about (
     website_link_url varchar_url -- <link>
 );
 
+CREATE INDEX idx_channel_about_channel_id ON channel_about(channel_id);
+CREATE INDEX idx_channel_about_itunes_type_id ON channel_about(itunes_type_id);
+
 --** CHANNEL > CATEGORY
 
 CREATE TABLE channel_category (
@@ -174,6 +183,9 @@ CREATE TABLE channel_category (
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     parent_id INTEGER REFERENCES channel_category(id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_channel_category_channel_id ON channel_category(channel_id);
+CREATE INDEX idx_channel_category_parent_id ON channel_category(parent_id);
 
 --** CHANNEL > CHAT
 
@@ -187,6 +199,8 @@ CREATE TABLE channel_chat (
     space varchar_normal
 );
 
+CREATE INDEX idx_channel_chat_channel_id ON channel_chat(channel_id);
+
 --** CHANNEL > DESCRIPTION
 
 -- <channel> -> <description> AND possibly other tags that contain a description
@@ -197,6 +211,8 @@ CREATE TABLE channel_description (
     value varchar_long NOT NULL
 );
 
+CREATE INDEX idx_channel_description_channel_id ON channel_description(channel_id);
+
 --** CHANNEL > FUNDING
 
 -- <channel> -> <podcast:funding>
@@ -206,6 +222,8 @@ CREATE TABLE channel_funding (
     url varchar_url NOT NULL,
     title varchar_normal
 );
+
+CREATE INDEX idx_channel_funding_channel_id ON channel_funding(channel_id);
 
 --** CHANNEL > IMAGE
 
@@ -222,6 +240,8 @@ CREATE TABLE channel_image (
     is_resized BOOLEAN DEFAULT FALSE
 );
 
+CREATE INDEX idx_channel_image_channel_id ON channel_image(channel_id);
+
 --** CHANNEL > INTERNAL SETTINGS
 
 CREATE TABLE channel_internal_settings (
@@ -231,6 +251,8 @@ CREATE TABLE channel_internal_settings (
     -- this prevents malicious parties from misrepresenting the podcast contents on another website.
     embed_approved_media_url_paths TEXT
 );
+
+CREATE INDEX idx_channel_internal_settings_channel_id ON channel_internal_settings(channel_id);
 
 --** CHANNEL > LICENSE
 
@@ -243,6 +265,8 @@ CREATE TABLE channel_license (
     url varchar_url
 );
 
+CREATE INDEX idx_channel_license_channel_id ON channel_license(channel_id);
+
 --** CHANNEL > LOCATION
 
 -- <channel> -> <podcast:location>
@@ -254,6 +278,8 @@ CREATE TABLE channel_location (
     CHECK (geo IS NOT NULL OR osm IS NOT NULL),
     name varchar_normal
 );
+
+CREATE INDEX idx_channel_location_channel_id ON channel_location(channel_id);
 
 --** CHANNEL > PERSON
 
@@ -268,6 +294,8 @@ CREATE TABLE channel_person (
     href varchar_url
 );
 
+CREATE INDEX idx_channel_person_channel_id ON channel_person(channel_id);
+
 --** CHANNEL > PODROLL
 
 -- <channel> -> <podcast:podroll>
@@ -275,6 +303,8 @@ CREATE TABLE channel_podroll (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_channel_podroll_channel_id ON channel_podroll(channel_id);
 
 --** CHANNEL > PODROLL > REMOTE ITEM
 
@@ -289,6 +319,9 @@ CREATE TABLE channel_podroll_remote_item (
     medium_id INTEGER REFERENCES medium(id)
 );
 
+CREATE INDEX idx_channel_podroll_remote_item_channel_podroll_id ON channel_podroll_remote_item(channel_podroll_id);
+CREATE INDEX idx_channel_podroll_remote_item_medium_id ON channel_podroll_remote_item(medium_id);
+
 --** CHANNEL > PUBLISHER
 
 -- <channel> -> <podcast:publisher>
@@ -296,6 +329,8 @@ CREATE TABLE channel_publisher (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_channel_publisher_channel_id ON channel_publisher(channel_id);
 
 --** CHANNEL > PUBLISHER > REMOTE ITEM
 
@@ -309,6 +344,9 @@ CREATE TABLE channel_publisher_remote_item (
     title varchar_normal,
     medium_id INTEGER REFERENCES medium(id)
 );
+
+CREATE INDEX idx_channel_publisher_remote_item_channel_publisher_id ON channel_publisher_remote_item(channel_publisher_id);
+CREATE INDEX idx_channel_publisher_remote_item_medium_id ON channel_publisher_remote_item(medium_id);
 
 --** CHANNEL > REMOTE ITEM
 
@@ -325,6 +363,9 @@ CREATE TABLE channel_remote_item (
     title varchar_normal,
     medium_id INTEGER REFERENCES medium(id)
 );
+
+CREATE INDEX idx_channel_remote_item_channel_id ON channel_remote_item(channel_id);
+CREATE INDEX idx_channel_remote_item_medium_id ON channel_remote_item(medium_id);
 
 --** CHANNEL > SEASON
 
@@ -344,6 +385,8 @@ CREATE TABLE channel_season (
     name varchar_normal
 );
 
+CREATE INDEX idx_channel_season_channel_id ON channel_season(channel_id);
+
 --** CHANNEL > SOCIAL INTERACT
 
 -- <channel> -> <podcast:socialInteract>
@@ -356,6 +399,8 @@ CREATE TABLE channel_social_interact (
     account_url varchar_url,
     priority INTEGER
 );
+
+CREATE INDEX idx_channel_social_interact_channel_id ON channel_social_interact(channel_id);
 
 --** CHANNEL > TRAILER
 
@@ -372,6 +417,9 @@ CREATE TABLE channel_trailer (
     UNIQUE (channel_id, url)
 );
 
+CREATE INDEX idx_channel_trailer_channel_id ON channel_trailer(channel_id);
+CREATE INDEX idx_channel_trailer_channel_season_id ON channel_trailer(channel_season_id);
+
 --** CHANNEL > TXT
 
 -- <channel> -> <podcast:txt>
@@ -381,6 +429,8 @@ CREATE TABLE channel_txt (
     purpose varchar_normal,
     value varchar_long NOT NULL
 );
+
+CREATE INDEX idx_channel_txt_channel_id ON channel_txt(channel_id);
 
 --** CHANNEL > VALUE
 
@@ -392,6 +442,8 @@ CREATE TABLE channel_value (
     method varchar_short NOT NULL,
     suggested FLOAT
 );
+
+CREATE INDEX idx_channel_value_channel_id ON channel_value(channel_id);
 
 --** CHANNEL > VALUE > RECEIPIENT
 
@@ -407,6 +459,8 @@ CREATE TABLE channel_value_recipient (
     custom_value varchar_long,
     fee BOOLEAN DEFAULT FALSE
 );
+
+CREATE INDEX idx_channel_value_recipient_channel_value_id ON channel_value_recipient(channel_value_id);
 
 --** ITEM
 
@@ -430,6 +484,7 @@ CREATE TABLE item (
 );
 
 CREATE UNIQUE INDEX item_slug ON item(slug) WHERE slug IS NOT NULL;
+CREATE INDEX idx_item_channel_id ON item(channel_id);
 
 --** ITEM > ABOUT > ITUNES TYPE
 
@@ -452,6 +507,9 @@ CREATE TABLE item_about (
     item_itunes_episode_type_id INTEGER REFERENCES item_itunes_episode_type(id) -- <itunes:episodeType>
 );
 
+CREATE INDEX idx_item_about_item_id ON item_about(item_id);
+CREATE INDEX idx_item_about_item_itunes_episode_type_id ON item_about(item_itunes_episode_type_id);
+
 --** ITEM > CHAPTERS
 
 -- <item> -> <podcast:chapters>
@@ -461,6 +519,8 @@ CREATE TABLE item_chapters_feed (
     url varchar_url NOT NULL,
     type varchar_short NOT NULL
 );
+
+CREATE INDEX idx_item_chapters_feed_item_id ON item_chapters_feed(item_id);
 
 --** ITEM > CHAPTERS > LOG
 
@@ -474,6 +534,8 @@ CREATE TABLE item_chapters_feed_log (
     last_finished_parse_time server_time,
     parse_errors INTEGER DEFAULT 0
 );
+
+CREATE INDEX idx_item_chapters_feed_log_item_chapters_feed_id ON item_chapters_feed_log(item_chapters_feed_id);
 
 --** ITEM > CHAPTERS > CHAPTER
 
@@ -490,6 +552,8 @@ CREATE TABLE item_chapter (
     table_of_contents BOOLEAN DEFAULT TRUE
 );
 
+CREATE INDEX idx_item_chapter_item_chapters_feed_id ON item_chapter(item_chapters_feed_id);
+
 --** ITEM > CHAPTER > LOCATION
 
 -- <item> -> <podcast:chapters> -> chapter items correspond with jsonChapters.md example file
@@ -501,6 +565,8 @@ CREATE TABLE item_chapter_location (
     CHECK (geo IS NOT NULL OR osm IS NOT NULL),
     name varchar_normal
 );
+
+CREATE INDEX idx_item_chapter_location_item_chapter_id ON item_chapter_location(item_chapter_id);
 
 --** ITEM > CHAT
 
@@ -514,6 +580,8 @@ CREATE TABLE item_chat (
     space varchar_normal
 );
 
+CREATE INDEX idx_item_chat_item_id ON item_chat(item_id);
+
 --** ITEM > CONTENT LINK
 
 -- <item> -> <podcast:contentLink>
@@ -524,6 +592,8 @@ CREATE TABLE item_content_link (
     title varchar_normal
 );
 
+CREATE INDEX idx_item_content_link_item_id ON item_content_link(item_id);
+
 --** ITEM > DESCRIPTION
 
 -- <item> -> <description> AND possibly other tags that contain a description
@@ -533,6 +603,8 @@ CREATE TABLE item_description (
     UNIQUE (item_id),
     value varchar_long NOT NULL
 );
+
+CREATE INDEX idx_item_description_item_id ON item_description(item_id);
 
 --** ITEM > ENCLOSURE (AKA ALTERNATE ENCLOSURE)
 
@@ -553,6 +625,8 @@ CREATE TABLE item_enclosure (
     item_enclosure_default BOOLEAN DEFAULT FALSE
 );
 
+CREATE INDEX idx_item_enclosure_item_id ON item_enclosure(item_id);
+
 -- <item> -> <podcast:alternateEnclosure> -> <podcast:source>
 CREATE TABLE item_enclosure_source (
     id SERIAL PRIMARY KEY,
@@ -561,6 +635,8 @@ CREATE TABLE item_enclosure_source (
     content_type varchar_short
 );
 
+CREATE INDEX idx_item_enclosure_source_item_id ON item_enclosure_source(item_enclosure_id);
+
 -- <item> -> <podcast:alternateEnclosure> -> <podcast:integrity>
 CREATE TABLE item_enclosure_integrity (
     id SERIAL PRIMARY KEY,
@@ -568,6 +644,8 @@ CREATE TABLE item_enclosure_integrity (
     type TEXT NOT NULL CHECK (type IN ('sri', 'pgp-signature')),
     value varchar_long NOT NULL
 );
+
+CREATE INDEX idx_item_enclosure_integrity_item_enclosure_id ON item_enclosure_integrity(item_enclosure_id);
 
 --** ITEM > FUNDING
 
@@ -578,6 +656,8 @@ CREATE TABLE item_funding (
     url varchar_url NOT NULL,
     title varchar_normal
 );
+
+CREATE INDEX idx_item_funding_item_id ON item_funding(item_id);
 
 --** ITEM > IMAGE
 
@@ -594,6 +674,8 @@ CREATE TABLE item_image (
     is_resized BOOLEAN DEFAULT FALSE
 );
 
+CREATE INDEX idx_item_image_item_id ON item_image(item_id);
+
 --** ITEM > LICENSE
 
 -- <item> -> <podcast:license>
@@ -604,6 +686,8 @@ CREATE TABLE item_license (
     identifier varchar_normal NOT NULL,
     url varchar_url
 );
+
+CREATE INDEX idx_item_license_item_id ON item_license(item_id);
 
 --** ITEM > LOCATION
 
@@ -616,6 +700,8 @@ CREATE TABLE item_location (
     CHECK (geo IS NOT NULL OR osm IS NOT NULL),
     name varchar_normal
 );
+
+CREATE INDEX idx_item_location_item_id ON item_location(item_id);
 
 --** ITEM > PERSON
 
@@ -630,6 +716,8 @@ CREATE TABLE item_person (
     href varchar_url
 );
 
+CREATE INDEX idx_item_person_item_id ON item_person(item_id);
+
 --** ITEM > SEASON
 
 -- <item> -> <podcast:season>
@@ -640,6 +728,9 @@ CREATE TABLE item_season (
     title varchar_normal
 );
 
+CREATE INDEX idx_item_season_channel_season_id ON item_season(channel_season_id);
+CREATE INDEX idx_item_season_item_id ON item_season(item_id);
+
 --** ITEM > SEASON > EPISODE
 
 -- <item> -> <podcast:season> -> <podcast:episode>
@@ -649,6 +740,8 @@ CREATE TABLE item_season_episode (
     display varchar_short,
     number FLOAT NOT NULL
 );
+
+CREATE INDEX idx_item_season_episode_item_id ON item_season_episode(item_id);
 
 --** ITEM > SOCIAL INTERACT
 
@@ -663,6 +756,8 @@ CREATE TABLE item_social_interact (
     priority INTEGER
 );
 
+CREATE INDEX idx_item_social_interact_item_id ON item_social_interact(item_id);
+
 --** ITEM > SOUNDBITE
 
 -- <item> -> <podcast:soundbite>
@@ -674,6 +769,8 @@ CREATE TABLE item_soundbite (
     duration media_player_time NOT NULL,
     title varchar_normal
 );
+
+CREATE INDEX idx_item_soundbite_item_id ON item_soundbite(item_id);
 
 --** ITEM > TRANSCRIPT
 
@@ -687,6 +784,8 @@ CREATE TABLE item_transcript (
     rel VARCHAR(50) CHECK (rel IS NULL OR rel = 'captions')
 );
 
+CREATE INDEX idx_item_transcript_item_id ON item_transcript(item_id);
+
 --** ITEM > TXT
 
 -- <item> -> <podcast:txt>
@@ -696,6 +795,8 @@ CREATE TABLE item_txt (
     purpose varchar_normal,
     value varchar_long NOT NULL
 );
+
+CREATE INDEX idx_item_txt_item_id ON item_txt(item_id);
 
 --** ITEM > VALUE
 
@@ -707,6 +808,8 @@ CREATE TABLE item_value (
     method varchar_short NOT NULL,
     suggested FLOAT
 );
+
+CREATE INDEX idx_item_value_item_id ON item_value(item_id);
 
 --** ITEM > VALUE > RECEIPIENT
 
@@ -723,6 +826,8 @@ CREATE TABLE item_value_recipient (
     fee BOOLEAN DEFAULT FALSE
 );
 
+CREATE INDEX idx_item_value_recipient_item_value_id ON item_value_recipient(item_value_id);
+
 --** ITEM > VALUE > TIME SPLIT
 
 -- <item> -> <podcast:value> -> <podcast:valueTimeSplit>
@@ -735,6 +840,8 @@ CREATE TABLE item_value_time_split (
     remote_percentage media_player_time DEFAULT 100
 );
 
+CREATE INDEX idx_item_value_time_split_item_value_id ON item_value_time_split(item_value_id);
+
 --** ITEM > VALUE > TIME SPLIT > REMOTE ITEM
 
 -- <item> -> <podcast:value> -> <podcast:valueTimeSplit> -> <podcast:remoteItem>
@@ -746,6 +853,8 @@ CREATE TABLE item_value_time_split_remote_item (
     item_guid varchar_uri,
     title varchar_normal
 );
+
+CREATE INDEX idx_item_value_time_split_remote_item_item_value_time_split_id ON item_value_time_split_remote_item(item_value_time_split_id);
 
 --** ITEM > VALUE > TIME SPLIT > VALUE RECIPEINT
 
@@ -761,6 +870,8 @@ CREATE TABLE item_value_time_split_recipient (
     custom_value varchar_long,
     fee BOOLEAN DEFAULT FALSE
 );
+
+CREATE INDEX idx_item_value_time_split_recipient_item_value_time_split_id ON item_value_time_split_recipient(item_value_time_split_id);
 
 --** LIVE ITEM > STATUS
 
@@ -786,3 +897,5 @@ CREATE TABLE live_item (
     chat_web_url varchar_url
 );
 
+CREATE INDEX idx_live_item_item_id ON live_item(item_id);
+CREATE INDEX idx_live_item_live_item_status_id ON live_item(live_item_status_id);
