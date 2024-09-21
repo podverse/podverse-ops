@@ -80,6 +80,7 @@ npm link podverse-helpers
 
 echo "Linking podverse-parser dependencies..."
 cd ../podverse-parser
+npm link podverse-external-services
 npm link podverse-helpers
 npm link podverse-orm
 
