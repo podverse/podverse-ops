@@ -5,7 +5,7 @@ networks:
 services:
 
   podverse_db:
-    image: postgres:16.2-bookworm
+    image: postgres:16.5-bookworm
     container_name: podverse_db_prod
 
     env_file:
