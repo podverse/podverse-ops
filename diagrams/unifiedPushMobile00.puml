@@ -1,0 +1,41 @@
+@startuml unifiedPushMobile00
+actor User
+participant MobileApp
+participant API
+database Postgres
+participant NtfyMobileApp
+participant UPServer
+
+User -> MobileApp : opens the app
+MobileApp -> User : asks the user to accept notifications
+User -> MobileApp : accepts notifications
+MobileApp -> User : enables notifications
+User -> MobileApp : tries to subscribe to notifications for a podcast
+MobileApp -> User : prompts the user that notifications are a \npremium-only feature and to please login
+User -> MobileApp : user logs in, and tries to subscribe \nto notifications for a podcast again
+MobileApp -> User : shows the UnifiedPush setup modal
+User -> MobileApp : inputs their UP endpoint hostname \nand presses the Register button
+MobileApp -> API : sends UP hostname in \nan authenticated request
+API -> API : creates UP salted_topic_id
+API -> Postgres : saves the UP hostname+salted_topic_id \nwith ManyToOne to User table \nin the unifiedPushToken table
+Postgres -> API : success response
+API -> MobileApp : returns the hostname+salted_topic_id
+MobileApp -> NtfyMobileApp : registers hostname+salted_topic_id
+NtfyMobileApp -> MobileApp : success response??
+MobileApp -> User : shows UP notifications enabled message
+User -> MobileApp : presses the Test button
+MobileApp -> UPServer : posts Test notification body
+UPServer -> NtfyMobileApp : receives Test notification
+NtfyMobileApp -> User : presents Test notification to user
+User -> MobileApp : presses the Unregister button
+MobileApp -> API : sends authenticated remove unifiedPushToken request
+API -> API : confirms the user has permission \nto remove it
+API -> Postgres : sends delete unifiedPushToken \nrow request
+Postgres -> Postgres : deletes the unifiedPushToken row
+Postgres -> API : success response
+API -> MobileApp : success response
+MobileApp -> NtfyMobileApp : unregisters hostname+salted_topic_id
+NtfyMobileApp -> MobileApp : success response??
+MobileApp -> User : shows unregister successful message
+
+@enduml
