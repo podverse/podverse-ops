@@ -1,0 +1,28 @@
+services:
+  podverse_web:
+    build:
+      context: ../../.devcontainer/podverse-web
+    command: sleep infinity
+    user: node
+    volumes:
+      - type: bind
+        source: ../..
+        target: /workspaces
+        bind:
+          selinux: z
+          create_host_path: false
+    working_dir: /workspaces/projects/podverse-web
+
+  podverse_api:
+    build:
+      context: ../../.devcontainer/podverse-api
+    command: sleep infinity
+    user: node
+    volumes:
+      - type: bind
+        source: ../..
+        target: /workspaces
+        bind:
+          selinux: z
+          create_host_path: false
+    working_dir: /workspaces/projects/podverse-api
