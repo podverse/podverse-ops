@@ -322,3 +322,34 @@ sanbox_srv_docker-compose_up:
 .PHONY: sanbox_srv_docker-compose_up-no_dettach
 sanbox_srv_docker-compose_up-no_dettach:
 	docker-compose -f docker-compose/sandbox/srv/docker-compose.yml up
+
+.PHONY: dev_up
+dev_up:
+	@echo 'Starting devcontainers'
+	@devcontainer up --prebuild --workspace-folder . --config .devcontainer/podverse-web/devcontainer.json
+	@devcontainer set-up --config .devcontainer/podverse-api/devcontainer.json --container-id podverse_api_local
+
+.PHONY: dev_down
+dev_down:
+	@echo 'Stopping devcontainers'
+	@docker compose -f ./docker-compose/local/docker-compose.yml -f ./.devcontainer/docker-compose.yml down
+
+.PHONY: dev_start_api
+dev_start_api:
+	@echo 'Starting Podverse API node server'
+	@devcontainer exec --config .devcontainer/podverse-api/devcontainer.json --container-id podverse_api_local yarn start
+
+.PHONY: dev_start_web
+dev_start_web:
+	@echo 'Starting Podverse Web node server'
+	@devcontainer exec --config .devcontainer/podverse-web/devcontainer.json --container-id podverse_web_local yarn start
+
+.PHONY: dev_shell_api
+dev_shell_api:
+	@echo 'Shelling into api container'
+	@devcontainer exec --config .devcontainer/podverse-api/devcontainer.json --container-id podverse_api_local bash
+
+.PHONY: dev_shell_web
+dev_shell_web:
+	@echo 'Shelling into web container'
+	@devcontainer exec --config .devcontainer/podverse-web/devcontainer.json --container-id podverse_web_local bash
