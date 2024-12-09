@@ -323,18 +323,16 @@ sanbox_srv_docker-compose_up:
 sanbox_srv_docker-compose_up-no_dettach:
 	docker-compose -f docker-compose/sandbox/srv/docker-compose.yml up
 
-.PHONY: dev_init
-dev_init: dev_init_web dev_init_api
-
-.PHONY: dev_init_web
-dev_init_web:
+.PHONY: dev_up
+dev_up:
 	@echo 'Starting devcontainers'
-	@devcontainer up --workspace-folder . --config .devcontainer/podverse-web/devcontainer.json
-
-.PHONY: dev_init_api
-dev_init_api:
-	@echo 'Setting up api devcontainer'
+	@devcontainer up --prebuild --workspace-folder . --config .devcontainer/podverse-web/devcontainer.json
 	@devcontainer set-up --config .devcontainer/podverse-api/devcontainer.json --container-id podverse_api_local
+
+.PHONY: dev_down
+dev_down:
+	@echo 'Stopping devcontainers'
+	@docker compose -f ./docker-compose/local/docker-compose.yml -f ./.devcontainer/docker-compose.yml down
 
 .PHONY: dev_start_api
 dev_start_api:
