@@ -1,7 +1,9 @@
 services:
   podverse_web:
+    # TODO uncomment image before merging
+    # image: ghcr.io/podverse/podverse-web-dev
     build:
-      context: ../../.devcontainer/podverse-web
+      context: ../../.github/.devcontainer/podverse-web/
     command: sleep infinity
     user: node
     volumes:
@@ -14,8 +16,10 @@ services:
     working_dir: /workspaces/projects/podverse-web
 
   podverse_api:
+    # TODO uncomment image before merging
+    # image: ghcr.io/podverse/podverse-api-dev
     build:
-      context: ../../.devcontainer/podverse-api
+      context: ../../.github/.devcontainer/podverse-api/
     command: sleep infinity
     user: node
     volumes:
@@ -26,4 +30,3 @@ services:
           selinux: z
           create_host_path: false
     working_dir: /workspaces/projects/podverse-api
-

@@ -1,0 +1,41 @@
+name: Dev Container Build and Push Image
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "master"
+    tags:
+      - "v*.*.*"
+    pull_requests:
+      branches:
+        - "master"
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+      - name: Pre-build Web devcontainer image
+        uses: devcontainers/ci@v0.3
+        with:
+          subFolder: .github
+          configFile: .github/.devcontainer/podverse-web/devcontainer.json
+          imageName: ghcr.io/${{ github.actor }}/podverse-web-dev
+          cacheFrom: ghcr.io/${{ github.actor }}/podverse-web-dev
+          push: always
+      - name: Pre-build API devcontainer image
+        uses: devcontainers/ci@v0.3
+        with:
+          subFolder: .github
+          configFile: .github/.devcontainer/podverse-api/devcontainer.json
+          imageName: ghcr.io/${{ github.actor }}/podverse-api-dev
+          cacheFrom: ghcr.io/${{ github.actor }}/podverse-api-dev
+          push: always
