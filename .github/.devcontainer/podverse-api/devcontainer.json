@@ -1,0 +1,14 @@
+{
+  "name": "Podverse API",
+  "build": {
+    "dockerfile": "./Dockerfile",
+    "context": "."
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils": {},
+    "ghcr.io/devcontainers-extra/features/prettier": {},
+    "ghcr.io/robbert229/devcontainer-features/postgresql-client:1": {
+      "version": "16"
+    }
+  }
+}

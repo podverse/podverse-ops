@@ -1,6 +1,10 @@
 [submodule "projects/podverse-web"]
 	path = projects/podverse-web
 	url = https://github.com/podverse/podverse-web.git
+  branch = develop
+  ignore = all
 [submodule "projects/podverse-api"]
 	path = projects/podverse-api
 	url = https://github.com/podverse/podverse-api.git
+  branch = develop
+  ignore = all
