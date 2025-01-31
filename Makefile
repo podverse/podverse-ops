@@ -38,16 +38,16 @@ nginx_proxy:
 
 .PHONY: up_db
 up_db:
-	docker-compose -f docker-compose/local/docker-compose.yml up podverse_db -d
+	docker compose -f docker-compose/local/docker-compose.yml up podverse_db -d
 
 .PHONY: up_all
 up_all:
-	docker-compose -f docker-compose/local/docker-compose.yml up podverse_db -d
-	docker-compose -f docker-compose/local/docker-compose.yml up podverse_queue -d
+	docker compose -f docker-compose/local/docker-compose.yml up podverse_db -d
+	docker compose -f docker-compose/local/docker-compose.yml up podverse_queue -d
 
 .PHONY: down
 down:
-	docker-compose -f docker-compose/local/docker-compose.yml down
+	docker compose -f docker-compose/local/docker-compose.yml down
 
 proxy/local/certs:
 	mkdir -p $@
