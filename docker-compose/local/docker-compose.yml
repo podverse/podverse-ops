@@ -12,13 +12,15 @@ services:
     image: postgres:16.3
     container_name: podverse_db
     env_file:
-      - ../config/podverse-db.env
+      - ../../config/podverse-db.env
     ports:
       - '5432:5432'
     networks:
       - podverse_network
+    # to initialize the database with the schema, you can run:
+    # docker exec -i podverse_db psql -U user -d postgres -f /opt/database/combined/init_database.sql
     volumes:
-      - ../database/combined/init_database.sql:/opt/database/combined/init_database.sql
+      - ../../database/combined/init_database.sql:/opt/database/combined/init_database.sql
     command: >
       postgres -c max_connections=200
                -c superuser_reserved_connections=20
@@ -48,7 +50,7 @@ services:
     image: rabbitmq:3-management
     container_name: podverse_queue
     env_file:
-      - ../config/podverse-queue.env
+      - ../../config/podverse-queue.env
     ports:
       - '5672:5672'
       - '15672:15672'
@@ -68,7 +70,7 @@ services:
     image: podverse-workers:latest
     container_name: podverse_workers
     env_file:
-      - ../config/podverse-workers.env
+      - ../../config/podverse-workers.env
     networks:
       - podverse_network
     depends_on:
@@ -85,7 +87,7 @@ services:
     image: podverse-workers:latest
     container_name: podverse_workers_debug
     env_file:
-      - ../config/podverse-workers.env
+      - ../../config/podverse-workers.env
     networks:
       - podverse_network
     depends_on:
