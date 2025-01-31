@@ -6,9 +6,11 @@ truffle.log
 
 .vscode/terminals.json
 
-config/podverse-api-local.env
-config/podverse-db-local.env
-config/podverse-web-local.env
+config/podverse-api.env
+config/podverse-db.env
+config/podverse-queue.env
+config/podverse-web.env
+config/podverse-workers.env
 
 config/podverse-db-sandbox.env
 
