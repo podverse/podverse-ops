@@ -43,7 +43,7 @@ up_db:
 .PHONY: up_all
 up_all:
 	docker-compose -f docker-compose/local/docker-compose.yml up podverse_db -d
-	docker-compose -f docker-compose/local/docker-compose.yml up podverse_amqp -d
+	docker-compose -f docker-compose/local/docker-compose.yml up podverse_queue -d
 
 .PHONY: down
 down:

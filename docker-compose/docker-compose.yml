@@ -44,11 +44,11 @@ services:
         max-file: '1'
         max-size: '50m'
 
-  podverse_amqp:
+  podverse_queue:
     image: rabbitmq:3-management
-    container_name: podverse_amqp
+    container_name: podverse_queue
     env_file:
-      - ../config/podverse-amqp.env
+      - ../config/podverse-queue.env
     ports:
       - '5672:5672'
       - '15672:15672'
@@ -73,7 +73,7 @@ services:
       - podverse_network
     depends_on:
       - podverse_db
-      - podverse_amqp
+      - podverse_queue
     shm_size: 1gb
     logging:
       driver: 'json-file'
@@ -90,7 +90,7 @@ services:
       - podverse_network
     depends_on:
       - podverse_db
-      - podverse_amqp
+      - podverse_queue
     volumes:
       - /home/mitch/logs/podverse-workers:/var/logs/pv-workers
     shm_size: 1gb

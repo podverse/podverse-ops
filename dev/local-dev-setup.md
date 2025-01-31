@@ -22,7 +22,7 @@ The Podverse repos that run locally (the ones that don't simply need to build, b
 
 The Podverse infrastructure requires 2 Docker services:
 - `podverse_db` - a Postgres database
-- `podverse_amqp` - a RabbitMQ instance (AMQP queue service)
+- `podverse_queue` - a RabbitMQ instance (AMQP queue service)
 
 You will need Docker installed locally. To start these containers in the background, from the root of `podverse-ops`, run the following command (using either `docker-compose` or `docker compose`):
 
