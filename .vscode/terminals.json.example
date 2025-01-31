@@ -5,15 +5,13 @@
       "name": "Podverse API",
       "description": "podverse-api",
       "cwd": "~/repos/podverse-api",
-      "open": true,
-      "command": "npm run dev:watch"
+      "open": true
     },
     {
       "name": "Podverse External Services",
       "description": "podverse-external-services",
       "cwd": "~/repos/podverse-external-services",
-      "open": true,
-      "command": "npm run build:watch"
+      "open": true
     },
     {
       "name": "Podverse F-Droid",
@@ -25,8 +23,7 @@
       "name": "Podverse Helpers",
       "description": "podverse-helpers",
       "cwd": "~/repos/podverse-helpers",
-      "open": true,
-      "command": "npm run build:watch"
+      "open": true
     },
     {
       "name": "Podverse Ops",
@@ -38,22 +35,19 @@
       "name": "Podverse ORM",
       "description": "podverse-orm",
       "cwd": "~/repos/podverse-orm",
-      "open": true,
-      "command": "npm run build:watch"
+      "open": true
     },
     {
       "name": "Podverse Parser",
       "description": "podverse-parser",
       "cwd": "~/repos/podverse-parser",
-      "open": true,
-      "command": "npm run build:watch"
+      "open": true
     },
     {
       "name": "Podverse Queue",
       "description": "podverse-queue",
       "cwd": "~/repos/podverse-queue",
-      "open": true,
-      "command": "npm run build:watch"
+      "open": true
     },
     {
       "name": "Podverse RN",
