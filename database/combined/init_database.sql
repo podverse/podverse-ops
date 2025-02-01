@@ -2,6 +2,34 @@
 
 -- Helpers
 
+-- START CREATE read AND read_write users
+
+-- Create the "read" user
+CREATE USER read WITH PASSWORD 'your_read_password';
+
+-- Create the "read_write" user
+CREATE USER read_write WITH PASSWORD 'your_read_write_password';
+
+-- Grant CONNECT and USAGE privileges on the database and schema to both users
+GRANT CONNECT ON DATABASE postgres TO read, read_write;
+GRANT USAGE ON SCHEMA public TO read, read_write;
+
+-- Grant SELECT privileges on all tables and sequences to the "read" user
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO read;
+GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO read;
+
+-- Grant SELECT, INSERT, UPDATE, DELETE privileges on all tables to the "read_write" user
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO read_write;
+GRANT SELECT, USAGE, UPDATE ON ALL SEQUENCES IN SCHEMA public TO read_write;
+
+-- Ensure future tables and sequences have the correct privileges
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO read;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON SEQUENCES TO read;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO read_write;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, USAGE, UPDATE ON SEQUENCES TO read_write;
+
+-- END CREATE read AND read_write users
+
 -- In the previous version of the app, short_id was 7-14 characters long.
 -- To make migration to v2 easier, we will use a 15 character long short_id,
 -- so we can easily distinguish between v1 and v2 short_ids.

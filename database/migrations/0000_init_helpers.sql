@@ -14,15 +14,19 @@ CREATE USER read_write WITH PASSWORD 'your_read_write_password';
 GRANT CONNECT ON DATABASE postgres TO read, read_write;
 GRANT USAGE ON SCHEMA public TO read, read_write;
 
--- Grant SELECT privileges on all tables to the "read" user
+-- Grant SELECT privileges on all tables and sequences to the "read" user
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO read;
+GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO read;
 
 -- Grant SELECT, INSERT, UPDATE, DELETE privileges on all tables to the "read_write" user
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO read_write;
+GRANT SELECT, USAGE, UPDATE ON ALL SEQUENCES IN SCHEMA public TO read_write;
 
 -- Ensure future tables and sequences have the correct privileges
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO read;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON SEQUENCES TO read;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO read_write;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, USAGE, UPDATE ON SEQUENCES TO read_write;
 
 -- END CREATE read AND read_write users
 
