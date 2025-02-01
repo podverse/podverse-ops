@@ -1,6 +1,17 @@
 #!/bin/bash
 
+# List all globally linked packages
+linked_packages=$(npm ls -g --depth=0 --link=true --parseable | tail -n +2)
+
+# Unlink each globally linked package
+for package in $linked_packages; do
+  npm unlink -g "$package"
+done
+
 # Delete and reinstall all node_modules
+
+# Clean npm cache
+npm cache clean --force
 
 echo "Clearing npm cache..."
 npm cache clean --force
