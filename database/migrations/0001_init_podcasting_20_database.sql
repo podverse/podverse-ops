@@ -26,10 +26,129 @@ PODCASTING 2.0 DATABASE SCHEMA
 -- 
 CREATE TABLE category (
     id SERIAL PRIMARY KEY,
-    node_text varchar_normal NOT NULL, -- <itunes:category>
+    parent_id INTEGER REFERENCES category(id) ON DELETE CASCADE,
     display_name varchar_normal NOT NULL, -- our own display name for the category
-    slug varchar_normal NOT NULL -- our own slug for the category
+    slug varchar_normal NOT NULL, -- our own web url slug for the category
+    mapping_key varchar_normal -- camel case version of the slug
 );
+
+CREATE INDEX idx_category_parent_id ON category(parent_id);
+
+-- Insert parent categories
+INSERT INTO category (parent_id, display_name, slug, mapping_key) VALUES
+(NULL, 'Arts', 'arts', 'arts'),
+(NULL, 'Business', 'business', 'business'),
+(NULL, 'Comedy', 'comedy', 'comedy'),
+(NULL, 'Education', 'education', 'education'),
+(NULL, 'Fiction', 'fiction', 'fiction'),
+(NULL, 'Government', 'government', 'government'),
+(NULL, 'History', 'history', 'history'),
+(NULL, 'Health & Fitness', 'health-and-fitness', 'healthandfitness'),
+(NULL, 'Kids & Family', 'kids-and-family', 'kidsandfamily'),
+(NULL, 'Leisure', 'leisure', 'leisure'),
+(NULL, 'Music', 'music', 'music'),
+(NULL, 'News', 'news', 'news'),
+(NULL, 'Religion & Spirituality', 'religion-and-spirituality', 'religionandspirituality'),
+(NULL, 'Science', 'science', 'science'),
+(NULL, 'Society & Culture', 'society-and-culture', 'societyandculture'),
+(NULL, 'Sports', 'sports', 'sports'),
+(NULL, 'Technology', 'technology', 'technology'),
+(NULL, 'True Crime', 'true-crime', 'truecrime'),
+(NULL, 'TV & Film', 'tv-and-film', 'tvandfilm');
+
+-- Insert child categories
+INSERT INTO category (parent_id, display_name, slug, mapping_key) VALUES
+((SELECT id FROM category WHERE display_name = 'Arts'), 'Books', 'books', 'books'),
+((SELECT id FROM category WHERE display_name = 'Arts'), 'Design', 'design', 'design'),
+((SELECT id FROM category WHERE display_name = 'Arts'), 'Fashion & Beauty', 'fashion-and-beauty', 'fashionandbeauty'),
+((SELECT id FROM category WHERE display_name = 'Arts'), 'Food', 'food', 'food'),
+((SELECT id FROM category WHERE display_name = 'Arts'), 'Performing Arts', 'performing-arts', 'performingarts'),
+((SELECT id FROM category WHERE display_name = 'Arts'), 'Visual Arts', 'visual-arts', 'visualarts'),
+((SELECT id FROM category WHERE display_name = 'Business'), 'Careers', 'careers', 'careers'),
+((SELECT id FROM category WHERE display_name = 'Business'), 'Entrepreneurship', 'entrepreneurship', 'entrepreneurship'),
+((SELECT id FROM category WHERE display_name = 'Business'), 'Investing', 'investing', 'investing'),
+((SELECT id FROM category WHERE display_name = 'Business'), 'Management', 'management', 'management'),
+((SELECT id FROM category WHERE display_name = 'Business'), 'Marketing', 'marketing', 'marketing'),
+((SELECT id FROM category WHERE display_name = 'Business'), 'Non-Profit', 'non-profit', 'nonprofit'),
+((SELECT id FROM category WHERE display_name = 'Comedy'), 'Comedy Interviews', 'comedy-interviews', 'comedyinterviews'),
+((SELECT id FROM category WHERE display_name = 'Comedy'), 'Improv', 'improv', 'improv'),
+((SELECT id FROM category WHERE display_name = 'Comedy'), 'Stand-Up', 'stand-up', 'standup'),
+((SELECT id FROM category WHERE display_name = 'Education'), 'Courses', 'courses', 'courses'),
+((SELECT id FROM category WHERE display_name = 'Education'), 'How To', 'how-to', 'howto'),
+((SELECT id FROM category WHERE display_name = 'Education'), 'Language Learning', 'language-learning', 'languagelearning'),
+((SELECT id FROM category WHERE display_name = 'Education'), 'Self-Improvement', 'self-improvement', 'selfimprovement'),
+((SELECT id FROM category WHERE display_name = 'Fiction'), 'Comedy Fiction', 'comedy-fiction', 'comedyfiction'),
+((SELECT id FROM category WHERE display_name = 'Fiction'), 'Drama', 'drama', 'drama'),
+((SELECT id FROM category WHERE display_name = 'Fiction'), 'Science Fiction', 'science-fiction', 'sciencefiction'),
+((SELECT id FROM category WHERE display_name = 'Health & Fitness'), 'Alternative Health', 'alternative-health', 'alternativehealth'),
+((SELECT id FROM category WHERE display_name = 'Health & Fitness'), 'Fitness', 'fitness', 'fitness'),
+((SELECT id FROM category WHERE display_name = 'Health & Fitness'), 'Medicine', 'medicine', 'medicine'),
+((SELECT id FROM category WHERE display_name = 'Health & Fitness'), 'Mental Health', 'mental-health', 'mentalhealth'),
+((SELECT id FROM category WHERE display_name = 'Health & Fitness'), 'Nutrition', 'nutrition', 'nutrition'),
+((SELECT id FROM category WHERE display_name = 'Health & Fitness'), 'Sexuality', 'sexuality', 'sexuality'),
+((SELECT id FROM category WHERE display_name = 'Kids & Family'), 'Education for Kids', 'education-for-kids', 'educationforkids'),
+((SELECT id FROM category WHERE display_name = 'Kids & Family'), 'Parenting', 'parenting', 'parenting'),
+((SELECT id FROM category WHERE display_name = 'Kids & Family'), 'Pets & Animals', 'pets-and-animals', 'petsandanimals'),
+((SELECT id FROM category WHERE display_name = 'Kids & Family'), 'Stories for Kids', 'stories-for-kids', 'storiesforkids'),
+((SELECT id FROM category WHERE display_name = 'Leisure'), 'Animation & Manga', 'animation-and-manga', 'animationandmanga'),
+((SELECT id FROM category WHERE display_name = 'Leisure'), 'Automotive', 'automotive', 'automotive'),
+((SELECT id FROM category WHERE display_name = 'Leisure'), 'Aviation', 'aviation', 'aviation'),
+((SELECT id FROM category WHERE display_name = 'Leisure'), 'Crafts', 'crafts', 'crafts'),
+((SELECT id FROM category WHERE display_name = 'Leisure'), 'Games', 'games', 'games'),
+((SELECT id FROM category WHERE display_name = 'Leisure'), 'Hobbies', 'hobbies', 'hobbies'),
+((SELECT id FROM category WHERE display_name = 'Leisure'), 'Home & Garden', 'home-and-garden', 'homeandgarden'),
+((SELECT id FROM category WHERE display_name = 'Leisure'), 'Video Games', 'video-games', 'videogames'),
+((SELECT id FROM category WHERE display_name = 'Music'), 'Music Commentary', 'music-commentary', 'musiccommentary'),
+((SELECT id FROM category WHERE display_name = 'Music'), 'Music History', 'music-history', 'musichistory'),
+((SELECT id FROM category WHERE display_name = 'Music'), 'Music Interviews', 'music-interviews', 'musicinterviews'),
+((SELECT id FROM category WHERE display_name = 'News'), 'Business News', 'business-news', 'businessnews'),
+((SELECT id FROM category WHERE display_name = 'News'), 'Daily News', 'daily-news', 'dailynews'),
+((SELECT id FROM category WHERE display_name = 'News'), 'Entertainment News', 'entertainment-news', 'entertainmentnews'),
+((SELECT id FROM category WHERE display_name = 'News'), 'News Commentary', 'news-commentary', 'newscommentary'),
+((SELECT id FROM category WHERE display_name = 'News'), 'Politics', 'politics', 'politics'),
+((SELECT id FROM category WHERE display_name = 'News'), 'Sports News', 'sports-news', 'sportsnews'),
+((SELECT id FROM category WHERE display_name = 'News'), 'Tech News', 'tech-news', 'technews'),
+((SELECT id FROM category WHERE display_name = 'Religion & Spirituality'), 'Buddhism', 'buddhism', 'buddhism'),
+((SELECT id FROM category WHERE display_name = 'Religion & Spirituality'), 'Christianity', 'christianity', 'christianity'),
+((SELECT id FROM category WHERE display_name = 'Religion & Spirituality'), 'Hinduism', 'hinduism', 'hinduism'),
+((SELECT id FROM category WHERE display_name = 'Religion & Spirituality'), 'Islam', 'islam', 'islam'),
+((SELECT id FROM category WHERE display_name = 'Religion & Spirituality'), 'Judaism', 'judaism', 'judaism'),
+((SELECT id FROM category WHERE display_name = 'Religion & Spirituality'), 'Religion', 'religion', 'religion'),
+((SELECT id FROM category WHERE display_name = 'Religion & Spirituality'), 'Spirituality', 'spirituality', 'spirituality'),
+((SELECT id FROM category WHERE display_name = 'Science'), 'Astronomy', 'astronomy', 'astronomy'),
+((SELECT id FROM category WHERE display_name = 'Science'), 'Chemistry', 'chemistry', 'chemistry'),
+((SELECT id FROM category WHERE display_name = 'Science'), 'Earth Sciences', 'earth-sciences', 'earthsciences'),
+((SELECT id FROM category WHERE display_name = 'Science'), 'Life Sciences', 'life-sciences', 'lifesciences'),
+((SELECT id FROM category WHERE display_name = 'Science'), 'Mathematics', 'mathematics', 'mathematics'),
+((SELECT id FROM category WHERE display_name = 'Science'), 'Natural Sciences', 'natural-sciences', 'naturalsciences'),
+((SELECT id FROM category WHERE display_name = 'Science'), 'Nature', 'nature', 'nature'),
+((SELECT id FROM category WHERE display_name = 'Science'), 'Physics', 'physics', 'physics'),
+((SELECT id FROM category WHERE display_name = 'Science'), 'Social Sciences', 'social-sciences', 'socialsciences'),
+((SELECT id FROM category WHERE display_name = 'Society & Culture'), 'Documentary', 'documentary', 'documentary'),
+((SELECT id FROM category WHERE display_name = 'Society & Culture'), 'Personal Journals', 'personal-journals', 'personaljournals'),
+((SELECT id FROM category WHERE display_name = 'Society & Culture'), 'Philosophy', 'philosophy', 'philosophy'),
+((SELECT id FROM category WHERE display_name = 'Society & Culture'), 'Places & Travel', 'places-and-travel', 'placesandtravel'),
+((SELECT id FROM category WHERE display_name = 'Society & Culture'), 'Relationships', 'relationships', 'relationships'),
+((SELECT id FROM category WHERE display_name = 'Sports'), 'Baseball', 'baseball', 'baseball'),
+((SELECT id FROM category WHERE display_name = 'Sports'), 'Basketball', 'basketball', 'basketball'),
+((SELECT id FROM category WHERE display_name = 'Sports'), 'Cricket', 'cricket', 'cricket'),
+((SELECT id FROM category WHERE display_name = 'Sports'), 'Fantasy Sports', 'fantasy-sports', 'fantasysports'),
+((SELECT id FROM category WHERE display_name = 'Sports'), 'Football', 'football', 'football'),
+((SELECT id FROM category WHERE display_name = 'Sports'), 'Golf', 'golf', 'golf'),
+((SELECT id FROM category WHERE display_name = 'Sports'), 'Hockey', 'hockey', 'hockey'),
+((SELECT id FROM category WHERE display_name = 'Sports'), 'Rugby', 'rugby', 'rugby'),
+((SELECT id FROM category WHERE display_name = 'Sports'), 'Running', 'running', 'running'),
+((SELECT id FROM category WHERE display_name = 'Sports'), 'Soccer', 'soccer', 'soccer'),
+((SELECT id FROM category WHERE display_name = 'Sports'), 'Swimming', 'swimming', 'swimming'),
+((SELECT id FROM category WHERE display_name = 'Sports'), 'Tennis', 'tennis', 'tennis'),
+((SELECT id FROM category WHERE display_name = 'Sports'), 'Volleyball', 'volleyball', 'volleyball'),
+((SELECT id FROM category WHERE display_name = 'Sports'), 'Wilderness', 'wilderness', 'wilderness'),
+((SELECT id FROM category WHERE display_name = 'Sports'), 'Wrestling', 'wrestling', 'wrestling'),
+((SELECT id FROM category WHERE display_name = 'TV & Film'), 'After Shows', 'after-shows', 'aftershows'),
+((SELECT id FROM category WHERE display_name = 'TV & Film'), 'Film History', 'film-history', 'filmhistory'),
+((SELECT id FROM category WHERE display_name = 'TV & Film'), 'Film Interviews', 'film-interviews', 'filminterviews'),
+((SELECT id FROM category WHERE display_name = 'TV & Film'), 'Film Reviews', 'film-reviews', 'filmreviews'),
+((SELECT id FROM category WHERE display_name = 'TV & Film'), 'TV Reviews', 'tv-reviews', 'tvreviews');
 
 --** MEDIUM VALUE
 
@@ -182,14 +301,15 @@ CREATE INDEX idx_channel_about_itunes_type_id ON channel_about(itunes_type_id);
 
 --** CHANNEL > CATEGORY
 
+-- <channel> -> <category>
 CREATE TABLE channel_category (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
-    parent_id INTEGER REFERENCES channel_category(id) ON DELETE CASCADE
+    category_id INTEGER NOT NULL REFERENCES category(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_channel_category_channel_id ON channel_category(channel_id);
-CREATE INDEX idx_channel_category_parent_id ON channel_category(parent_id);
+CREATE INDEX idx_channel_category_category_id ON channel_category(category_id);
 
 --** CHANNEL > CHAT
 
