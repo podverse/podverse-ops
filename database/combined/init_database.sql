@@ -671,14 +671,17 @@ CREATE TABLE item (
     slug varchar_slug,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     guid varchar_uri, -- <guid>
-    guid_enclosure_url varchar_url NOT NULL, -- enclosure url
+    guid_enclosure_url varchar_url, -- enclosure url
     pubdate TIMESTAMPTZ, -- <pubDate>
     title varchar_normal, -- <title>
 
     -- hidden items are no longer available in the rss feed, but are still in the database.
     hidden BOOLEAN DEFAULT FALSE,
     -- markedForDeletion items are no longer available in the rss feed, and may be able to be deleted.
-    marked_for_deletion BOOLEAN DEFAULT FALSE
+    marked_for_deletion BOOLEAN DEFAULT FALSE,
+
+    -- Ensure either guid or guid_enclosure_url is required
+    CHECK (guid IS NOT NULL OR guid_enclosure_url IS NOT NULL)
 );
 
 CREATE UNIQUE INDEX item_slug ON item(slug) WHERE slug IS NOT NULL;
