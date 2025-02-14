@@ -44,7 +44,8 @@ CREATE DOMAIN varchar_fcm_token AS VARCHAR(255);
 CREATE DOMAIN varchar_fqdn AS VARCHAR(253);
 CREATE DOMAIN varchar_guid AS VARCHAR(36);
 CREATE DOMAIN varchar_md5 AS VARCHAR(32);
-CREATE DOMAIN varchar_password AS VARCHAR(36);
+-- bcrypt salted hash passwords are always 60 characters long
+CREATE DOMAIN varchar_password AS VARCHAR(60);
 CREATE DOMAIN varchar_slug AS VARCHAR(100);
 CREATE DOMAIN varchar_uri AS VARCHAR(2083);
 CREATE DOMAIN varchar_url AS VARCHAR(2083) CHECK (VALUE ~ '^https?://|^http?://');
@@ -1102,8 +1103,6 @@ CREATE TABLE live_item (
 CREATE INDEX idx_live_item_item_id ON live_item(item_id);
 CREATE INDEX idx_live_item_live_item_status_id ON live_item(live_item_status_id);
 
--- 0002 migration
-
 CREATE TABLE sharable_status (
     id SERIAL PRIMARY KEY,
     status TEXT UNIQUE CHECK (status IN ('public', 'unlisted', 'private'))
@@ -1122,7 +1121,7 @@ CREATE INDEX idx_account_sharable_status_id ON account(sharable_status_id);
 
 CREATE TABLE account_credentials (
     id SERIAL PRIMARY KEY,
-    account_id integer REFERENCES account(id) ON DELETE CASCADE,
+    account_id integer REFERENCES account(id) ON DELETE CASCADE UNIQUE,
     email varchar_email UNIQUE NOT NULL,
     password varchar_password NOT NULL
 );
@@ -1131,7 +1130,7 @@ CREATE INDEX idx_account_credentials_account_id ON account_credentials(account_i
 
 CREATE TABLE account_profile (
     id SERIAL PRIMARY KEY,
-    account_id integer REFERENCES account(id) ON DELETE CASCADE,
+    account_id integer REFERENCES account(id) ON DELETE CASCADE UNIQUE,
     display_name varchar_normal,
     bio varchar_long
 );
@@ -1140,7 +1139,7 @@ CREATE INDEX idx_account_profile_account_id ON account_profile(account_id);
 
 CREATE TABLE account_reset_password (
     id SERIAL PRIMARY KEY,
-    account_id integer REFERENCES account(id) ON DELETE CASCADE,
+    account_id integer REFERENCES account(id) ON DELETE CASCADE UNIQUE,
     reset_token varchar_guid,
     reset_token_expires_at TIMESTAMP
 );
@@ -1149,7 +1148,7 @@ CREATE INDEX idx_account_reset_password_account_id ON account_reset_password(acc
 
 CREATE TABLE account_verification (
     id SERIAL PRIMARY KEY,
-    account_id integer REFERENCES account(id) ON DELETE CASCADE,
+    account_id integer REFERENCES account(id) ON DELETE CASCADE UNIQUE,
     verification_token varchar_guid,
     verification_token_expires_at TIMESTAMP
 );
@@ -1165,7 +1164,7 @@ INSERT INTO account_membership (tier) VALUES ('trial'), ('basic');
 
 CREATE TABLE account_membership_status (
     id SERIAL PRIMARY KEY,
-    account_id integer REFERENCES account(id) ON DELETE CASCADE,
+    account_id integer REFERENCES account(id) ON DELETE CASCADE UNIQUE,
     account_membership_id INTEGER NOT NULL REFERENCES account_membership(id),
     membership_expires_at TIMESTAMP
 );
@@ -1175,7 +1174,7 @@ CREATE INDEX idx_account_membership_status_account_membership_id ON account_memb
 
 CREATE TABLE account_admin_roles (
     id SERIAL PRIMARY KEY,
-    account_id integer REFERENCES account(id) ON DELETE CASCADE,
+    account_id integer REFERENCES account(id) ON DELETE CASCADE UNIQUE,
     dev_admin BOOLEAN DEFAULT FALSE,
     podping_admin BOOLEAN DEFAULT FALSE
 );
@@ -1506,7 +1505,7 @@ CREATE INDEX idx_account_google_play_purchase_account_id ON account_google_play_
 CREATE TABLE membership_claim_token (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     claimed BOOLEAN DEFAULT FALSE,
-    years_to_add INT DEFAULT 1,
+    months_to_add INT DEFAULT 1,
     account_membership_id INT REFERENCES account_membership(id) ON DELETE CASCADE
 );
 
