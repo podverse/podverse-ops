@@ -44,7 +44,8 @@ CREATE DOMAIN varchar_fcm_token AS VARCHAR(255);
 CREATE DOMAIN varchar_fqdn AS VARCHAR(253);
 CREATE DOMAIN varchar_guid AS VARCHAR(36);
 CREATE DOMAIN varchar_md5 AS VARCHAR(32);
-CREATE DOMAIN varchar_password AS VARCHAR(36);
+-- bcrypt salted hash passwords are always 60 characters long
+CREATE DOMAIN varchar_password AS VARCHAR(60);
 CREATE DOMAIN varchar_slug AS VARCHAR(100);
 CREATE DOMAIN varchar_uri AS VARCHAR(2083);
 CREATE DOMAIN varchar_url AS VARCHAR(2083) CHECK (VALUE ~ '^https?://|^http?://');
