@@ -97,6 +97,7 @@ npm link
 echo "Linking podverse-api dependencies..."
 cd ../podverse-api
 nvm use
+# does the order of these matter? i run into linking issues sometimes...
 npm link podverse-helpers
 npm link podverse-orm
 
