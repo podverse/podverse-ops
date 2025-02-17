@@ -1209,9 +1209,9 @@ CREATE TABLE playlist (
     title varchar_normal,
     description varchar_long,
     is_default_favorites BOOLEAN DEFAULT FALSE,
-    is_public BOOLEAN DEFAULT FALSE,
     item_count INTEGER DEFAULT 0,
-    medium_id INTEGER NOT NULL REFERENCES medium(id)
+    medium_id INTEGER NOT NULL REFERENCES medium(id),
+    UNIQUE (account_id, medium_id, is_default_favorites) WHERE is_default_favorites = TRUE
 );
 
 CREATE INDEX idx_playlist_account_id ON playlist(account_id);
