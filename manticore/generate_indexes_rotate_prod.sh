@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 docker exec -i podverse_manticore_prod gosu manticore indexer idx_author --rotate --verbose;
 docker exec -i podverse_manticore_prod gosu manticore indexer idx_media_ref --rotate --verbose;

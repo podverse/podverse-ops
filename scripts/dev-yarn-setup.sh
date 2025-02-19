@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Step 1: Make sure the correct version of Node is used!
 # You will need to run `nvm use` within podverse-ops.

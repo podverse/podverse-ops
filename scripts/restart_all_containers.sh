@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 docker-compose -f docker-compose.prod.yml up -d podverse_nginx_proxy podverse_letsencrypt_nginx podverse_db podverse_api podverse_web
 

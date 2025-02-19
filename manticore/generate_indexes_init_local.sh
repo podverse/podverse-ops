@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 docker exec -i podverse_manticore_local gosu manticore indexer idx_author --verbose;
 docker exec -i podverse_manticore_local gosu manticore indexer idx_media_ref --verbose;

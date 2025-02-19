@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Thanks to Pranav Prakash! 
 # https://pranavprakash.net/2017/05/16/automated-postgresql-backups/

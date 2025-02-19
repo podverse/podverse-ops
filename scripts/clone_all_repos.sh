@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 /usr/bin/git clone https://github.com/podverse/podcast-db.git
 /usr/bin/git clone https://github.com/podverse/podverse-admin.git

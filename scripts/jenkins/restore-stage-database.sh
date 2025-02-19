@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 docker stop podverse_db_stage;
 docker rm podverse_db_stage;

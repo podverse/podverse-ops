@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 docker rm $(docker stop $(docker ps -a -q --filter ancestor=podverse/podverse_web))
 docker image rm podverse/podverse_web

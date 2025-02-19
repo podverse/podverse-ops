@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #/usr/bin/docker start podverse_api_parser_worker_1
 #/usr/bin/docker start podverse_api_parser_worker_2

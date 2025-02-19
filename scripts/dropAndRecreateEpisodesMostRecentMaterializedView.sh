@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # drop the materialized view
 /usr/bin/docker exec -i podverse_db_prod psql -U postgres -c 'DROP MATERIALIZED VIEW "episodes_most_recent"'
