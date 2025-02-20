@@ -1260,33 +1260,19 @@ CREATE INDEX idx_playlist_resource_item_soundbite_soundbite_id ON playlist_resou
 CREATE OR REPLACE FUNCTION delete_playlist_resource_base()
 RETURNS TRIGGER AS $$
 BEGIN
-    DELETE FROM playlist_resource_base WHERE id = OLD.id;
+    -- Delete child rows in the correct order to avoid recursion
+    DELETE FROM playlist_resource_item WHERE id = OLD.id;
+    DELETE FROM playlist_resource_item_add_by_rss WHERE id = OLD.id;
+    DELETE FROM playlist_resource_item_chapter WHERE id = OLD.id;
+    DELETE FROM playlist_resource_clip WHERE id = OLD.id;
+    DELETE FROM playlist_resource_item_soundbite WHERE id = OLD.id;
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER delete_playlist_resource_base_trigger_item
-BEFORE DELETE ON playlist_resource_item
-FOR EACH ROW
-EXECUTE FUNCTION delete_playlist_resource_base();
-
-CREATE TRIGGER delete_playlist_resource_base_trigger_item_add_by_rss
-BEFORE DELETE ON playlist_resource_item_add_by_rss
-FOR EACH ROW
-EXECUTE FUNCTION delete_playlist_resource_base();
-
-CREATE TRIGGER delete_playlist_resource_base_trigger_item_chapter
-BEFORE DELETE ON playlist_resource_item_chapter
-FOR EACH ROW
-EXECUTE FUNCTION delete_playlist_resource_base();
-
-CREATE TRIGGER delete_playlist_resource_base_trigger_clip
-BEFORE DELETE ON playlist_resource_clip
-FOR EACH ROW
-EXECUTE FUNCTION delete_playlist_resource_base();
-
-CREATE TRIGGER delete_playlist_resource_base_trigger_item_soundbite
-BEFORE DELETE ON playlist_resource_item_soundbite
+-- Add a new trigger on the playlist_resource_base table
+CREATE TRIGGER delete_playlist_resource_base_trigger
+BEFORE DELETE ON playlist_resource_base
 FOR EACH ROW
 EXECUTE FUNCTION delete_playlist_resource_base();
 
