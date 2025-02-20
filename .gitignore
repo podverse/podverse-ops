@@ -32,3 +32,5 @@ temp
 nginx-error.log
 
 proxy/local/certs
+
+config/google/firebase-podverse-app-key.json
