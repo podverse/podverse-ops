@@ -9,10 +9,12 @@ services:
     image: podverse/podverse_api:latest
     container_name: podverse_api_worker_prod
     env_file:
-      - ../../../config/podverse-api-prod.env
+      - /opt/podverse-ops/config/podverse-api-prod.env
     volumes:
-      - ../../../config/google/firebase-podverse-app-key.json:/mnt/config/google/firebase-podverse-app-key.json
+      - /opt/podverse-ops/config/google/firebase-podverse-app-key.json:/mnt/config/google/firebase-podverse-app-key.json
     logging:
       driver: "syslog"
       options:
         tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+    networks:
+      - nginx-proxy
