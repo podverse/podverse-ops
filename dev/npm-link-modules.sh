@@ -100,6 +100,7 @@ nvm use
 # does the order of these matter? i run into linking issues sometimes...
 npm link podverse-helpers
 npm link podverse-orm
+npm link podverse-parser
 
 echo "Linking podverse-external-services dependencies..."
 cd ../podverse-external-services
