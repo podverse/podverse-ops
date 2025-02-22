@@ -30,10 +30,11 @@ CREATE TABLE queue_resource_item (
 CREATE INDEX idx_queue_resource_item_item_id ON queue_resource_item(item_id);
 
 CREATE TABLE queue_resource_item_add_by_rss (
-    resource_data jsonb NOT NULL
+    resource_data jsonb NOT NULL,
+    hash_id varchar_md5 UNIQUE NOT NULL
 ) INHERITS (queue_resource_base);
 
-CREATE INDEX idx_queue_resource_item_add_by_rss_resource_data ON queue_resource_item_add_by_rss USING gin (resource_data);
+CREATE INDEX idx_queue_resource_item_add_by_rss_hash_id ON queue_resource_item_add_by_rss(hash_id);
 
 CREATE TABLE queue_resource_item_chapter (
     item_chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE

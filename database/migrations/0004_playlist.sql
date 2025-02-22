@@ -9,9 +9,12 @@ CREATE TABLE playlist (
     description varchar_long,
     is_default_favorites BOOLEAN DEFAULT FALSE,
     item_count INTEGER DEFAULT 0,
-    medium_id INTEGER NOT NULL REFERENCES medium(id),
-    UNIQUE (account_id, medium_id, is_default_favorites) WHERE is_default_favorites = TRUE
+    medium_id INTEGER NOT NULL REFERENCES medium(id)
 );
+
+CREATE UNIQUE INDEX idx_playlist_account_medium_default_favorites
+    ON playlist (account_id, medium_id)
+    WHERE is_default_favorites = TRUE;
 
 CREATE INDEX idx_playlist_account_id ON playlist(account_id);
 CREATE INDEX idx_playlist_sharable_status_id ON playlist(sharable_status_id);
@@ -33,10 +36,11 @@ CREATE TABLE playlist_resource_item (
 CREATE INDEX idx_playlist_resource_item_item_id ON playlist_resource_item(item_id);
 
 CREATE TABLE playlist_resource_item_add_by_rss (
-    resource_data jsonb NOT NULL
+    resource_data jsonb NOT NULL,
+    hash_id varchar_md5 UNIQUE NOT NULL
 ) INHERITS (playlist_resource_base);
 
-CREATE INDEX idx_playlist_resource_item_add_by_rss_resource_data ON playlist_resource_item_add_by_rss USING gin (resource_data);
+CREATE INDEX idx_playlist_resource_item_add_by_rss_hash_id ON playlist_resource_item_add_by_rss(hash_id);
 
 CREATE TABLE playlist_resource_item_chapter (
     item_chapter_id INTEGER NOT NULL REFERENCES item_chapter(id) ON DELETE CASCADE
