@@ -1296,8 +1296,8 @@ CREATE INDEX idx_queue_medium_id ON queue(medium_id);
 CREATE TABLE queue_resource_base (
     id SERIAL PRIMARY KEY,
     queue_id INTEGER NOT NULL REFERENCES queue(id) ON DELETE CASCADE,
-    UNIQUE (queue_id, list_position),
     list_position list_position NOT NULL CHECK (list_position != 0 OR list_position = 0::numeric),
+    UNIQUE (queue_id, list_position),
     playback_position media_player_time NOT NULL DEFAULT 0,
     media_file_duration media_player_time NOT NULL DEFAULT 0,
     completed BOOLEAN NOT NULL DEFAULT FALSE
