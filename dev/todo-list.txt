@@ -1,18 +1,5 @@
 # todo
 
-get followed accounts for account
-  for logged-in user
-  for public users
-get followed add by rss for account
-  for logged-in user
-  for public users
-get followed channels for account
-  for logged-in user
-  for public users
-get followed playlist for account
-  for logged-in user
-  for public users
-
 filter by channel
 filter by item
 filter by clip
@@ -33,7 +20,6 @@ sort by playlist
   recent
   oldest
 
-update account profile
 update account email
   send verification email with pending email change
   after clicked, email is switched
