@@ -16,7 +16,7 @@ CREATE INDEX idx_account_sharable_status_id ON account(sharable_status_id);
 
 CREATE TABLE account_credentials (
     id SERIAL PRIMARY KEY,
-    account_id integer REFERENCES account(id) ON DELETE CASCADE UNIQUE,
+    account_id integer NOT NULL REFERENCES account(id) ON DELETE CASCADE UNIQUE,
     email varchar_email UNIQUE NOT NULL,
     password varchar_password NOT NULL
 );
@@ -25,7 +25,7 @@ CREATE INDEX idx_account_credentials_account_id ON account_credentials(account_i
 
 CREATE TABLE account_profile (
     id SERIAL PRIMARY KEY,
-    account_id integer REFERENCES account(id) ON DELETE CASCADE UNIQUE,
+    account_id integer NOT NULL REFERENCES account(id) ON DELETE CASCADE UNIQUE,
     display_name varchar_normal,
     bio varchar_long
 );
@@ -34,7 +34,7 @@ CREATE INDEX idx_account_profile_account_id ON account_profile(account_id);
 
 CREATE TABLE account_reset_password (
     id SERIAL PRIMARY KEY,
-    account_id integer REFERENCES account(id) ON DELETE CASCADE UNIQUE,
+    account_id integer NOT NULL REFERENCES account(id) ON DELETE CASCADE UNIQUE,
     reset_token varchar_guid,
     reset_token_expires_at TIMESTAMP
 );
@@ -43,12 +43,21 @@ CREATE INDEX idx_account_reset_password_account_id ON account_reset_password(acc
 
 CREATE TABLE account_verification (
     id SERIAL PRIMARY KEY,
-    account_id integer REFERENCES account(id) ON DELETE CASCADE UNIQUE,
+    account_id integer NOT NULL REFERENCES account(id) ON DELETE CASCADE UNIQUE,
     verification_token varchar_guid,
     verification_token_expires_at TIMESTAMP
 );
 
 CREATE INDEX idx_account_verification_account_id ON account_verification(account_id);
+
+CREATE TABLE account_pending_new_email_verification (
+    id SERIAL PRIMARY KEY,
+    account_id integer NOT NULL REFERENCES account(id) ON DELETE CASCADE UNIQUE,
+    verification_token varchar_guid,
+    verification_token_expires_at TIMESTAMP
+);
+
+CREATE INDEX idx_account_pending_new_email_verification_id ON account_pending_new_email_verification(account_id);
 
 CREATE TABLE account_membership (
     id SERIAL PRIMARY KEY,
@@ -59,7 +68,7 @@ INSERT INTO account_membership (tier) VALUES ('trial'), ('basic');
 
 CREATE TABLE account_membership_status (
     id SERIAL PRIMARY KEY,
-    account_id integer REFERENCES account(id) ON DELETE CASCADE UNIQUE,
+    account_id integer NOT NULL REFERENCES account(id) ON DELETE CASCADE UNIQUE,
     account_membership_id INTEGER NOT NULL REFERENCES account_membership(id),
     membership_expires_at TIMESTAMP
 );
@@ -69,7 +78,7 @@ CREATE INDEX idx_account_membership_status_account_membership_id ON account_memb
 
 CREATE TABLE account_admin_roles (
     id SERIAL PRIMARY KEY,
-    account_id integer REFERENCES account(id) ON DELETE CASCADE UNIQUE,
+    account_id integer NOT NULL REFERENCES account(id) ON DELETE CASCADE UNIQUE,
     dev_admin BOOLEAN DEFAULT FALSE,
     podping_admin BOOLEAN DEFAULT FALSE
 );
