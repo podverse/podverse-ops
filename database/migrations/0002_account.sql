@@ -50,14 +50,15 @@ CREATE TABLE account_verification (
 
 CREATE INDEX idx_account_verification_account_id ON account_verification(account_id);
 
-CREATE TABLE account_pending_new_email_verification (
+CREATE TABLE account_email_change_verification (
     id SERIAL PRIMARY KEY,
     account_id integer NOT NULL REFERENCES account(id) ON DELETE CASCADE UNIQUE,
     verification_token varchar_guid,
-    verification_token_expires_at TIMESTAMP
+    verification_token_expires_at TIMESTAMP,
+    pending_email_address varchar_email
 );
 
-CREATE INDEX idx_account_pending_new_email_verification_id ON account_pending_new_email_verification(account_id);
+CREATE INDEX idx_account_email_change_verification_id ON account_email_change_verification(account_id);
 
 CREATE TABLE account_membership (
     id SERIAL PRIMARY KEY,
