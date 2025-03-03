@@ -20,10 +20,6 @@ sort by playlist
   recent
   oldest
 
-update account email
-  send verification email with pending email change
-  after clicked, email is switched
-
 add membership claim process
 
 account membership
