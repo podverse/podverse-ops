@@ -20,8 +20,6 @@ sort by playlist
   recent
   oldest
 
-add membership claim process
-
 account membership
 pay pal order
 app store purchase
