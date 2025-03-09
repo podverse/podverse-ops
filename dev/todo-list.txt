@@ -20,8 +20,6 @@ sort by playlist
   recent
   oldest
 
-account membership
-pay pal order
 app store purchase
 google play purchase
 
