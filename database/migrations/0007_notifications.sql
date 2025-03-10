@@ -1,13 +1,13 @@
 -- 0007
 
-CREATE TABLE account_notification (
+CREATE TABLE account_notification_channel (
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     PRIMARY KEY (channel_id, account_id)
 );
 
-CREATE INDEX idx_account_notification_channel_id ON account_notification(channel_id);
-CREATE INDEX idx_account_notification_account_id ON account_notification(account_id);
+CREATE INDEX idx_account_notification_channel_channel_id ON account_notification_channel(channel_id);
+CREATE INDEX idx_account_notification_channel_account_id ON account_notification_channel(account_id);
 
 CREATE TABLE account_up_device (
     account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
