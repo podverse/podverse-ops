@@ -619,6 +619,8 @@ CREATE TABLE item (
 
 CREATE UNIQUE INDEX item_slug ON item(slug) WHERE slug IS NOT NULL;
 CREATE INDEX idx_item_channel_id ON item(channel_id);
+CREATE INDEX idx_item_guid ON your_table_name (guid);
+CREATE INDEX idx_item_guid_enclosure_url ON your_table_name (guid_enclosure_url);
 
 --** ITEM > ABOUT > ITUNES TYPE
 
