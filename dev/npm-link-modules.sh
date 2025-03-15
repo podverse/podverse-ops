@@ -130,6 +130,7 @@ npm link podverse-parser
 echo "Linking podverse-workers dependencies..."
 cd ../podverse-workers
 nvm use
+npm link podverse-external-services
 npm link podverse-helpers
 npm link podverse-orm
 npm link podverse-parser
