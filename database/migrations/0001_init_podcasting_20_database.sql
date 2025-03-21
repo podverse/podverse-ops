@@ -541,7 +541,7 @@ CREATE TABLE channel_trailer (
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     url varchar_url NOT NULL,
     title varchar_normal,
-    pubdate TIMESTAMPTZ NOT NULL,
+    pub_date TIMESTAMPTZ NOT NULL,
     length INTEGER,
     type varchar_short,
     channel_season_id INTEGER REFERENCES channel_season(id),
@@ -605,7 +605,7 @@ CREATE TABLE item (
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     guid varchar_uri, -- <guid>
     guid_enclosure_url varchar_url, -- enclosure url
-    pubdate TIMESTAMPTZ, -- <pubDate>
+    pub_date TIMESTAMPTZ, -- <pubDate>
     title varchar_normal, -- <title>
 
     -- hidden items are no longer available in the rss feed, but are still in the database.
@@ -619,8 +619,8 @@ CREATE TABLE item (
 
 CREATE UNIQUE INDEX item_slug ON item(slug) WHERE slug IS NOT NULL;
 CREATE INDEX idx_item_channel_id ON item(channel_id);
-CREATE INDEX idx_item_guid ON your_table_name (guid);
-CREATE INDEX idx_item_guid_enclosure_url ON your_table_name (guid_enclosure_url);
+CREATE INDEX idx_item_guid ON item(guid);
+CREATE INDEX idx_item_guid_enclosure_url ON item(guid_enclosure_url);
 
 --** ITEM > ABOUT > ITUNES TYPE
 
