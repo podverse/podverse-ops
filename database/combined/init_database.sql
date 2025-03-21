@@ -609,7 +609,7 @@ CREATE TABLE channel_trailer (
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     url varchar_url NOT NULL,
     title varchar_normal,
-    pubdate TIMESTAMPTZ NOT NULL,
+    pub_date TIMESTAMPTZ NOT NULL,
     length INTEGER,
     type varchar_short,
     channel_season_id INTEGER REFERENCES channel_season(id),
@@ -673,7 +673,7 @@ CREATE TABLE item (
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     guid varchar_uri, -- <guid>
     guid_enclosure_url varchar_url, -- enclosure url
-    pubdate TIMESTAMPTZ, -- <pubDate>
+    pub_date TIMESTAMPTZ, -- <pubDate>
     title varchar_normal, -- <title>
 
     -- hidden items are no longer available in the rss feed, but are still in the database.
@@ -687,8 +687,8 @@ CREATE TABLE item (
 
 CREATE UNIQUE INDEX item_slug ON item(slug) WHERE slug IS NOT NULL;
 CREATE INDEX idx_item_channel_id ON item(channel_id);
-CREATE INDEX idx_item_guid ON your_table_name (guid);
-CREATE INDEX idx_item_guid_enclosure_url ON your_table_name (guid_enclosure_url);
+CREATE INDEX idx_item_guid ON item(guid);
+CREATE INDEX idx_item_guid_enclosure_url ON item(guid_enclosure_url);
 
 --** ITEM > ABOUT > ITUNES TYPE
 
@@ -1210,6 +1210,31 @@ CREATE INDEX idx_clip_account_id ON clip(account_id);
 CREATE INDEX idx_clip_item_id ON clip(item_id);
 CREATE INDEX idx_clip_sharable_status_id ON clip(sharable_status_id);
 
+CREATE TABLE clip_archived (
+    id SERIAL PRIMARY KEY,
+    id_text short_id_v2 UNIQUE NOT NULL,
+    account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    channel_podcast_index_id INTEGER NOT NULL,
+    channel_title varchar_normal,
+    channel_images jsonb,
+    item_guid varchar_uri,
+    item_guid_enclosure_url varchar_url,
+    item_alternate_enclosures jsonb NOT NULL,
+    item_title varchar_normal,
+    item_pub_date TIMESTAMPTZ,
+    start_time media_player_time NOT NULL,
+    end_time media_player_time,
+    title varchar_normal,
+    description varchar_long,
+    sharable_status_id INTEGER NOT NULL REFERENCES sharable_status(id)
+);
+
+CREATE INDEX idx_clip_archived_account_id ON clip_archived(account_id);
+CREATE INDEX idx_clip_archived_channel_podcast_index_id ON clip_archived(channel_podcast_index_id);
+CREATE INDEX idx_clip_archived_sharable_status_id ON clip_archived(sharable_status_id);
+CREATE INDEX idx_clip_archived_item_guid ON clip_archived(item_guid);
+CREATE INDEX idx_clip_archived_item_guid_enclosure_url ON clip_archived(item_guid_enclosure_url);
+
 -- 0004 migration
 
 CREATE TABLE playlist (
@@ -1239,6 +1264,7 @@ CREATE TABLE playlist_resource (
     item_id INTEGER REFERENCES item(id) ON DELETE CASCADE,
     item_chapter_id INTEGER REFERENCES item_chapter(id) ON DELETE CASCADE,
     clip_id INTEGER REFERENCES clip(id) ON DELETE CASCADE,
+    clip_archived_id INTEGER REFERENCES clip_archived(id) ON DELETE CASCADE,
     item_soundbite_id INTEGER REFERENCES item_soundbite(id) ON DELETE CASCADE,
     add_by_rss_resource_data jsonb,
     add_by_rss_hash_id varchar_md5,
@@ -1248,11 +1274,13 @@ CREATE TABLE playlist_resource (
         (add_by_rss_hash_id IS NOT NULL)::int +
         (item_chapter_id IS NOT NULL)::int +
         (clip_id IS NOT NULL)::int +
+        (clip_archived_id IS NOT NULL)::int +
         (item_soundbite_id IS NOT NULL)::int = 1
     ),
     UNIQUE (playlist_id, item_id),
     UNIQUE (playlist_id, item_chapter_id),
     UNIQUE (playlist_id, clip_id),
+    UNIQUE (playlist_id, clip_archived_id),
     UNIQUE (playlist_id, item_soundbite_id),
     UNIQUE (playlist_id, add_by_rss_hash_id)
 );
@@ -1261,6 +1289,7 @@ CREATE INDEX idx_playlist_resource_playlist_id ON playlist_resource(playlist_id)
 CREATE INDEX idx_playlist_resource_item_id ON playlist_resource(item_id);
 CREATE INDEX idx_playlist_resource_item_chapter_id ON playlist_resource(item_chapter_id);
 CREATE INDEX idx_playlist_resource_clip_id ON playlist_resource(clip_id);
+CREATE INDEX idx_playlist_resource_clip_archived_id ON playlist_resource(clip_archived_id);
 CREATE INDEX idx_playlist_resource_soundbite_id ON playlist_resource(item_soundbite_id);
 CREATE INDEX idx_playlist_resource_hash_id ON playlist_resource(add_by_rss_hash_id);
 
@@ -1301,20 +1330,23 @@ CREATE TABLE queue_resource (
     item_id INTEGER REFERENCES item(id) ON DELETE CASCADE,
     item_chapter_id INTEGER REFERENCES item_chapter(id) ON DELETE CASCADE,
     clip_id INTEGER REFERENCES clip(id) ON DELETE CASCADE,
+    clip_archived_id INTEGER REFERENCES clip_archived(id) ON DELETE CASCADE,
     item_soundbite_id INTEGER REFERENCES item_soundbite(id) ON DELETE CASCADE,
     add_by_rss_resource_data jsonb,
     add_by_rss_hash_id varchar_md5,
     UNIQUE (queue_id, list_position),
     CHECK (
         (item_id IS NOT NULL)::int +
+        (add_by_rss_hash_id IS NOT NULL)::int +
         (item_chapter_id IS NOT NULL)::int +
         (clip_id IS NOT NULL)::int +
+        (clip_archived_id IS NOT NULL)::int +
         (item_soundbite_id IS NOT NULL)::int = 1
-        (add_by_rss_hash_id IS NOT NULL)::int +
     ),
     UNIQUE (queue_id, item_id),
     UNIQUE (queue_id, item_chapter_id),
     UNIQUE (queue_id, clip_id),
+    UNIQUE (queue_id, clip_archived_id),
     UNIQUE (queue_id, item_soundbite_id),
     UNIQUE (queue_id, add_by_rss_hash_id)
 );
@@ -1323,6 +1355,7 @@ CREATE INDEX idx_queue_resource_queue_id ON queue_resource(queue_id);
 CREATE INDEX idx_queue_resource_item_id ON queue_resource(item_id);
 CREATE INDEX idx_queue_resource_item_chapter_id ON queue_resource(item_chapter_id);
 CREATE INDEX idx_queue_resource_clip_id ON queue_resource(clip_id);
+CREATE INDEX idx_queue_resource_clip_archived_id ON queue_resource(clip_archived_id);
 CREATE INDEX idx_queue_resource_soundbite_id ON queue_resource(item_soundbite_id);
 CREATE INDEX idx_queue_resource_add_by_rss_hash_id ON queue_resource(add_by_rss_hash_id);
 -- 0006 migration
@@ -1462,7 +1495,7 @@ CREATE TABLE stats_track_account_guid (
     id SERIAL PRIMARY KEY,
     account_id INT NOT NULL,
     account_guid UUID NOT NULL,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at server_time_with_default NOT NULL,
     UNIQUE (account_id),
     UNIQUE (account_guid),
     FOREIGN KEY (account_id) REFERENCES account(id) ON DELETE CASCADE
@@ -1476,7 +1509,7 @@ CREATE TABLE stats_track_event_channel (
     id SERIAL PRIMARY KEY,
     account_guid UUID NOT NULL,
     channel_id INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at server_time_with_default NOT NULL,
     UNIQUE (account_guid, channel_id),
     FOREIGN KEY (account_guid) REFERENCES stats_track_account_guid(account_guid) ON DELETE CASCADE,
     FOREIGN KEY (channel_id) REFERENCES channel(id) ON DELETE CASCADE
@@ -1520,7 +1553,7 @@ CREATE TABLE stats_track_event_item (
     id SERIAL PRIMARY KEY,
     account_guid UUID NOT NULL,
     item_id INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at server_time_with_default NOT NULL,
     UNIQUE (account_guid, item_id),
     FOREIGN KEY (account_guid) REFERENCES stats_track_account_guid(account_guid) ON DELETE CASCADE,
     FOREIGN KEY (item_id) REFERENCES item(id) ON DELETE CASCADE
@@ -1564,7 +1597,7 @@ CREATE TABLE stats_track_event_clip (
     id SERIAL PRIMARY KEY,
     account_guid UUID NOT NULL,
     clip_id INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at server_time_with_default NOT NULL,
     UNIQUE (account_guid, clip_id),
     FOREIGN KEY (account_guid) REFERENCES stats_track_account_guid(account_guid) ON DELETE CASCADE,
     FOREIGN KEY (clip_id) REFERENCES clip(id) ON DELETE CASCADE
@@ -1608,7 +1641,7 @@ CREATE TABLE stats_track_event_playlist (
     id SERIAL PRIMARY KEY,
     account_guid UUID NOT NULL,
     playlist_id INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at server_time_with_default NOT NULL,
     UNIQUE (account_guid, playlist_id),
     FOREIGN KEY (account_guid) REFERENCES stats_track_account_guid(account_guid) ON DELETE CASCADE,
     FOREIGN KEY (playlist_id) REFERENCES playlist(id) ON DELETE CASCADE
@@ -1652,7 +1685,7 @@ CREATE TABLE stats_track_event_account (
     id SERIAL PRIMARY KEY,
     account_guid UUID NOT NULL,
     tracked_account_id INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at server_time_with_default NOT NULL,
     UNIQUE (account_guid, tracked_account_id),
     FOREIGN KEY (account_guid) REFERENCES stats_track_account_guid(account_guid) ON DELETE CASCADE,
     FOREIGN KEY (tracked_account_id) REFERENCES account(id) ON DELETE CASCADE
