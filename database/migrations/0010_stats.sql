@@ -2,7 +2,7 @@ CREATE TABLE stats_track_account_guid (
     id SERIAL PRIMARY KEY,
     account_id INT NOT NULL,
     account_guid UUID NOT NULL,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at server_time_with_default NOT NULL,
     UNIQUE (account_id),
     UNIQUE (account_guid),
     FOREIGN KEY (account_id) REFERENCES account(id) ON DELETE CASCADE
@@ -16,7 +16,7 @@ CREATE TABLE stats_track_event_channel (
     id SERIAL PRIMARY KEY,
     account_guid UUID NOT NULL,
     channel_id INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at server_time_with_default NOT NULL,
     UNIQUE (account_guid, channel_id),
     FOREIGN KEY (account_guid) REFERENCES stats_track_account_guid(account_guid) ON DELETE CASCADE,
     FOREIGN KEY (channel_id) REFERENCES channel(id) ON DELETE CASCADE
@@ -60,7 +60,7 @@ CREATE TABLE stats_track_event_item (
     id SERIAL PRIMARY KEY,
     account_guid UUID NOT NULL,
     item_id INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at server_time_with_default NOT NULL,
     UNIQUE (account_guid, item_id),
     FOREIGN KEY (account_guid) REFERENCES stats_track_account_guid(account_guid) ON DELETE CASCADE,
     FOREIGN KEY (item_id) REFERENCES item(id) ON DELETE CASCADE
@@ -104,7 +104,7 @@ CREATE TABLE stats_track_event_clip (
     id SERIAL PRIMARY KEY,
     account_guid UUID NOT NULL,
     clip_id INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at server_time_with_default NOT NULL,
     UNIQUE (account_guid, clip_id),
     FOREIGN KEY (account_guid) REFERENCES stats_track_account_guid(account_guid) ON DELETE CASCADE,
     FOREIGN KEY (clip_id) REFERENCES clip(id) ON DELETE CASCADE
@@ -148,7 +148,7 @@ CREATE TABLE stats_track_event_playlist (
     id SERIAL PRIMARY KEY,
     account_guid UUID NOT NULL,
     playlist_id INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at server_time_with_default NOT NULL,
     UNIQUE (account_guid, playlist_id),
     FOREIGN KEY (account_guid) REFERENCES stats_track_account_guid(account_guid) ON DELETE CASCADE,
     FOREIGN KEY (playlist_id) REFERENCES playlist(id) ON DELETE CASCADE
@@ -192,7 +192,7 @@ CREATE TABLE stats_track_event_account (
     id SERIAL PRIMARY KEY,
     account_guid UUID NOT NULL,
     tracked_account_id INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at server_time_with_default NOT NULL,
     UNIQUE (account_guid, tracked_account_id),
     FOREIGN KEY (account_guid) REFERENCES stats_track_account_guid(account_guid) ON DELETE CASCADE,
     FOREIGN KEY (tracked_account_id) REFERENCES account(id) ON DELETE CASCADE
