@@ -843,7 +843,7 @@ CREATE INDEX idx_item_enclosure_source_item_id ON item_enclosure_source(item_enc
 -- <item> -> <podcast:alternateEnclosure> -> <podcast:integrity>
 CREATE TABLE item_enclosure_integrity (
     id SERIAL PRIMARY KEY,
-    item_enclosure_id INTEGER NOT NULL UNIQUE REFERENCES item_enclosure_source(id) ON DELETE CASCADE,
+    item_enclosure_id INTEGER NOT NULL UNIQUE REFERENCES item_enclosure(id) ON DELETE CASCADE,
     type TEXT NOT NULL CHECK (type IN ('sri', 'pgp-signature')),
     value varchar_long NOT NULL
 );
