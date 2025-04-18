@@ -15,7 +15,7 @@ say_hello:
 	@echo "Hello Podverse"
 
 .PHONY: validate_init
-validate_init: config/podverse-api.env config/podverse-db.env
+validate_init: config/podverse-api.env config/podverse-db.env config/podverse-test-db.env
 
 config/podverse-api.env:
 	@echo "Missing: $@"
@@ -23,6 +23,11 @@ config/podverse-api.env:
 	cp ./$@.example ./$@
 
 config/podverse-db.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+config/podverse-test-db.env:
 	@echo "Missing: $@"
 	@echo "Copying from example file"
 	cp ./$@.example ./$@
@@ -67,3 +72,9 @@ proxy/local/certs/podverse-server.crt: proxy/local/certs/podverse-server.csr
 .PHONY: nginx_proxy_cert
 nginx_proxy_cert: proxy/local/certs proxy/local/certs/podverse-server.key proxy/local/certs/podverse-server.key.insecure proxy/local/certs/podverse-server.csr proxy/local/certs/podverse-server.crt
 	@echo 'Generate new cert'
+
+# TEST DB
+
+.PHONY: up_test_db
+up_test_db:
+	docker compose -f docker-compose/test/docker-compose.yml up podverse_test_db -d
