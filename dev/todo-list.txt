@@ -4,6 +4,7 @@ filter by channel
 filter by item
 filter by clip
 filter by playlist
+filter by account
   title
   medium
   categories
@@ -16,20 +17,31 @@ sort by channel
 sort by item
 sort by clip
 sort by playlist
+sort by account
   a-z
   recent
   oldest
+  popularity
+    day_current_count
+    week_current_count
+    month_current_count
+    all_time_current_count
+
+setup stage/test env assets
+
+setup e2e test process
 
 app store purchase
 google play purchase
 
-notification
-fcm device
+how to handle feeds that are deleted from PI?
+add special item and channel delete handling that creates backup references
+  clip
+  playlist resource
+  queue resource
+
+all json columns should be private sharable setting
+
 account up device
 
-stats handling
-
-podcast index value tag handling
-
-reduce playlist controller duplication
-reduce queue controller duplication
+update example .env files
