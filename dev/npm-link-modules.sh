@@ -27,42 +27,49 @@ echo "Installing podverse-api dependencies..."
 cd ../podverse-api
 nvm use
 rm -rf node_modules
+rm -rf dist
 npm install
 
 echo "Installing podverse-external-services dependencies..."
 cd ../podverse-external-services
 nvm use
 rm -rf node_modules
+rm -rf dist
 npm install
 
 echo "Installing podverse-helpers dependencies..."
 cd ../podverse-helpers
 nvm use
 rm -rf node_modules
+rm -rf dist
 npm install
 
 echo "Installing podverse-orm dependencies..."
 cd ../podverse-orm
 nvm use
 rm -rf node_modules
+rm -rf dist
 npm install
 
 echo "Installing podverse-parser dependencies..."
 cd ../podverse-parser
 nvm use
 rm -rf node_modules
+rm -rf dist
 npm install
 
 echo "Installing podverse-queue dependencies..."
 cd ../podverse-queue
 nvm use
 rm -rf node_modules
+rm -rf dist
 npm install
 
 echo "Installing podverse-workers dependencies..."
 cd ../podverse-workers
 nvm use
 rm -rf node_modules
+rm -rf dist
 npm install
 
 # Link dependencies to npm
@@ -97,10 +104,7 @@ npm link
 echo "Linking podverse-api dependencies..."
 cd ../podverse-api
 nvm use
-# does the order of these matter? i run into linking issues sometimes...
-npm link podverse-helpers
-npm link podverse-orm
-npm link podverse-parser
+npm link podverse-external-services podverse-helpers podverse-orm podverse-parser
 
 echo "Linking podverse-external-services dependencies..."
 cd ../podverse-external-services
@@ -115,23 +119,44 @@ npm link podverse-helpers
 echo "Linking podverse-parser dependencies..."
 cd ../podverse-parser
 nvm use
-npm link podverse-external-services
-npm link podverse-helpers
-npm link podverse-orm
+npm link podverse-external-services podverse-helpers podverse-orm
 
 echo "Linking podverse-queue dependencies..."
 cd ../podverse-queue
 nvm use
-npm link podverse-external-services
-npm link podverse-helpers
-npm link podverse-orm
-npm link podverse-parser
+npm link podverse-external-services podverse-helpers podverse-orm podverse-parser
 
 echo "Linking podverse-workers dependencies..."
 cd ../podverse-workers
 nvm use
-npm link podverse-external-services
-npm link podverse-helpers
-npm link podverse-orm
-npm link podverse-parser
-npm link podverse-queue
+npm link podverse-external-services podverse-helpers podverse-orm podverse-parser podverse-queue
+
+echo "Building podverse-helpers..."
+cd ../podverse-helpers
+nvm use
+npm run build
+
+echo "Building podverse-external-services..."
+cd ../podverse-external-services
+nvm use
+npm run build
+
+echo "Building podverse-orm..."
+cd ../podverse-orm
+nvm use
+npm run build
+
+echo "Building podverse-parser..."
+cd ../podverse-parser
+nvm use
+npm run build
+
+echo "Building podverse-queue..."
+cd ../podverse-queue
+nvm use
+npm run build
+
+echo "Building podverse-workers..."
+cd ../podverse-workers
+nvm use
+npm run build
