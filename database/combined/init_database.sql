@@ -4,11 +4,23 @@
 
 -- START CREATE read AND read_write users
 
--- Create the "read" user
-CREATE USER read WITH PASSWORD 'your_read_password';
+-- Create the "read" user if it doesn't already exist
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'read') THEN
+        CREATE USER read WITH PASSWORD 'your_read_password';
+    END IF;
+END
+$$;
 
--- Create the "read_write" user
-CREATE USER read_write WITH PASSWORD 'your_read_write_password';
+-- Create the "read_write" user if it doesn't already exist
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'read_write') THEN
+        CREATE USER read_write WITH PASSWORD 'your_read_write_password';
+    END IF;
+END
+$$;
 
 -- Grant CONNECT and USAGE privileges on the database and schema to both users
 GRANT CONNECT ON DATABASE postgres TO read, read_write;
@@ -243,7 +255,7 @@ INSERT INTO medium (value) VALUES
 -- used internally for identifying and handling spam and other special flag statuses.
 CREATE TABLE feed_flag_status (
     id SERIAL PRIMARY KEY,
-    status TEXT UNIQUE CHECK (status IN ('none', 'spam', 'takedown', 'other', 'always-allow')),
+    status TEXT UNIQUE CHECK (status IN ('active', 'always-parse', 'spam', 'pending-archive', 'archived', 'takedown')),
     created_at server_time_with_default,
     updated_at server_time_with_default
 );
@@ -253,7 +265,7 @@ BEFORE UPDATE ON feed_flag_status
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at_field();
 
-INSERT INTO feed_flag_status (status) VALUES ('none'), ('spam'), ('takedown'), ('other'), ('always-allow');
+INSERT INTO feed_flag_status (status) VALUES ('active'), ('always-parse'), ('spam'), ('pending-archive'), ('archived'), ('takedown');
 
 --** FEED
 
@@ -326,12 +338,7 @@ CREATE TABLE channel (
 
     -- this column is used for optimization purposes to determine if all of the items
     -- for a channel need to have their value time split remote items parsed.
-    has_value_time_splits BOOLEAN DEFAULT FALSE,
-
-    -- hidden items are no longer available in the rss feed, but are still in the database.
-    hidden BOOLEAN DEFAULT FALSE,
-    -- markedForDeletion items are no longer available in the rss feed, and may be able to be deleted.
-    marked_for_deletion BOOLEAN DEFAULT FALSE
+    has_value_time_splits BOOLEAN DEFAULT FALSE
 );
 
 CREATE UNIQUE INDEX channel_podcast_guid_unique ON channel(podcast_guid) WHERE podcast_guid IS NOT NULL;
@@ -661,6 +668,23 @@ CREATE TABLE channel_value_recipient (
 
 CREATE INDEX idx_channel_value_recipient_channel_value_id ON channel_value_recipient(channel_value_id);
 
+--** ITEM > FLAG STATUS
+
+-- used internally for identifying and handling special flag statuses for items.
+CREATE TABLE item_flag_status (
+    id SERIAL PRIMARY KEY,
+    status TEXT UNIQUE CHECK (status IN ('active', 'pending-archive', 'archived', 'pending-delete')),
+    created_at server_time_with_default,
+    updated_at server_time_with_default
+);
+
+CREATE TRIGGER set_updated_at_item_flag_status
+BEFORE UPDATE ON item_flag_status
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at_field();
+
+INSERT INTO item_flag_status (status) VALUES ('active'), ('pending-archive'), ('archived'), ('pending-delete');
+
 --** ITEM
 
 -- Technically the item table could be named channel_item, but it seems easier to understand as item.
@@ -676,11 +700,8 @@ CREATE TABLE item (
     pub_date TIMESTAMPTZ, -- <pubDate>
     title varchar_normal, -- <title>
 
-    -- hidden items are no longer available in the rss feed, but are still in the database.
-    hidden BOOLEAN DEFAULT FALSE,
-    -- markedForDeletion items are no longer available in the rss feed, and may be able to be deleted.
-    marked_for_deletion BOOLEAN DEFAULT FALSE,
-
+    item_flag_status_id INTEGER NOT NULL REFERENCES item_flag_status(id),
+    
     -- Ensure either guid or guid_enclosure_url is required
     CHECK (guid IS NOT NULL OR guid_enclosure_url IS NOT NULL)
 );
@@ -689,6 +710,7 @@ CREATE UNIQUE INDEX item_slug ON item(slug) WHERE slug IS NOT NULL;
 CREATE INDEX idx_item_channel_id ON item(channel_id);
 CREATE INDEX idx_item_guid ON item(guid);
 CREATE INDEX idx_item_guid_enclosure_url ON item(guid_enclosure_url);
+CREATE INDEX idx_item_item_flag_status_id ON item(item_flag_status_id);
 
 --** ITEM > ABOUT > ITUNES TYPE
 

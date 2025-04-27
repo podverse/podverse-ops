@@ -4,11 +4,23 @@
 
 -- START CREATE read AND read_write users
 
--- Create the "read" user
-CREATE USER read WITH PASSWORD 'your_read_password';
+-- Create the "read" user if it doesn't already exist
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'read') THEN
+        CREATE USER read WITH PASSWORD 'your_read_password';
+    END IF;
+END
+$$;
 
--- Create the "read_write" user
-CREATE USER read_write WITH PASSWORD 'your_read_write_password';
+-- Create the "read_write" user if it doesn't already exist
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'read_write') THEN
+        CREATE USER read_write WITH PASSWORD 'your_read_write_password';
+    END IF;
+END
+$$;
 
 -- Grant CONNECT and USAGE privileges on the database and schema to both users
 GRANT CONNECT ON DATABASE postgres TO read, read_write;
