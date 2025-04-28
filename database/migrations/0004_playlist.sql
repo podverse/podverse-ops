@@ -27,7 +27,6 @@ CREATE TABLE playlist_resource (
     item_id INTEGER REFERENCES item(id) ON DELETE CASCADE,
     item_chapter_id INTEGER REFERENCES item_chapter(id) ON DELETE CASCADE,
     clip_id INTEGER REFERENCES clip(id) ON DELETE CASCADE,
-    clip_archived_id INTEGER REFERENCES clip_archived(id) ON DELETE CASCADE,
     item_soundbite_id INTEGER REFERENCES item_soundbite(id) ON DELETE CASCADE,
     add_by_rss_resource_data jsonb,
     add_by_rss_hash_id varchar_md5,
@@ -37,13 +36,11 @@ CREATE TABLE playlist_resource (
         (add_by_rss_hash_id IS NOT NULL)::int +
         (item_chapter_id IS NOT NULL)::int +
         (clip_id IS NOT NULL)::int +
-        (clip_archived_id IS NOT NULL)::int +
         (item_soundbite_id IS NOT NULL)::int = 1
     ),
     UNIQUE (playlist_id, item_id),
     UNIQUE (playlist_id, item_chapter_id),
     UNIQUE (playlist_id, clip_id),
-    UNIQUE (playlist_id, clip_archived_id),
     UNIQUE (playlist_id, item_soundbite_id),
     UNIQUE (playlist_id, add_by_rss_hash_id)
 );
@@ -52,7 +49,6 @@ CREATE INDEX idx_playlist_resource_playlist_id ON playlist_resource(playlist_id)
 CREATE INDEX idx_playlist_resource_item_id ON playlist_resource(item_id);
 CREATE INDEX idx_playlist_resource_item_chapter_id ON playlist_resource(item_chapter_id);
 CREATE INDEX idx_playlist_resource_clip_id ON playlist_resource(clip_id);
-CREATE INDEX idx_playlist_resource_clip_archived_id ON playlist_resource(clip_archived_id);
 CREATE INDEX idx_playlist_resource_soundbite_id ON playlist_resource(item_soundbite_id);
 CREATE INDEX idx_playlist_resource_hash_id ON playlist_resource(add_by_rss_hash_id);
 

@@ -1232,31 +1232,6 @@ CREATE INDEX idx_clip_account_id ON clip(account_id);
 CREATE INDEX idx_clip_item_id ON clip(item_id);
 CREATE INDEX idx_clip_sharable_status_id ON clip(sharable_status_id);
 
-CREATE TABLE clip_archived (
-    id SERIAL PRIMARY KEY,
-    id_text short_id_v2 UNIQUE NOT NULL,
-    account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
-    channel_podcast_index_id INTEGER NOT NULL,
-    channel_title varchar_normal,
-    channel_images jsonb,
-    item_guid varchar_uri,
-    item_guid_enclosure_url varchar_url,
-    item_alternate_enclosures jsonb NOT NULL,
-    item_title varchar_normal,
-    item_pub_date TIMESTAMPTZ,
-    start_time media_player_time NOT NULL,
-    end_time media_player_time,
-    title varchar_normal,
-    description varchar_long,
-    sharable_status_id INTEGER NOT NULL REFERENCES sharable_status(id)
-);
-
-CREATE INDEX idx_clip_archived_account_id ON clip_archived(account_id);
-CREATE INDEX idx_clip_archived_channel_podcast_index_id ON clip_archived(channel_podcast_index_id);
-CREATE INDEX idx_clip_archived_sharable_status_id ON clip_archived(sharable_status_id);
-CREATE INDEX idx_clip_archived_item_guid ON clip_archived(item_guid);
-CREATE INDEX idx_clip_archived_item_guid_enclosure_url ON clip_archived(item_guid_enclosure_url);
-
 -- 0004 migration
 
 CREATE TABLE playlist (
@@ -1286,7 +1261,6 @@ CREATE TABLE playlist_resource (
     item_id INTEGER REFERENCES item(id) ON DELETE CASCADE,
     item_chapter_id INTEGER REFERENCES item_chapter(id) ON DELETE CASCADE,
     clip_id INTEGER REFERENCES clip(id) ON DELETE CASCADE,
-    clip_archived_id INTEGER REFERENCES clip_archived(id) ON DELETE CASCADE,
     item_soundbite_id INTEGER REFERENCES item_soundbite(id) ON DELETE CASCADE,
     add_by_rss_resource_data jsonb,
     add_by_rss_hash_id varchar_md5,
@@ -1296,13 +1270,11 @@ CREATE TABLE playlist_resource (
         (add_by_rss_hash_id IS NOT NULL)::int +
         (item_chapter_id IS NOT NULL)::int +
         (clip_id IS NOT NULL)::int +
-        (clip_archived_id IS NOT NULL)::int +
         (item_soundbite_id IS NOT NULL)::int = 1
     ),
     UNIQUE (playlist_id, item_id),
     UNIQUE (playlist_id, item_chapter_id),
     UNIQUE (playlist_id, clip_id),
-    UNIQUE (playlist_id, clip_archived_id),
     UNIQUE (playlist_id, item_soundbite_id),
     UNIQUE (playlist_id, add_by_rss_hash_id)
 );
@@ -1311,7 +1283,6 @@ CREATE INDEX idx_playlist_resource_playlist_id ON playlist_resource(playlist_id)
 CREATE INDEX idx_playlist_resource_item_id ON playlist_resource(item_id);
 CREATE INDEX idx_playlist_resource_item_chapter_id ON playlist_resource(item_chapter_id);
 CREATE INDEX idx_playlist_resource_clip_id ON playlist_resource(clip_id);
-CREATE INDEX idx_playlist_resource_clip_archived_id ON playlist_resource(clip_archived_id);
 CREATE INDEX idx_playlist_resource_soundbite_id ON playlist_resource(item_soundbite_id);
 CREATE INDEX idx_playlist_resource_hash_id ON playlist_resource(add_by_rss_hash_id);
 
@@ -1352,7 +1323,6 @@ CREATE TABLE queue_resource (
     item_id INTEGER REFERENCES item(id) ON DELETE CASCADE,
     item_chapter_id INTEGER REFERENCES item_chapter(id) ON DELETE CASCADE,
     clip_id INTEGER REFERENCES clip(id) ON DELETE CASCADE,
-    clip_archived_id INTEGER REFERENCES clip_archived(id) ON DELETE CASCADE,
     item_soundbite_id INTEGER REFERENCES item_soundbite(id) ON DELETE CASCADE,
     add_by_rss_resource_data jsonb,
     add_by_rss_hash_id varchar_md5,
@@ -1362,13 +1332,11 @@ CREATE TABLE queue_resource (
         (add_by_rss_hash_id IS NOT NULL)::int +
         (item_chapter_id IS NOT NULL)::int +
         (clip_id IS NOT NULL)::int +
-        (clip_archived_id IS NOT NULL)::int +
         (item_soundbite_id IS NOT NULL)::int = 1
     ),
     UNIQUE (queue_id, item_id),
     UNIQUE (queue_id, item_chapter_id),
     UNIQUE (queue_id, clip_id),
-    UNIQUE (queue_id, clip_archived_id),
     UNIQUE (queue_id, item_soundbite_id),
     UNIQUE (queue_id, add_by_rss_hash_id)
 );
@@ -1377,7 +1345,6 @@ CREATE INDEX idx_queue_resource_queue_id ON queue_resource(queue_id);
 CREATE INDEX idx_queue_resource_item_id ON queue_resource(item_id);
 CREATE INDEX idx_queue_resource_item_chapter_id ON queue_resource(item_chapter_id);
 CREATE INDEX idx_queue_resource_clip_id ON queue_resource(clip_id);
-CREATE INDEX idx_queue_resource_clip_archived_id ON queue_resource(clip_archived_id);
 CREATE INDEX idx_queue_resource_soundbite_id ON queue_resource(item_soundbite_id);
 CREATE INDEX idx_queue_resource_add_by_rss_hash_id ON queue_resource(add_by_rss_hash_id);
 -- 0006 migration
