@@ -1,41 +1,169 @@
-cd ~/repos/podverse-api
-git pull origin v5-develop
+#!/bin/bash
 
-cd ~/repos/podverse-external-services
+# Source nvm script
+export NVM_DIR="$HOME/.nvm"
+# This loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# This loads nvm bash_completion
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# List all globally linked packages
+linked_packages=$(npm ls -g --depth=0 --link=true --parseable | tail -n +2)
+
+# Unlink each globally linked package
+for package in $linked_packages; do
+  npm unlink -g "$package"
+done
+
+# Delete and reinstall all node_modules
+
+# Clean npm cache
+npm cache clean --force
+
+echo "Clearing npm cache..."
+npm cache clean --force
+
+echo "Installing podverse-api dependencies..."
+cd ../podverse-api
 git pull origin v5-develop
+nvm use
+rm -rf node_modules
 rm -rf dist
 npm install
+
+echo "Installing podverse-external-services dependencies..."
+cd ../podverse-external-services
+git pull origin v5-develop
+nvm use
+rm -rf node_modules
+rm -rf dist
+npm install
+
+echo "Installing podverse-helpers dependencies..."
+cd ../podverse-helpers
+git pull origin v5-develop
+nvm use
+rm -rf node_modules
+rm -rf dist
+npm install
+
+echo "Installing podverse-orm dependencies..."
+cd ../podverse-orm
+git pull origin v5-develop
+nvm use
+rm -rf node_modules
+rm -rf dist
+npm install
+
+echo "Installing podverse-parser dependencies..."
+cd ../podverse-parser
+git pull origin v5-develop
+nvm use
+rm -rf node_modules
+rm -rf dist
+npm install
+
+echo "Installing podverse-queue dependencies..."
+cd ../podverse-queue
+git pull origin v5-develop
+nvm use
+rm -rf node_modules
+rm -rf dist
+npm install
+
+echo "Installing podverse-workers dependencies..."
+cd ../podverse-workers
+git pull origin v5-develop
+nvm use
+rm -rf node_modules
+rm -rf dist
+npm install
+
+# Link dependencies to npm
+
+echo "Linking podverse-external-services dependency..."
+cd ../podverse-external-services
+nvm use
+npm link
+
+echo "Linking podverse-helpers dependency..."
+cd ../podverse-helpers
+nvm use
+npm link
+
+echo "Linking podverse-orm dependency..."
+cd ../podverse-orm
+nvm use
+npm link
+
+echo "Linking podverse-parser dependency..."
+cd ../podverse-parser
+nvm use
+npm link
+
+echo "Linking podverse-queue dependency..."
+cd ../podverse-queue
+nvm use
+npm link
+
+# Link dependencies to consuming projects
+
+echo "Linking podverse-api dependencies..."
+cd ../podverse-api
+nvm use
+npm link podverse-external-services podverse-helpers podverse-orm podverse-parser
+
+echo "Linking podverse-external-services dependencies..."
+cd ../podverse-external-services
+nvm use
+npm link podverse-helpers
+
+echo "Linking podverse-orm dependencies..."
+cd ../podverse-orm
+nvm use
+npm link podverse-helpers
+
+echo "Linking podverse-parser dependencies..."
+cd ../podverse-parser
+nvm use
+npm link podverse-external-services podverse-helpers podverse-orm
+
+echo "Linking podverse-queue dependencies..."
+cd ../podverse-queue
+nvm use
+npm link podverse-external-services podverse-helpers podverse-orm podverse-parser
+
+echo "Linking podverse-workers dependencies..."
+cd ../podverse-workers
+nvm use
+npm link podverse-external-services podverse-helpers podverse-orm podverse-parser podverse-queue
+
+echo "Building podverse-helpers..."
+cd ../podverse-helpers
+nvm use
 npm run build
 
-cd ~/repos/podverse-helpers
-git pull origin v5-develop
-rm -rf dist
-npm install
+echo "Building podverse-external-services..."
+cd ../podverse-external-services
+nvm use
 npm run build
 
-cd ~/repos/podverse-ops
-git pull origin v5-develop
-
-cd ~/repos/podverse-orm
-git pull origin v5-develop
-rm -rf dist
-npm install
+echo "Building podverse-orm..."
+cd ../podverse-orm
+nvm use
 npm run build
 
-cd ~/repos/podverse-parser
-git pull origin v5-develop
-rm -rf dist
-npm install
+echo "Building podverse-parser..."
+cd ../podverse-parser
+nvm use
 npm run build
 
-cd ~/repos/podverse-queue
-git pull origin v5-develop
-rm -rf dist
-npm install
+echo "Building podverse-queue..."
+cd ../podverse-queue
+nvm use
 npm run build
 
-cd ~/repos/podverse-workers
-git pull origin v5-develop
-rm -rf dist
-npm install
+echo "Building podverse-workers..."
+cd ../podverse-workers
+nvm use
 npm run build
