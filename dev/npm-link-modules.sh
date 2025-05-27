@@ -23,11 +23,12 @@ npm cache clean --force
 echo "Clearing npm cache..."
 npm cache clean --force
 
-echo "Installing podverse-api dependencies..."
-cd ../podverse-api
+echo "Installing podverse-helpers dependencies..."
+cd ../podverse-helpers
 nvm use
 rm -rf node_modules
 rm -rf dist
+rm package-lock.json
 npm install
 
 echo "Installing podverse-external-services dependencies..."
@@ -35,13 +36,7 @@ cd ../podverse-external-services
 nvm use
 rm -rf node_modules
 rm -rf dist
-npm install
-
-echo "Installing podverse-helpers dependencies..."
-cd ../podverse-helpers
-nvm use
-rm -rf node_modules
-rm -rf dist
+rm package-lock.json
 npm install
 
 echo "Installing podverse-orm dependencies..."
@@ -49,6 +44,7 @@ cd ../podverse-orm
 nvm use
 rm -rf node_modules
 rm -rf dist
+rm package-lock.json
 npm install
 
 echo "Installing podverse-parser dependencies..."
@@ -56,6 +52,7 @@ cd ../podverse-parser
 nvm use
 rm -rf node_modules
 rm -rf dist
+rm package-lock.json
 npm install
 
 echo "Installing podverse-queue dependencies..."
@@ -63,6 +60,7 @@ cd ../podverse-queue
 nvm use
 rm -rf node_modules
 rm -rf dist
+rm package-lock.json
 npm install
 
 echo "Installing podverse-workers dependencies..."
@@ -70,17 +68,26 @@ cd ../podverse-workers
 nvm use
 rm -rf node_modules
 rm -rf dist
+rm package-lock.json
+npm install
+
+echo "Installing podverse-api dependencies..."
+cd ../podverse-api
+nvm use
+rm -rf node_modules
+rm -rf dist
+rm package-lock.json
 npm install
 
 # Link dependencies to npm
 
-echo "Linking podverse-external-services dependency..."
-cd ../podverse-external-services
+echo "Linking podverse-helpers dependency..."
+cd ../podverse-helpers
 nvm use
 npm link
 
-echo "Linking podverse-helpers dependency..."
-cd ../podverse-helpers
+echo "Linking podverse-external-services dependency..."
+cd ../podverse-external-services
 nvm use
 npm link
 
@@ -100,11 +107,6 @@ nvm use
 npm link
 
 # Link dependencies to consuming projects
-
-echo "Linking podverse-api dependencies..."
-cd ../podverse-api
-nvm use
-npm link podverse-external-services podverse-helpers podverse-orm podverse-parser
 
 echo "Linking podverse-external-services dependencies..."
 cd ../podverse-external-services
@@ -130,6 +132,13 @@ echo "Linking podverse-workers dependencies..."
 cd ../podverse-workers
 nvm use
 npm link podverse-external-services podverse-helpers podverse-orm podverse-parser podverse-queue
+
+echo "Linking podverse-api dependencies..."
+cd ../podverse-api
+nvm use
+npm link podverse-external-services podverse-helpers podverse-orm podverse-parser
+
+# Build all projects
 
 echo "Building podverse-helpers..."
 cd ../podverse-helpers
@@ -158,5 +167,10 @@ npm run build
 
 echo "Building podverse-workers..."
 cd ../podverse-workers
+nvm use
+npm run build
+
+echo "Building podverse-api..."
+cd ../podverse-api
 nvm use
 npm run build
