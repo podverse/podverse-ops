@@ -1,0 +1,42 @@
+volumes:
+  rabbitmq_data:
+
+networks:
+  podverse_local_network:
+    external: true
+
+services:
+
+  podverse_sandbox_queue:
+    image: rabbitmq:3-management
+    container_name: podverse_sandbox_queue
+    env_file:
+      - ../../../config/podverse-sandbox-queue.env
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    networks:
+      - podverse_sandbox_network
+    restart: always
+    shm_size: 1gb
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'
+
+  podverse_sandbox_workers:
+    image: podverse-workers:latest
+    container_name: podverse_sandbox_workers
+    env_file:
+      - ../../../config/podverse-sandbox-workers.env
+    networks:
+      - podverse_sandbox_network
+    shm_size: 1gb
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'

@@ -1,0 +1,22 @@
+networks:
+  podverse_local_network:
+    external: true
+
+services:
+
+  podverse_local_api:
+    image: ghcr.io/podverse/podverse-api/podverse-api:5.1.0-alpha.1
+    container_name: podverse_local_api
+    env_file:
+      - ../../../config/podverse-local-api.env
+    networks:
+      - podverse_local_network
+    ports:
+      - "1234:1234"
+    command: npm start
+    shm_size: 1gb
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'

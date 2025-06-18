@@ -1,0 +1,21 @@
+networks:
+  podverse_local_network:
+    external: true
+
+services:
+
+  podverse_sandbox_api:
+    image: ghcr.io/podverse/podverse-workers/podverse-workers:5.1.0-alpha.1
+    container_name: podverse_sandbox_api
+    env_file:
+      - ../../../config/podverse-sandbox-api.env
+    networks:
+      - podverse_sandbox_network
+    ports:
+      - "1234:1234"
+    shm_size: 1gb
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'

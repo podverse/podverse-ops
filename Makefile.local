@@ -1,0 +1,73 @@
+.PHONY: local_validate_init
+local_validate_init: config/podverse-local-db.env config/podverse-local-queue.env config/podverse-local-workers.env config/podverse-local-api.env
+
+config/podverse-local-db.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+config/podverse-local-queue.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+config/podverse-local-workers.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+config/podverse-local-api.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+.PHONY: local_up_all
+local_up_all:
+	local_validate_init
+	local_up_db
+	local_up_queue
+	local_up_workers
+	local_up_api
+
+.PHONY: local_down_all
+local_down_all:
+	local_down_db
+	local_down_queue
+	local_down_workers
+	local_down_api
+
+.PHONY: local_up_db
+local_up_db: config/podverse-local-db.env
+	docker compose -f docker-compose/local/db/docker-compose.yml up podverse_local_db -d
+
+.PHONY: local_down_db
+local_down_db:
+	docker compose -f docker-compose/local/db/docker-compose.yml stop podverse_local_db
+	docker compose -f docker-compose/local/db/docker-compose.yml rm -f podverse_local_db
+
+.PHONY: local_up_queue
+local_up_queue: config/podverse-local-queue.env
+	docker compose -f docker-compose/local/workers/docker-compose.yml up podverse_local_queue -d
+
+.PHONY: local_down_queue
+local_down_queue:
+	docker compose -f docker-compose/local/workers/docker-compose.yml stop podverse_local_queue
+	docker compose -f docker-compose/local/workers/docker-compose.yml rm -f podverse_local_queue
+
+.PHONY: local_up_workers
+local_up_workers: config/podverse-local-workers.env
+	docker compose -f docker-compose/local/workers/docker-compose.yml up podverse_local_workers -d
+
+.PHONY: local_down_workers
+local_down_workers:
+	docker compose -f docker-compose/local/workers/docker-compose.yml stop podverse_local_workers
+	docker compose -f docker-compose/local/workers/docker-compose.yml rm -f podverse_local_workers
+
+.PHONY: local_up_api
+local_up_api:	config/podverse-local-api.env
+	docker compose -f docker-compose/local/srv/docker-compose.yml up podverse_local_api -d
+
+.PHONY: local_down_api
+local_down_api:
+	docker compose -f docker-compose/local/srv/docker-compose.yml stop podverse_local_api
+	docker compose -f docker-compose/local/srv/docker-compose.yml rm -f podverse_local_api

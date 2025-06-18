@@ -1,0 +1,13 @@
+config/podverse-test-db.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+.PHONY: up_test_db
+up_test_db: config/podverse-test-db.env
+	docker compose -f docker-compose/test/docker-compose.yml up podverse_test_db -d
+
+.PHONY: down_test_db
+down_test_db:
+	docker compose -f docker-compose/test/docker-compose.yml stop podverse_test_db
+	docker compose -f docker-compose/test/docker-compose.yml rm -f podverse_test_db

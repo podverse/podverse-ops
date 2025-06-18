@@ -1,0 +1,42 @@
+volumes:
+  rabbitmq_data:
+
+networks:
+  podverse_local_network:
+    external: true
+
+services:
+
+  podverse_local_queue:
+    image: rabbitmq:3-management
+    container_name: podverse_local_queue
+    env_file:
+      - ../../../config/podverse-local-queue.env
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    networks:
+      - podverse_local_network
+    restart: always
+    shm_size: 1gb
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'
+
+  podverse_local_workers:
+    image: ghcr.io/podverse/podverse-workers/podverse-workers:5.1.0-alpha.1
+    container_name: podverse_local_workers
+    env_file:
+      - ../../../config/podverse-local-workers.env
+    networks:
+      - podverse_local_network
+    shm_size: 1gb
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'

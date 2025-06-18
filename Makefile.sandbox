@@ -1,0 +1,73 @@
+.PHONY: sandbox_validate_init
+sandbox_validate_init: config/podverse-sandbox-db.env config/podverse-sandbox-queue.env config/podverse-sandbox-workers.env config/podverse-sandbox-api.env
+
+config/podverse-sandbox-db.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+config/podverse-sandbox-queue.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+config/podverse-sandbox-workers.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+config/podverse-sandbox-api.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+.PHONY: sandbox_up_all
+sandbox_up_all:
+	sandbox_validate_init
+	sandbox_up_db
+	sandbox_up_queue
+	sandbox_up_workers
+	sandbox_up_api
+
+.PHONY: sandbox_down_all
+sandbox_down_all:
+	sandbox_down_db
+	sandbox_down_queue
+	sandbox_down_workers
+	sandbox_down_api
+
+.PHONY: sandbox_up_db
+sandbox_up_db: config/podverse-sandbox-db.env
+	docker compose -f docker-compose/sandbox/db/docker-compose.yml up podverse_sandbox_db -d
+
+.PHONY: sandbox_down_db
+sandbox_down_db:
+	docker compose -f docker-compose/sandbox/db/docker-compose.yml stop podverse_sandbox_db
+	docker compose -f docker-compose/sandbox/db/docker-compose.yml rm -f podverse_sandbox_db
+
+.PHONY: sandbox_up_queue
+sandbox_up_queue: config/podverse-sandbox-queue.env
+	docker compose -f docker-compose/sandbox/workers/docker-compose.yml up podverse_sandbox_queue -d
+
+.PHONY: sandbox_down_queue
+sandbox_down_queue:
+	docker compose -f docker-compose/sandbox/workers/docker-compose.yml stop podverse_sandbox_queue
+	docker compose -f docker-compose/sandbox/workers/docker-compose.yml rm -f podverse_sandbox_queue
+
+.PHONY: sandbox_up_workers
+sandbox_up_workers: config/podverse-sandbox-workers.env
+	docker compose -f docker-compose/sandbox/workers/docker-compose.yml up podverse_sandbox_workers -d
+
+.PHONY: sandbox_down_workers
+sandbox_down_workers:
+	docker compose -f docker-compose/sandbox/workers/docker-compose.yml stop podverse_sandbox_workers
+	docker compose -f docker-compose/sandbox/workers/docker-compose.yml rm -f podverse_sandbox_workers
+
+.PHONY: sandbox_up_api
+sandbox_up_api:	config/podverse-sandbox-api.env
+	docker compose -f docker-compose/sandbox/srv/docker-compose.yml up podverse_sandbox_api -d
+
+.PHONY: sandbox_down_api
+sandbox_down_api:
+	docker compose -f docker-compose/sandbox/srv/docker-compose.yml stop podverse_sandbox_api
+	docker compose -f docker-compose/sandbox/srv/docker-compose.yml rm -f podverse_sandbox_api
