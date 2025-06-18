@@ -2,35 +2,24 @@ node_modules
 
 *.DS_Store
 
-truffle.log
-
 .vscode/terminals.json
 
-config/podverse-api.env
-config/podverse-db.env
-config/podverse-queue.env
-config/podverse-web.env
-config/podverse-workers.env
+config/podverse-local-api.env
+config/podverse-local-db.env
+config/podverse-local-queue.env
+config/podverse-local-web.env
+config/podverse-local-workers.env
 
-config/podverse-db-sandbox.env
+config/podverse-test-db.env
 
-config/podverse-api-stage.env
-config/podverse-db-stage.env
-config/podverse-web-stage.env
+config/podverse-sandbox-api.env
+config/podverse-sandbox-db.env
+config/podverse-sandbox-queue.env
+config/podverse-sandbox-web.env
+config/podverse-sandbox-workers.env
 
-config/podverse-api-prod.env
-config/podverse-db-prod.env
-config/podverse-web-prod.env
-
-config/google/jwt.keys.json
-
-manticore/data*
-manticore/episode_export.csv
-
-utils/translate-json/node_modules
-
-temp
-
-nginx-error.log
-
-proxy/local/certs
+config/podverse-prod-api.env
+config/podverse-prod-db.env
+config/podverse-prod-queue.env
+config/podverse-prod-web.env
+config/podverse-prod-workers.env
