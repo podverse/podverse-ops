@@ -2,7 +2,7 @@ volumes:
   rabbitmq_data:
 
 networks:
-  podverse_local_network:
+  podverse_sandbox_network:
     external: true
 
 services:
@@ -22,13 +22,12 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     logging:
-      driver: 'json-file'
+      driver: "syslog"
       options:
-        max-file: '1'
-        max-size: '50m'
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
 
   podverse_sandbox_workers:
-    image: podverse-workers:latest
+    image: ghcr.io/podverse/podverse-workers/podverse-workers:REPLACE_WITH_WORKERS_VERSION
     container_name: podverse_sandbox_workers
     env_file:
       - ../../../config/podverse-sandbox-workers.env
@@ -36,7 +35,6 @@ services:
       - podverse_sandbox_network
     shm_size: 1gb
     logging:
-      driver: 'json-file'
+      driver: "syslog"
       options:
-        max-file: '1'
-        max-size: '50m'
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"

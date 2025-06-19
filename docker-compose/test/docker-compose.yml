@@ -3,7 +3,7 @@ volumes:
   rabbitmq_data:
 
 networks:
-  podverse_local_network:
+  podverse_sandbox_network:
     external: true
 
 services:
@@ -13,7 +13,7 @@ services:
     env_file:
       - ../../config/podverse-test-db.env
     ports:
-      - '5111:5432'
+      - '5111:5432' # Use port 5111 for the test database so it doesn't conflict with the dev database
     networks:
       - podverse_network
     # to initialize the database with the schema, you can run:

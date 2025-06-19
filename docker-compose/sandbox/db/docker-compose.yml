@@ -1,5 +1,5 @@
 networks:
-  podverse_local_network:
+  podverse_sandbox_network:
     external: true
 
 volumes:
@@ -40,7 +40,6 @@ services:
     restart: always
     shm_size: 1gb
     logging:
-      driver: 'json-file'
+      driver: "syslog"
       options:
-        max-file: '1'
-        max-size: '50m'
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"

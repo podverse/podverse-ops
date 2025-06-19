@@ -1,11 +1,11 @@
 networks:
-  podverse_local_network:
+  podverse_sandbox_network:
     external: true
 
 services:
 
   podverse_sandbox_api:
-    image: ghcr.io/podverse/podverse-workers/podverse-workers:5.1.0-alpha.1
+    image: ghcr.io/podverse/podverse-api/podverse-api:REPLACE_WITH_API_VERSION
     container_name: podverse_sandbox_api
     env_file:
       - ../../../config/podverse-sandbox-api.env
@@ -15,7 +15,6 @@ services:
       - "1234:1234"
     shm_size: 1gb
     logging:
-      driver: 'json-file'
+      driver: "syslog"
       options:
-        max-file: '1'
-        max-size: '50m'
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
