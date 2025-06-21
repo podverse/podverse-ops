@@ -44,6 +44,7 @@ local_up_db: config/podverse-local-db.env
 local_down_db:
 	docker compose -f docker-compose/local/db/docker-compose.yml stop podverse_local_db
 	docker compose -f docker-compose/local/db/docker-compose.yml rm -f podverse_local_db
+	docker image rm -f postgres
 
 .PHONY: local_up_queue
 local_up_queue: config/podverse-local-queue.env
@@ -53,6 +54,7 @@ local_up_queue: config/podverse-local-queue.env
 local_down_queue:
 	docker compose -f docker-compose/local/workers/docker-compose.yml stop podverse_local_queue
 	docker compose -f docker-compose/local/workers/docker-compose.yml rm -f podverse_local_queue
+	docker image rm -f rabbitmq
 
 .PHONY: local_up_workers
 local_up_workers: config/podverse-local-workers.env
@@ -62,6 +64,7 @@ local_up_workers: config/podverse-local-workers.env
 local_down_workers:
 	docker compose -f docker-compose/local/workers/docker-compose.yml stop podverse_local_workers
 	docker compose -f docker-compose/local/workers/docker-compose.yml rm -f podverse_local_workers
+	docker image rm -f ghcr.io/podverse/podverse-workers/podverse-workers
 
 .PHONY: local_up_api
 local_up_api:	config/podverse-local-api.env
@@ -71,3 +74,4 @@ local_up_api:	config/podverse-local-api.env
 local_down_api:
 	docker compose -f docker-compose/local/srv/docker-compose.yml stop podverse_local_api
 	docker compose -f docker-compose/local/srv/docker-compose.yml rm -f podverse_local_api
+	docker image rm -f ghcr.io/podverse/podverse-api/podverse-api
