@@ -21,57 +21,57 @@ config/podverse-local-api.env:
 	@echo "Copying from example file"
 	cp ./$@.example ./$@
 
-.PHONY: local_up_all
-local_up_all:
-	$(MAKE) local_validate_init
-	$(MAKE) local_up_db
-	$(MAKE) local_up_queue
-	$(MAKE) local_up_workers
-	$(MAKE) local_up_api
-
-.PHONY: local_down_all
-local_down_all:
-	$(MAKE) local_down_api
-	$(MAKE) local_down_workers
-	$(MAKE) local_down_queue
-	$(MAKE) local_down_db
-
-.PHONY: local_up_db
-local_up_db: config/podverse-local-db.env
-	docker compose -f docker-compose/local/db/docker-compose.yml up podverse_local_db -d
-
-.PHONY: local_down_db
-local_down_db:
-	docker compose -f docker-compose/local/db/docker-compose.yml stop podverse_local_db
-	docker compose -f docker-compose/local/db/docker-compose.yml rm -f podverse_local_db
-  docker images "postgres" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
-
-.PHONY: local_up_queue
-local_up_queue: config/podverse-local-queue.env
-	docker compose -f docker-compose/local/workers/docker-compose.yml up podverse_local_queue -d
-
-.PHONY: local_down_queue
-local_down_queue:
-	docker compose -f docker-compose/local/workers/docker-compose.yml stop podverse_local_queue
-	docker compose -f docker-compose/local/workers/docker-compose.yml rm -f podverse_local_queue
-	docker images "rabbitmq" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
-
-.PHONY: local_up_workers
-local_up_workers: config/podverse-local-workers.env
+.PHONY: local_workers_up
+local_workers_up: config/podverse-local-workers.env
 	docker compose -f docker-compose/local/workers/docker-compose.yml pull podverse_local_workers
 
-.PHONY: local_down_workers
-local_down_workers:
+.PHONY: local_workers_down
+local_workers_down:
 	docker compose -f docker-compose/local/workers/docker-compose.yml stop podverse_local_workers
 	docker compose -f docker-compose/local/workers/docker-compose.yml rm -f podverse_local_workers
 	docker images "ghcr.io/podverse/podverse-workers/podverse-workers" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
 
-.PHONY: local_up_api
-local_up_api:	config/podverse-local-api.env
+.PHONY: local_db_up
+local_db_up: config/podverse-local-db.env
+	docker compose -f docker-compose/local/db/docker-compose.yml up podverse_local_db -d
+
+.PHONY: local_db_down
+local_db_down:
+	docker compose -f docker-compose/local/db/docker-compose.yml stop podverse_local_db
+	docker compose -f docker-compose/local/db/docker-compose.yml rm -f podverse_local_db
+	docker images "postgres" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
+
+.PHONY: local_queue_up
+local_queue_up: config/podverse-local-queue.env
+	docker compose -f docker-compose/local/workers/docker-compose.yml up podverse_local_queue -d
+
+.PHONY: local_queue_down
+local_queue_down:
+	docker compose -f docker-compose/local/workers/docker-compose.yml stop podverse_local_queue
+	docker compose -f docker-compose/local/workers/docker-compose.yml rm -f podverse_local_queue
+	docker images "rabbitmq" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
+
+.PHONY: local_api_up
+local_api_up: config/podverse-local-api.env
 	docker compose -f docker-compose/local/srv/docker-compose.yml up podverse_local_api -d
 
-.PHONY: local_down_api
-local_down_api:
+.PHONY: local_api_down
+local_api_down:
 	docker compose -f docker-compose/local/srv/docker-compose.yml stop podverse_local_api
 	docker compose -f docker-compose/local/srv/docker-compose.yml rm -f podverse_local_api
 	docker images "ghcr.io/podverse/podverse-api/podverse-api" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
+
+.PHONY: local_all_up
+local_all_up:
+	$(MAKE) local_validate_init
+	$(MAKE) local_db_up
+	$(MAKE) local_queue_up
+	$(MAKE) local_workers_up
+	$(MAKE) local_api_up
+
+.PHONY: local_all_down
+local_all_down:
+	$(MAKE) local_api_down
+	$(MAKE) local_workers_down
+	$(MAKE) local_queue_down
+	$(MAKE) local_db_down
