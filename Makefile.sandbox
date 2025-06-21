@@ -58,7 +58,7 @@ sandbox_down_queue:
 
 .PHONY: sandbox_up_workers
 sandbox_up_workers: config/podverse-sandbox-workers.env
-	docker compose -f docker-compose/sandbox/workers/docker-compose.yml up podverse_sandbox_workers -d
+	docker compose -f docker-compose/sandbox/workers/docker-compose.yml pull podverse_sandbox_workers
 
 .PHONY: sandbox_down_workers
 sandbox_down_workers:

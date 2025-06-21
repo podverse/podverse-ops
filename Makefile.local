@@ -58,7 +58,7 @@ local_down_queue:
 
 .PHONY: local_up_workers
 local_up_workers: config/podverse-local-workers.env
-	docker compose -f docker-compose/local/workers/docker-compose.yml up podverse_local_workers -d
+	docker compose -f docker-compose/local/workers/docker-compose.yml pull podverse_local_workers
 
 .PHONY: local_down_workers
 local_down_workers:
