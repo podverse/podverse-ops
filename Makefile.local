@@ -23,18 +23,18 @@ config/podverse-local-api.env:
 
 .PHONY: local_up_all
 local_up_all:
-	local_validate_init
-	local_up_db
-	local_up_queue
-	local_up_workers
-	local_up_api
+	$(MAKE) local_validate_init
+	$(MAKE) local_up_db
+	$(MAKE) local_up_queue
+	$(MAKE) local_up_workers
+	$(MAKE) local_up_api
 
 .PHONY: local_down_all
 local_down_all:
-	local_down_db
-	local_down_queue
-	local_down_workers
-	local_down_api
+	$(MAKE) local_down_db
+	$(MAKE) local_down_queue
+	$(MAKE) local_down_workers
+	$(MAKE) local_down_api
 
 .PHONY: local_up_db
 local_up_db: config/podverse-local-db.env

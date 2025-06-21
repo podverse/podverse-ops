@@ -23,18 +23,18 @@ config/podverse-sandbox-api.env:
 
 .PHONY: sandbox_up_all
 sandbox_up_all:
-	sandbox_validate_init
-	sandbox_up_db
-	sandbox_up_queue
-	sandbox_up_workers
-	sandbox_up_api
+	$(MAKE) sandbox_validate_init
+	$(MAKE) sandbox_up_db
+	$(MAKE) sandbox_up_queue
+	$(MAKE) sandbox_up_workers
+	$(MAKE) sandbox_up_api
 
 .PHONY: sandbox_down_all
 sandbox_down_all:
-	sandbox_down_db
-	sandbox_down_queue
-	sandbox_down_workers
-	sandbox_down_api
+	$(MAKE) sandbox_down_db
+	$(MAKE) sandbox_down_queue
+	$(MAKE) sandbox_down_workers
+	$(MAKE) sandbox_down_api
 
 .PHONY: sandbox_up_db
 sandbox_up_db: config/podverse-sandbox-db.env
