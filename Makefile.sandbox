@@ -47,8 +47,6 @@ sandbox_workers_up: config/podverse-sandbox-workers.env
 
 .PHONY: sandbox_workers_down
 sandbox_workers_down:
-	docker compose -f docker-compose/sandbox/workers/docker-compose.yml stop podverse_sandbox_workers
-	docker compose -f docker-compose/sandbox/workers/docker-compose.yml rm -f podverse_sandbox_workers
 	docker images "ghcr.io/podverse/podverse-workers/podverse-workers" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
 
 .PHONY: sandbox_api_up
