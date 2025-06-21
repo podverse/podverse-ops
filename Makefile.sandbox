@@ -31,10 +31,10 @@ sandbox_up_all:
 
 .PHONY: sandbox_down_all
 sandbox_down_all:
-	$(MAKE) sandbox_down_db
-	$(MAKE) sandbox_down_queue
-	$(MAKE) sandbox_down_workers
 	$(MAKE) sandbox_down_api
+	$(MAKE) sandbox_down_workers
+	$(MAKE) sandbox_down_queue
+	$(MAKE) sandbox_down_db
 
 .PHONY: sandbox_up_db
 sandbox_up_db: config/podverse-sandbox-db.env

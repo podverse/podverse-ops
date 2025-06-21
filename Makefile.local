@@ -31,10 +31,10 @@ local_up_all:
 
 .PHONY: local_down_all
 local_down_all:
-	$(MAKE) local_down_db
-	$(MAKE) local_down_queue
-	$(MAKE) local_down_workers
 	$(MAKE) local_down_api
+	$(MAKE) local_down_workers
+	$(MAKE) local_down_queue
+	$(MAKE) local_down_db
 
 .PHONY: local_up_db
 local_up_db: config/podverse-local-db.env
