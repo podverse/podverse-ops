@@ -44,7 +44,7 @@ sandbox_up_db: config/podverse-sandbox-db.env
 sandbox_down_db:
 	docker compose -f docker-compose/sandbox/db/docker-compose.yml stop podverse_sandbox_db
 	docker compose -f docker-compose/sandbox/db/docker-compose.yml rm -f podverse_sandbox_db
-	docker image rm -f postgres
+	docker images "postgres" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
 
 .PHONY: sandbox_up_queue
 sandbox_up_queue: config/podverse-sandbox-queue.env
@@ -54,7 +54,7 @@ sandbox_up_queue: config/podverse-sandbox-queue.env
 sandbox_down_queue:
 	docker compose -f docker-compose/sandbox/workers/docker-compose.yml stop podverse_sandbox_queue
 	docker compose -f docker-compose/sandbox/workers/docker-compose.yml rm -f podverse_sandbox_queue
-	docker image rm -f rabbitmq
+	docker images "rabbitmq" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
 
 .PHONY: sandbox_up_workers
 sandbox_up_workers: config/podverse-sandbox-workers.env
@@ -64,7 +64,7 @@ sandbox_up_workers: config/podverse-sandbox-workers.env
 sandbox_down_workers:
 	docker compose -f docker-compose/sandbox/workers/docker-compose.yml stop podverse_sandbox_workers
 	docker compose -f docker-compose/sandbox/workers/docker-compose.yml rm -f podverse_sandbox_workers
-	docker image rm -f ghcr.io/podverse/podverse-workers/podverse-workers
+	docker images "ghcr.io/podverse/podverse-workers/podverse-workers" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
 
 .PHONY: sandbox_up_api
 sandbox_up_api:	config/podverse-sandbox-api.env
@@ -74,4 +74,4 @@ sandbox_up_api:	config/podverse-sandbox-api.env
 sandbox_down_api:
 	docker compose -f docker-compose/sandbox/srv/docker-compose.yml stop podverse_sandbox_api
 	docker compose -f docker-compose/sandbox/srv/docker-compose.yml rm -f podverse_sandbox_api
-	docker image rm -f ghcr.io/podverse/podverse-api/podverse-api
+	docker images "ghcr.io/podverse/podverse-api/podverse-api" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true

@@ -11,3 +11,4 @@ up_test_db: config/podverse-test-db.env
 down_test_db:
 	docker compose -f docker-compose/test/docker-compose.yml stop podverse_test_db
 	docker compose -f docker-compose/test/docker-compose.yml rm -f podverse_test_db
+	docker images "postgres" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
