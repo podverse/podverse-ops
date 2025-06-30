@@ -34,6 +34,8 @@ services:
     networks:
       - podverse_sandbox_network
     shm_size: 1gb
+    volumes:
+      - ../../../config/firebase/firebase-key.json:/app/config/firebase-key.json:ro
     logging:
       driver: "syslog"
       options:
