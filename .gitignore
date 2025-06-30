@@ -23,3 +23,5 @@ config/podverse-prod-db.env
 config/podverse-prod-queue.env
 config/podverse-prod-web.env
 config/podverse-prod-workers.env
+
+config/firebase/firebase-key.json
