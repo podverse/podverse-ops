@@ -7,9 +7,9 @@ networks:
 
 services:
 
-  podverse_sandbox_queue_atmp:
+  podverse_sandbox_queue_amtp:
     image: rabbitmq:3-management
-    container_name: podverse_sandbox_queue_atmp
+    container_name: podverse_sandbox_queue_amtp
     env_file:
       - ../../../config/podverse-sandbox-queue-amtp.env
     ports:

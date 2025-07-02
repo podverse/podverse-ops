@@ -7,9 +7,9 @@ networks:
 
 services:
 
-  podverse_local_queue_atmp:
+  podverse_local_queue_amtp:
     image: rabbitmq:3-management
-    container_name: podverse_local_queue_atmp
+    container_name: podverse_local_queue_amtp
     env_file:
       - ../../../config/podverse-local-queue-amtp.env
     ports:

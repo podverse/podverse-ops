@@ -33,7 +33,7 @@ local_db_down:
 
 .PHONY: local_queue_amtp_up
 local_queue_amtp_up: config/podverse-local-queue-amtp.env
-	docker compose -f docker-compose/local/queue-amtp/docker-compose.yml up podverse_local_queue_atmp -d
+	docker compose -f docker-compose/local/queue-amtp/docker-compose.yml up podverse_local_queue_amtp -d
 
 .PHONY: local_queue_amtp_down
 local_queue_amtp_down:

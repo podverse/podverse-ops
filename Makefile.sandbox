@@ -31,12 +31,12 @@ sandbox_db_down:
 	docker compose -f docker-compose/sandbox/db/docker-compose.yml rm -f podverse_sandbox_db
 	docker images "postgres" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
 
-.PHONY: sandbox_queue_atmp_up
-sandbox_queue_atmp_up: config/podverse-sandbox-queue-amtp.env
-	docker compose -f docker-compose/sandbox/queue/docker-compose.yml up podverse_sandbox_queue_atmp -d
+.PHONY: sandbox_queue_amtp_up
+sandbox_queue_amtp_up: config/podverse-sandbox-queue-amtp.env
+	docker compose -f docker-compose/sandbox/queue/docker-compose.yml up podverse_sandbox_queue_amtp -d
 
-.PHONY: sandbox_queue_atmp_down
-sandbox_queue_atmp_down:
+.PHONY: sandbox_queue_amtp_down
+sandbox_queue_amtp_down:
 	docker compose -f docker-compose/sandbox/queue/docker-compose.yml down --remove-orphans --rmi all
 
 .PHONY: sandbox_workers_up
