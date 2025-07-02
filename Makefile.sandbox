@@ -61,7 +61,7 @@ sandbox_api_down:
 sandbox_all_up:
 	$(MAKE) sandbox_validate_init
 	$(MAKE) sandbox_db_up
-	$(MAKE) sandbox_queue_up
+	$(MAKE) sandbox_queue_amtp_up
 	$(MAKE) sandbox_workers_up
 	$(MAKE) sandbox_api_up
 
@@ -69,5 +69,5 @@ sandbox_all_up:
 sandbox_all_down:
 	$(MAKE) sandbox_api_down
 	$(MAKE) sandbox_workers_down
-	$(MAKE) sandbox_queue_down
+	$(MAKE) sandbox_queue_amtp_down
 	$(MAKE) sandbox_db_down
