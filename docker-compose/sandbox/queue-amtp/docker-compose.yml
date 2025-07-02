@@ -1,0 +1,27 @@
+volumes:
+  rabbitmq_data:
+
+networks:
+  podverse_sandbox_network:
+    external: true
+
+services:
+
+  podverse_sandbox_queue_atmp:
+    image: rabbitmq:3-management
+    container_name: podverse_sandbox_queue_atmp
+    env_file:
+      - ../../../config/podverse-sandbox-queue.env
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    networks:
+      - podverse_sandbox_network
+    restart: always
+    shm_size: 1gb
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    logging:
+      driver: "syslog"
+      options:
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"

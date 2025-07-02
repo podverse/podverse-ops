@@ -33,12 +33,12 @@ sandbox_db_down:
 
 .PHONY: sandbox_queue_up
 sandbox_queue_up: config/podverse-sandbox-queue.env
-	docker compose -f docker-compose/sandbox/workers/docker-compose.yml up podverse_sandbox_queue -d
+	docker compose -f docker-compose/sandbox/workers/docker-compose.yml up podverse_sandbox_queue_atmp -d
 
 .PHONY: sandbox_queue_down
 sandbox_queue_down:
-	docker compose -f docker-compose/sandbox/workers/docker-compose.yml stop podverse_sandbox_queue
-	docker compose -f docker-compose/sandbox/workers/docker-compose.yml rm -f podverse_sandbox_queue
+	docker compose -f docker-compose/sandbox/workers/docker-compose.yml stop podverse_sandbox_queue_atmp
+	docker compose -f docker-compose/sandbox/workers/docker-compose.yml rm -f podverse_sandbox_queue_atmp
 	docker images "rabbitmq" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
 
 .PHONY: sandbox_workers_up
@@ -47,9 +47,7 @@ sandbox_workers_up: config/podverse-sandbox-workers.env
 
 .PHONY: sandbox_workers_down
 sandbox_workers_down:
-	docker ps -a --filter "ancestor=ghcr.io/podverse/podverse-workers/podverse-workers" --format "{{.ID}}" | xargs -r docker stop || true
-	docker ps -a --filter "ancestor=ghcr.io/podverse/podverse-workers/podverse-workers" --format "{{.ID}}" | xargs -r docker rm -f || true
-	docker images "ghcr.io/podverse/podverse-workers/podverse-workers" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
+	docker compose -f docker-compose/sandbox/workers/docker-compose.yml down --remove-orphans --rmi all
 
 .PHONY: sandbox_api_up
 sandbox_api_up: config/podverse-sandbox-api.env

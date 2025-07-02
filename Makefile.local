@@ -33,12 +33,12 @@ local_db_down:
 
 .PHONY: local_queue_up
 local_queue_up: config/podverse-local-queue.env
-	docker compose -f docker-compose/local/workers/docker-compose.yml up podverse_local_queue -d
+	docker compose -f docker-compose/local/workers/docker-compose.yml up podverse_local_queue_atmp -d
 
 .PHONY: local_queue_down
 local_queue_down:
-	docker compose -f docker-compose/local/workers/docker-compose.yml stop podverse_local_queue
-	docker compose -f docker-compose/local/workers/docker-compose.yml rm -f podverse_local_queue
+	docker compose -f docker-compose/local/workers/docker-compose.yml stop podverse_local_queue_atmp
+	docker compose -f docker-compose/local/workers/docker-compose.yml rm -f podverse_local_queue_atmp
 	docker images "rabbitmq" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
 
 .PHONY: local_workers_up
@@ -47,9 +47,7 @@ local_workers_up: config/podverse-local-workers.env
 
 .PHONY: local_workers_down
 local_workers_down:
-	docker ps -a --filter "ancestor=ghcr.io/podverse/podverse-workers/podverse-workers" --format "{{.ID}}" | xargs -r docker stop || true
-	docker ps -a --filter "ancestor=ghcr.io/podverse/podverse-workers/podverse-workers" --format "{{.ID}}" | xargs -r docker rm -f || true
-	docker images "ghcr.io/podverse/podverse-workers/podverse-workers" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
+	docker compose -f docker-compose/local/workers/docker-compose.yml down --remove-orphans --rmi all
 
 .PHONY: local_api_up
 local_api_up: config/podverse-local-api.env
