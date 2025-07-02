@@ -1,12 +1,12 @@
 .PHONY: sandbox_validate_init
-sandbox_validate_init: config/podverse-sandbox-db.env config/podverse-sandbox-queue.env config/podverse-sandbox-workers.env config/podverse-sandbox-api.env
+sandbox_validate_init: config/podverse-sandbox-db.env config/podverse-sandbox-queue-amtp.env config/podverse-sandbox-workers.env config/podverse-sandbox-api.env
 
 config/podverse-sandbox-db.env:
 	@echo "Missing: $@"
 	@echo "Copying from example file"
 	cp ./$@.example ./$@
 
-config/podverse-sandbox-queue.env:
+config/podverse-sandbox-queue-amtp.env:
 	@echo "Missing: $@"
 	@echo "Copying from example file"
 	cp ./$@.example ./$@
@@ -31,12 +31,12 @@ sandbox_db_down:
 	docker compose -f docker-compose/sandbox/db/docker-compose.yml rm -f podverse_sandbox_db
 	docker images "postgres" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
 
-.PHONY: sandbox_queue_up
-sandbox_queue_up: config/podverse-sandbox-queue.env
+.PHONY: sandbox_queue_atmp_up
+sandbox_queue_atmp_up: config/podverse-sandbox-queue-amtp.env
 	docker compose -f docker-compose/sandbox/queue/docker-compose.yml up podverse_sandbox_queue_atmp -d
 
-.PHONY: sandbox_queue_down
-sandbox_queue_down:
+.PHONY: sandbox_queue_atmp_down
+sandbox_queue_atmp_down:
 	docker compose -f docker-compose/sandbox/queue/docker-compose.yml down --remove-orphans --rmi all
 
 .PHONY: sandbox_workers_up

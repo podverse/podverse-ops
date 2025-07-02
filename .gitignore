@@ -6,7 +6,7 @@ node_modules
 
 config/podverse-local-api.env
 config/podverse-local-db.env
-config/podverse-local-queue.env
+config/podverse-local-queue-amtp.env
 config/podverse-local-web.env
 config/podverse-local-workers.env
 
@@ -14,7 +14,7 @@ config/podverse-test-db.env
 
 config/podverse-sandbox-api.env
 config/podverse-sandbox-db.env
-config/podverse-sandbox-queue.env
+config/podverse-sandbox-queue-amtp.env
 config/podverse-sandbox-web.env
 config/podverse-sandbox-workers.env
 

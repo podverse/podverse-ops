@@ -11,7 +11,7 @@ services:
     image: rabbitmq:3-management
     container_name: podverse_local_queue_atmp
     env_file:
-      - ../../../config/podverse-local-queue.env
+      - ../../../config/podverse-local-queue-amtp.env
     ports:
       - '5672:5672'
       - '15672:15672'

@@ -1,12 +1,12 @@
 .PHONY: local_validate_init
-local_validate_init: config/podverse-local-db.env config/podverse-local-queue.env config/podverse-local-workers.env config/podverse-local-api.env
+local_validate_init: config/podverse-local-db.env config/podverse-local-queue-amtp.env config/podverse-local-workers.env config/podverse-local-api.env
 
 config/podverse-local-db.env:
 	@echo "Missing: $@"
 	@echo "Copying from example file"
 	cp ./$@.example ./$@
 
-config/podverse-local-queue.env:
+config/podverse-local-queue-amtp.env:
 	@echo "Missing: $@"
 	@echo "Copying from example file"
 	cp ./$@.example ./$@
@@ -31,13 +31,13 @@ local_db_down:
 	docker compose -f docker-compose/local/db/docker-compose.yml rm -f podverse_local_db
 	docker images "postgres" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
 
-.PHONY: local_queue_up
-local_queue_up: config/podverse-local-queue.env
-	docker compose -f docker-compose/local/queue/docker-compose.yml up podverse_local_queue_atmp -d
+.PHONY: local_queue_amtp_up
+local_queue_amtp_up: config/podverse-local-queue-amtp.env
+	docker compose -f docker-compose/local/queue-amtp/docker-compose.yml up podverse_local_queue_atmp -d
 
-.PHONY: local_queue_down
-local_queue_down:
-	docker compose -f docker-compose/local/queue/docker-compose.yml down --remove-orphans --rmi all
+.PHONY: local_queue_amtp_down
+local_queue_amtp_down:
+	docker compose -f docker-compose/local/queue-amtp/docker-compose.yml down --remove-orphans --rmi all
 
 .PHONY: local_workers_up
 local_workers_up: config/podverse-local-workers.env

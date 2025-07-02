@@ -11,7 +11,7 @@ services:
     image: rabbitmq:3-management
     container_name: podverse_sandbox_queue_atmp
     env_file:
-      - ../../../config/podverse-sandbox-queue.env
+      - ../../../config/podverse-sandbox-queue-amtp.env
     ports:
       - '5672:5672'
       - '15672:15672'
