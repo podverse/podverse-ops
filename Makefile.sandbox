@@ -33,11 +33,11 @@ sandbox_db_down:
 
 .PHONY: sandbox_queue_amtp_up
 sandbox_queue_amtp_up: config/podverse-sandbox-queue-amtp.env
-	docker compose -f docker-compose/sandbox/queue/docker-compose.yml up podverse_sandbox_queue_amtp -d
+	docker compose -f docker-compose/sandbox/queue-amtp/docker-compose.yml up podverse_sandbox_queue_amtp -d
 
 .PHONY: sandbox_queue_amtp_down
 sandbox_queue_amtp_down:
-	docker compose -f docker-compose/sandbox/queue/docker-compose.yml down --remove-orphans --rmi all
+	docker compose -f docker-compose/sandbox/queue-amtp/docker-compose.yml down --remove-orphans --rmi all
 
 .PHONY: sandbox_workers_up
 sandbox_workers_up: config/podverse-sandbox-workers.env
