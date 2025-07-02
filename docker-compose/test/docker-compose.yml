@@ -1,7 +1,3 @@
-volumes:
-  vhost:
-  rabbitmq_data:
-
 networks:
   podverse_sandbox_network:
     external: true
