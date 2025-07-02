@@ -47,6 +47,8 @@ local_workers_up: config/podverse-local-workers.env
 
 .PHONY: local_workers_down
 local_workers_down:
+	docker ps -a --filter "ancestor=ghcr.io/podverse/podverse-workers/podverse-workers" --format "{{.ID}}" | xargs -r docker stop || true
+	docker ps -a --filter "ancestor=ghcr.io/podverse/podverse-workers/podverse-workers" --format "{{.ID}}" | xargs -r docker rm -f || true
 	docker images "ghcr.io/podverse/podverse-workers/podverse-workers" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
 
 .PHONY: local_api_up

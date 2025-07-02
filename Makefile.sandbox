@@ -47,6 +47,8 @@ sandbox_workers_up: config/podverse-sandbox-workers.env
 
 .PHONY: sandbox_workers_down
 sandbox_workers_down:
+	docker ps -a --filter "ancestor=ghcr.io/podverse/podverse-workers/podverse-workers" --format "{{.ID}}" | xargs -r docker stop || true
+	docker ps -a --filter "ancestor=ghcr.io/podverse/podverse-workers/podverse-workers" --format "{{.ID}}" | xargs -r docker rm -f || true
 	docker images "ghcr.io/podverse/podverse-workers/podverse-workers" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
 
 .PHONY: sandbox_api_up
