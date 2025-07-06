@@ -2,6 +2,9 @@ networks:
   podverse_local_network:
     external: true
 
+volumes:
+  podverse_local_workers_data:
+
 services:
 
   podverse_local_workers:
@@ -17,3 +20,6 @@ services:
       options:
         max-file: '1'
         max-size: '50m'
+    volumes:
+      - ../../../config/firebase/firebase-key.json:/app/config/firebase-key.json:ro
+      - podverse_local_workers_data:/data
