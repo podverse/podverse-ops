@@ -11,6 +11,7 @@ The order is:
 5) podverse-queue
 6) podverse-workers
 7) podverse-api
+8) podverse-web
 
 If you update and publish package 1, you need to update and publish packages 2-7.
 
