@@ -47,22 +47,23 @@ local_workers_down:
 
 .PHONY: local_api_up
 local_api_up: config/podverse-local-api.env
-	docker compose -f docker-compose/local/srv/docker-compose.yml up podverse_local_api -d
+	docker compose -f docker-compose/local/api/docker-compose.yml up podverse_local_api -d
 
 .PHONY: local_api_down
 local_api_down:
-	docker compose -f docker-compose/local/srv/docker-compose.yml down --remove-orphans --rmi all
+	docker compose -f docker-compose/local/api/docker-compose.yml down --remove-orphans --rmi all
 
-.PHONY: local_all_up
-local_all_up:
-	$(MAKE) local_validate_init
-	$(MAKE) local_db_up
-	$(MAKE) local_queue_up
-	$(MAKE) local_workers_up
-	$(MAKE) local_api_up
+.PHONY: local_web_up
+local_web_up: config/podverse-local-web.env
+	docker compose -f docker-compose/local/web/docker-compose.yml up podverse_local_web -d
+
+.PHONY: local_web_down
+local_web_down:
+	docker compose -f docker-compose/local/web/docker-compose.yml down --remove-orphans --rmi all
 
 .PHONY: local_all_down
 local_all_down:
+	$(MAKE) local_web_down
 	$(MAKE) local_api_down
 	$(MAKE) local_workers_down
 	$(MAKE) local_queue_down

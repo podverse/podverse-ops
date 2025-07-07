@@ -47,22 +47,23 @@ sandbox_workers_down:
 
 .PHONY: sandbox_api_up
 sandbox_api_up: config/podverse-sandbox-api.env
-	docker compose -f docker-compose/sandbox/srv/docker-compose.yml up podverse_sandbox_api -d
+	docker compose -f docker-compose/sandbox/api/docker-compose.yml up podverse_sandbox_api -d
 
 .PHONY: sandbox_api_down
 sandbox_api_down:
-	docker compose -f docker-compose/sandbox/srv/docker-compose.yml down --remove-orphans --rmi all
+	docker compose -f docker-compose/sandbox/api/docker-compose.yml down --remove-orphans --rmi all
 
-.PHONY: sandbox_all_up
-sandbox_all_up:
-	$(MAKE) sandbox_validate_init
-	$(MAKE) sandbox_db_up
-	$(MAKE) sandbox_queue_amtp_up
-	$(MAKE) sandbox_workers_up
-	$(MAKE) sandbox_api_up
+.PHONY: sandbox_web_up
+sandbox_web_up: config/podverse-sandbox-web.env
+	docker compose -f docker-compose/sandbox/web/docker-compose.yml up podverse_sandbox_web -d
+
+.PHONY: sandbox_web_down
+sandbox_web_down:
+	docker compose -f docker-compose/sandbox/web/docker-compose.yml down --remove-orphans --rmi all
 
 .PHONY: sandbox_all_down
 sandbox_all_down:
+	$(MAKE) sandbox_web_down
 	$(MAKE) sandbox_api_down
 	$(MAKE) sandbox_workers_down
 	$(MAKE) sandbox_queue_amtp_down

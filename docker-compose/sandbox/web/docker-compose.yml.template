@@ -1,0 +1,21 @@
+networks:
+  podverse_sandbox_network:
+    external: true
+
+services:
+
+  podverse_sandbox_web:
+    image: ghcr.io/podverse/podverse-web/podverse-web:REPLACE_WITH_WEB_VERSION
+    container_name: podverse_sandbox_web
+    env_file:
+      - ../../../config/podverse-sandbox-web.env
+    networks:
+      - podverse_sandbox_network
+    ports:
+      - "3000:3000"
+    command: npm start
+    shm_size: 1gb
+    logging:
+      driver: "syslog"
+      options:
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
