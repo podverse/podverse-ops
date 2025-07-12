@@ -1206,14 +1206,6 @@ CREATE TABLE account_membership_status (
 CREATE INDEX idx_account_membership_status_account_id ON account_membership_status(account_id);
 CREATE INDEX idx_account_membership_status_account_membership_id ON account_membership_status(account_membership_id);
 
-CREATE TABLE account_admin_roles (
-    id SERIAL PRIMARY KEY,
-    account_id integer NOT NULL REFERENCES account(id) ON DELETE CASCADE UNIQUE,
-    dev_admin BOOLEAN DEFAULT FALSE,
-    podping_admin BOOLEAN DEFAULT FALSE
-);
-
-CREATE INDEX idx_account_admin_roles_account_id ON account_admin_roles(account_id);
 -- 0003 migration
 
 CREATE TABLE clip (
