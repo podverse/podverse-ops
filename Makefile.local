@@ -1,5 +1,5 @@
 .PHONY: local_validate_init
-local_validate_init: config/podverse-local-db.env config/podverse-local-queue-amtp.env config/podverse-local-workers.env config/podverse-local-api.env
+local_validate_init: config/podverse-local-db.env config/podverse-local-queue-amtp.env config/podverse-local-workers.env config/podverse-local-api.env config/podverse-local-web.env
 
 config/podverse-local-db.env:
 	@echo "Missing: $@"
@@ -17,6 +17,11 @@ config/podverse-local-workers.env:
 	cp ./$@.example ./$@
 
 config/podverse-local-api.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+config/podverse-local-web.env:
 	@echo "Missing: $@"
 	@echo "Copying from example file"
 	cp ./$@.example ./$@

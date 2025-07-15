@@ -1,5 +1,5 @@
 .PHONY: sandbox_validate_init
-sandbox_validate_init: config/podverse-sandbox-db.env config/podverse-sandbox-queue-amtp.env config/podverse-sandbox-workers.env config/podverse-sandbox-api.env
+sandbox_validate_init: config/podverse-sandbox-db.env config/podverse-sandbox-queue-amtp.env config/podverse-sandbox-workers.env config/podverse-sandbox-api.env config/podverse-sandbox-web.env
 
 config/podverse-sandbox-db.env:
 	@echo "Missing: $@"
@@ -17,6 +17,11 @@ config/podverse-sandbox-workers.env:
 	cp ./$@.example ./$@
 
 config/podverse-sandbox-api.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+config/podverse-sandbox-web.env:
 	@echo "Missing: $@"
 	@echo "Copying from example file"
 	cp ./$@.example ./$@
