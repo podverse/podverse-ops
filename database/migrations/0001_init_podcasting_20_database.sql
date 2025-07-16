@@ -293,6 +293,7 @@ CREATE TABLE channel_about (
 
 CREATE INDEX idx_channel_about_channel_id ON channel_about(channel_id);
 CREATE INDEX idx_channel_about_itunes_type_id ON channel_about(itunes_type_id);
+CREATE INDEX idx_channel_about_last_pub_date ON channel_about(last_pub_date);
 
 --** CHANNEL > CATEGORY
 
