@@ -44,6 +44,12 @@
       "open": true
     },
     {
+      "name": "Podverse QA",
+      "description": "podverse-qa",
+      "cwd": "~/repos/podverse-qa",
+      "open": true
+    },
+    {
       "name": "Podverse Queue",
       "description": "podverse-queue",
       "cwd": "~/repos/podverse-queue",
