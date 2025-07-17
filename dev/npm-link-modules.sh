@@ -87,6 +87,14 @@ rm -rf dist
 rm package-lock.json
 npm install
 
+echo "Installing podverse-qa dependencies..."
+cd ../podverse-qa
+nvm use
+rm -rf node_modules
+rm -rf dist
+rm package-lock.json
+npm install
+
 # Link dependencies to npm
 
 echo "Linking podverse-helpers dependency..."
@@ -111,6 +119,11 @@ npm link
 
 echo "Linking podverse-queue dependency..."
 cd ../podverse-queue
+nvm use
+npm link
+
+echo "Linking podverse-qa dependency..."
+cd ../podverse-qa
 nvm use
 npm link
 
@@ -151,6 +164,11 @@ cd ../podverse-web
 nvm use
 npm link podverse-helpers
 
+echo "Linking podverse-qa dependencies..."
+cd ../podverse-qa
+nvm use
+npm link podverse-orm
+
 # Build all projects
 
 echo "Building podverse-helpers..."
@@ -190,5 +208,10 @@ npm run build
 
 echo "Building podverse-web..."
 cd ../podverse-web
+nvm use
+npm run build
+
+echo "Building podverse-qa..."
+cd ../podverse-qa
 nvm use
 npm run build

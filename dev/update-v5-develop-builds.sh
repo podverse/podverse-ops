@@ -87,6 +87,14 @@ rm -rf node_modules
 rm -rf dist
 npm install
 
+echo "Installing podverse-qa dependencies..."
+cd ../podverse-qa
+git pull origin v5-develop
+nvm use
+rm -rf node_modules
+rm -rf dist
+npm install
+
 # Link dependencies to npm
 
 echo "Linking podverse-helpers dependency..."
@@ -151,6 +159,11 @@ cd ../podverse-web
 nvm use
 npm link podverse-helpers
 
+echo "Linking podverse-qa dependencies..."
+cd ../podverse-qa
+nvm use
+npm link podverse-orm
+
 # Build all projects
 
 echo "Building podverse-helpers..."
@@ -190,5 +203,10 @@ npm run build
 
 echo "Building podverse-web..."
 cd ../podverse-web
+nvm use
+npm run build
+
+echo "Building podverse-qa..."
+cd ../podverse-qa
 nvm use
 npm run build
