@@ -167,7 +167,7 @@ npm link podverse-helpers
 echo "Linking podverse-qa dependencies..."
 cd ../podverse-qa
 nvm use
-npm link podverse-helpers podverse-orm
+npm link podverse-helpers podverse-external-services podverse-orm podverse-parser
 
 # Build all projects
 
