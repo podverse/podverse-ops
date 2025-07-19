@@ -632,6 +632,7 @@ CREATE INDEX idx_item_channel_id ON item(channel_id);
 CREATE INDEX idx_item_guid ON item(guid);
 CREATE INDEX idx_item_guid_enclosure_url ON item(guid_enclosure_url);
 CREATE INDEX idx_item_item_flag_status_id ON item(item_flag_status_id);
+CREATE INDEX idx_item_pub_date ON item(pub_date);
 
 --** ITEM > ABOUT > ITUNES TYPE
 
