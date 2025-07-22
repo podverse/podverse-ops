@@ -2,6 +2,12 @@
   "autorun": false,
   "terminals": [
     {
+      "name": "Podverse Admin",
+      "description": "podverse-admin",
+      "cwd": "~/repos/podverse-admin",
+      "open": true
+    },
+    {
       "name": "Podverse API",
       "description": "podverse-api",
       "cwd": "~/repos/podverse-api",
