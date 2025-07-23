@@ -60,6 +60,14 @@ CREATE TABLE account_email_change_verification (
 
 CREATE INDEX idx_account_email_change_verification_id ON account_email_change_verification(account_id);
 
+-- Location data is saved a ISO 3166-1 Alpha-2 format
+-- Meaning it is saved as 2 capital letters
+CREATE TABLE account_location (
+    id SERIAL PRIMARY KEY,
+    account_id INTEGER UNIQUE REFERENCES account(id) ON DELETE CASCADE,
+    region CHAR(2) CHECK (region ~ '^[A-Z]{2}$')
+);
+
 CREATE TABLE account_membership (
     id SERIAL PRIMARY KEY,
     tier TEXT UNIQUE CHECK (tier IN ('trial', 'basic'))

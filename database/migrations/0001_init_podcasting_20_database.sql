@@ -27,9 +27,9 @@ PODCASTING 2.0 DATABASE SCHEMA
 CREATE TABLE category (
     id SERIAL PRIMARY KEY,
     parent_id INTEGER REFERENCES category(id) ON DELETE CASCADE,
-    display_name varchar_normal NOT NULL, -- our own display name for the category
-    slug varchar_normal NOT NULL, -- our own web url slug for the category
-    mapping_key varchar_normal NOT NULL -- camel case version of the slug
+    display_name varchar_normal UNIQUE NOT NULL, -- our own display name for the category
+    slug varchar_normal UNIQUE NOT NULL, -- our own web url slug for the category
+    mapping_key varchar_normal UNIQUE NOT NULL -- camel case version of the slug
 );
 
 CREATE INDEX idx_category_parent_id ON category(parent_id);
@@ -229,11 +229,14 @@ EXECUTE FUNCTION set_updated_at_field();
 
 CREATE TABLE feed_log (
     id SERIAL PRIMARY KEY,
-    feed_id INTEGER NOT NULL UNIQUE REFERENCES feed(id) ON DELETE CASCADE,
-    last_http_status INTEGER,
-    last_good_http_status_time server_time,
-    last_finished_parse_time server_time,
-    parse_errors INTEGER DEFAULT 0
+    feed_id INTEGER NOT NULL REFERENCES feed(id) ON DELETE CASCADE,
+    http_status INTEGER,
+    is_success BOOLEAN,
+    parse_errors INTEGER,
+    parse_error_message varchar_normal,
+    started_at server_time,
+    finished_at server_time,
+    parsed_by varchar_normal -- This should be an Auth0 ID
 );
 
 CREATE INDEX idx_feed_log_feed_id ON feed_log(feed_id);

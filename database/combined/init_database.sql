@@ -107,9 +107,9 @@ PODCASTING 2.0 DATABASE SCHEMA
 CREATE TABLE category (
     id SERIAL PRIMARY KEY,
     parent_id INTEGER REFERENCES category(id) ON DELETE CASCADE,
-    display_name varchar_normal NOT NULL, -- our own display name for the category
-    slug varchar_normal NOT NULL, -- our own web url slug for the category
-    mapping_key varchar_normal NOT NULL -- camel case version of the slug
+    display_name varchar_normal UNIQUE NOT NULL, -- our own display name for the category
+    slug varchar_normal UNIQUE NOT NULL, -- our own web url slug for the category
+    mapping_key varchar_normal UNIQUE NOT NULL -- camel case version of the slug
 );
 
 CREATE INDEX idx_category_parent_id ON category(parent_id);
@@ -309,11 +309,14 @@ EXECUTE FUNCTION set_updated_at_field();
 
 CREATE TABLE feed_log (
     id SERIAL PRIMARY KEY,
-    feed_id INTEGER NOT NULL UNIQUE REFERENCES feed(id) ON DELETE CASCADE,
-    last_http_status INTEGER,
-    last_good_http_status_time server_time,
-    last_finished_parse_time server_time,
-    parse_errors INTEGER DEFAULT 0
+    feed_id INTEGER NOT NULL REFERENCES feed(id) ON DELETE CASCADE,
+    http_status INTEGER,
+    is_success BOOLEAN,
+    parse_errors INTEGER,
+    parse_error_message varchar_normal,
+    started_at server_time,
+    finished_at server_time,
+    parsed_by varchar_normal -- This should be an Auth0 ID
 );
 
 CREATE INDEX idx_feed_log_feed_id ON feed_log(feed_id);
@@ -1191,6 +1194,14 @@ CREATE TABLE account_email_change_verification (
 
 CREATE INDEX idx_account_email_change_verification_id ON account_email_change_verification(account_id);
 
+-- Location data is saved a ISO 3166-1 Alpha-2 format
+-- Meaning it is saved as 2 capital letters
+CREATE TABLE account_location (
+    id SERIAL PRIMARY KEY,
+    account_id INTEGER UNIQUE REFERENCES account(id) ON DELETE CASCADE,
+    region CHAR(2) CHECK (region ~ '^[A-Z]{2}$')
+);
+
 CREATE TABLE account_membership (
     id SERIAL PRIMARY KEY,
     tier TEXT UNIQUE CHECK (tier IN ('trial', 'basic'))
@@ -1707,4 +1718,28 @@ CREATE INDEX stats_aggregated_account_day_current_count_idx ON stats_aggregated_
 CREATE INDEX stats_aggregated_account_week_current_count_idx ON stats_aggregated_account(week_current_count);
 CREATE INDEX stats_aggregated_account_month_current_count_idx ON stats_aggregated_account(month_current_count);
 CREATE INDEX stats_aggregated_account_all_time_count_idx ON stats_aggregated_account(all_time_count);
+
+-- Create export_logs table
+CREATE TABLE export_logs (
+    id SERIAL PRIMARY KEY,
+    export_by TEXT NOT NULL,                             -- who triggered it (manually or via system)
+    source TEXT NOT NULL CHECK (source IN ('channels', 'feeds', 'items')),
+    filters JSONB,                                         -- optional, if search terms used (e.g., search, sort_by)
+    status TEXT NOT NULL CHECK (status IN ('pending', 'success', 'failed', 'skipped', 'expired')),
+    file_path TEXT,                                        -- absolute or relative file path
+    format TEXT NOT NULL CHECK (format IN ('csv', 'json')),
+    channels_count INTEGER,                                -- result count for channels (if present)
+    feeds_count INTEGER,                                   -- result count for feeds (if present)
+    items_count INTEGER,                                   -- result count for items (if present)
+    created_at TIMESTAMP NOT NULL DEFAULT now(),           -- when task started
+    completed_at TIMESTAMP,                                -- when task finished
+    error_message TEXT                                     -- in case of failure
+);
+
+-- indexes for commonly queried fields
+CREATE INDEX idx_export_logs_export_by ON export_logs(export_by);
+CREATE INDEX idx_export_logs_source ON export_logs(source);
+CREATE INDEX idx_export_logs_status ON export_logs(status);
+CREATE INDEX idx_export_logs_created_at ON export_logs(created_at);
+CREATE INDEX idx_export_logs_created_at_desc ON export_logs(created_at DESC);
 
