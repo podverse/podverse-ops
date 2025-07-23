@@ -13,7 +13,7 @@ services:
       - podverse_sandbox_network
     ports:
       - "3000:3000"
-    command: npm start
+    command: sh -c "npm run build && npm start"
     shm_size: 1gb
     logging:
       driver: "syslog"
