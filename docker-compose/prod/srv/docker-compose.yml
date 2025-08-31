@@ -28,6 +28,7 @@ services:
       driver: "syslog"
       options:
         tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+    restart: unless-stopped
 
   podverse_web:
     image: podverse/podverse_web
@@ -51,3 +52,4 @@ services:
       driver: "syslog"
       options:
         tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+    restart: unless-stopped
