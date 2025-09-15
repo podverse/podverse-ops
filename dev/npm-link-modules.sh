@@ -204,7 +204,7 @@ npm run build
 echo "Building podverse-api..."
 cd ../podverse-api
 nvm use
-npm run build
+npm run build:dev
 
 echo "Building podverse-web..."
 cd ../podverse-web
