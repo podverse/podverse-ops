@@ -10,6 +10,7 @@ CREATE TABLE playlist (
     is_default_favorites BOOLEAN DEFAULT FALSE,
     item_count INTEGER DEFAULT 0,
     medium_id INTEGER NOT NULL REFERENCES medium(id)
+    last_updated server_time_with_default NOT NULL
 );
 
 CREATE UNIQUE INDEX idx_playlist_account_medium_default_favorites
@@ -19,6 +20,7 @@ CREATE UNIQUE INDEX idx_playlist_account_medium_default_favorites
 CREATE INDEX idx_playlist_account_id ON playlist(account_id);
 CREATE INDEX idx_playlist_sharable_status_id ON playlist(sharable_status_id);
 CREATE INDEX idx_playlist_medium_id ON playlist(medium_id);
+CREATE INDEX idx_playlist_last_updated ON playlist(last_updated);
 
 CREATE TABLE playlist_resource (
     id SERIAL PRIMARY KEY,
