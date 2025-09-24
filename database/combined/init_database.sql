@@ -1219,7 +1219,8 @@ CREATE TABLE clip (
     end_time media_player_time,
     title varchar_normal,
     description varchar_long,
-    sharable_status_id INTEGER NOT NULL REFERENCES sharable_status(id)
+    sharable_status_id INTEGER NOT NULL REFERENCES sharable_status(id),
+    created_at server_time_with_default
 );
 
 CREATE INDEX idx_clip_account_id ON clip(account_id);
