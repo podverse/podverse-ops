@@ -330,7 +330,7 @@ CREATE TABLE channel (
     podcast_guid UUID UNIQUE, -- <podcast:guid>
     title varchar_normal,
     sortable_title varchar_short, -- all lowercase, ignores articles at beginning of title
-    medium_id INTEGER REFERENCES medium(id),
+    medium_id INTEGER NOT NULL REFERENCES medium(id),
 
     -- channels that have a PI value tag require special handling to request value data
     -- from the Podcast Index API.
