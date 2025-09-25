@@ -45,3 +45,37 @@ CREATE INDEX idx_queue_resource_item_chapter_id ON queue_resource(item_chapter_i
 CREATE INDEX idx_queue_resource_clip_id ON queue_resource(clip_id);
 CREATE INDEX idx_queue_resource_soundbite_id ON queue_resource(item_soundbite_id);
 CREATE INDEX idx_queue_resource_add_by_rss_hash_id ON queue_resource(add_by_rss_hash_id);
+
+-- Example: Limit queue to 10000 resources
+CREATE OR REPLACE FUNCTION enforce_queue_resource_limit()
+RETURNS TRIGGER AS $$
+DECLARE
+    resource_count INTEGER;
+    max_resources CONSTANT INTEGER := 10000;
+    min_id INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO resource_count
+    FROM queue_resource
+    WHERE queue_id = NEW.queue_id;
+
+    IF resource_count >= max_resources THEN
+        -- Find the id of the resource with the lowest list_position
+        SELECT id INTO min_id
+        FROM queue_resource
+        WHERE queue_id = NEW.queue_id
+        ORDER BY list_position ASC
+        LIMIT 1;
+
+        IF min_id IS NOT NULL THEN
+            DELETE FROM queue_resource WHERE id = min_id;
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER queue_resource_limit_trigger
+BEFORE INSERT ON queue_resource
+FOR EACH ROW
+EXECUTE FUNCTION enforce_queue_resource_limit();

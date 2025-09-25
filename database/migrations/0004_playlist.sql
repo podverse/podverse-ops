@@ -54,16 +54,26 @@ CREATE INDEX idx_playlist_resource_clip_id ON playlist_resource(clip_id);
 CREATE INDEX idx_playlist_resource_soundbite_id ON playlist_resource(item_soundbite_id);
 CREATE INDEX idx_playlist_resource_hash_id ON playlist_resource(add_by_rss_hash_id);
 
-CREATE OR REPLACE FUNCTION delete_playlist_resource()
+-- Example: Limit playlist to 10000 resources
+CREATE OR REPLACE FUNCTION enforce_playlist_resource_limit()
 RETURNS TRIGGER AS $$
+DECLARE
+    resource_count INTEGER;
+    max_resources CONSTANT INTEGER := 10000;
 BEGIN
-    -- Custom logic for deleting related resources can be added here if needed
-    RETURN OLD;
+    SELECT COUNT(*) INTO resource_count
+    FROM playlist_resource
+    WHERE playlist_id = NEW.playlist_id;
+
+    IF resource_count >= max_resources THEN
+        RAISE EXCEPTION 'Playlist % cannot have more than % resources', NEW.playlist_id, max_resources;
+    END IF;
+
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
--- Add a new trigger on the playlist_resource table
-CREATE TRIGGER delete_playlist_resource_trigger
-BEFORE DELETE ON playlist_resource
+CREATE TRIGGER playlist_resource_limit_trigger
+BEFORE INSERT ON playlist_resource
 FOR EACH ROW
-EXECUTE FUNCTION delete_playlist_resource();
+EXECUTE FUNCTION enforce_playlist_resource_limit();

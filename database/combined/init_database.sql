@@ -332,6 +332,7 @@ CREATE TABLE channel (
     sortable_title varchar_short, -- all lowercase, ignores articles at beginning of title
     medium_id INTEGER NOT NULL REFERENCES medium(id),
 
+
     -- channels that have a PI value tag require special handling to request value data
     -- from the Podcast Index API.
     has_podcast_index_value BOOLEAN DEFAULT FALSE,
@@ -1239,7 +1240,7 @@ CREATE TABLE playlist (
     description varchar_long,
     is_default_favorites BOOLEAN DEFAULT FALSE,
     item_count INTEGER DEFAULT 0,
-    medium_id INTEGER NOT NULL REFERENCES medium(id),
+    medium_id INTEGER NOT NULL REFERENCES medium(id)
     last_updated server_time_with_default NOT NULL
 );
 
@@ -1250,6 +1251,7 @@ CREATE UNIQUE INDEX idx_playlist_account_medium_default_favorites
 CREATE INDEX idx_playlist_account_id ON playlist(account_id);
 CREATE INDEX idx_playlist_sharable_status_id ON playlist(sharable_status_id);
 CREATE INDEX idx_playlist_medium_id ON playlist(medium_id);
+CREATE INDEX idx_playlist_last_updated ON playlist(last_updated);
 
 CREATE TABLE playlist_resource (
     id SERIAL PRIMARY KEY,
@@ -1283,19 +1285,29 @@ CREATE INDEX idx_playlist_resource_clip_id ON playlist_resource(clip_id);
 CREATE INDEX idx_playlist_resource_soundbite_id ON playlist_resource(item_soundbite_id);
 CREATE INDEX idx_playlist_resource_hash_id ON playlist_resource(add_by_rss_hash_id);
 
-CREATE OR REPLACE FUNCTION delete_playlist_resource()
+-- Example: Limit playlist to 10000 resources
+CREATE OR REPLACE FUNCTION enforce_playlist_resource_limit()
 RETURNS TRIGGER AS $$
+DECLARE
+    resource_count INTEGER;
+    max_resources CONSTANT INTEGER := 10000;
 BEGIN
-    -- Custom logic for deleting related resources can be added here if needed
-    RETURN OLD;
+    SELECT COUNT(*) INTO resource_count
+    FROM playlist_resource
+    WHERE playlist_id = NEW.playlist_id;
+
+    IF resource_count >= max_resources THEN
+        RAISE EXCEPTION 'Playlist % cannot have more than % resources', NEW.playlist_id, max_resources;
+    END IF;
+
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
--- Add a new trigger on the playlist_resource table
-CREATE TRIGGER delete_playlist_resource_trigger
-BEFORE DELETE ON playlist_resource
+CREATE TRIGGER playlist_resource_limit_trigger
+BEFORE INSERT ON playlist_resource
 FOR EACH ROW
-EXECUTE FUNCTION delete_playlist_resource();
+EXECUTE FUNCTION enforce_playlist_resource_limit();
 
 -- 0005 migration
 
@@ -1344,6 +1356,40 @@ CREATE INDEX idx_queue_resource_item_chapter_id ON queue_resource(item_chapter_i
 CREATE INDEX idx_queue_resource_clip_id ON queue_resource(clip_id);
 CREATE INDEX idx_queue_resource_soundbite_id ON queue_resource(item_soundbite_id);
 CREATE INDEX idx_queue_resource_add_by_rss_hash_id ON queue_resource(add_by_rss_hash_id);
+
+-- Example: Limit queue to 10000 resources
+CREATE OR REPLACE FUNCTION enforce_queue_resource_limit()
+RETURNS TRIGGER AS $$
+DECLARE
+    resource_count INTEGER;
+    max_resources CONSTANT INTEGER := 10000;
+    min_id INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO resource_count
+    FROM queue_resource
+    WHERE queue_id = NEW.queue_id;
+
+    IF resource_count >= max_resources THEN
+        -- Find the id of the resource with the lowest list_position
+        SELECT id INTO min_id
+        FROM queue_resource
+        WHERE queue_id = NEW.queue_id
+        ORDER BY list_position ASC
+        LIMIT 1;
+
+        IF min_id IS NOT NULL THEN
+            DELETE FROM queue_resource WHERE id = min_id;
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER queue_resource_limit_trigger
+BEFORE INSERT ON queue_resource
+FOR EACH ROW
+EXECUTE FUNCTION enforce_queue_resource_limit();
 -- 0006 migration
 
 CREATE TABLE account_following_account (
