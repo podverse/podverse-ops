@@ -9,7 +9,7 @@ CREATE TABLE playlist (
     description varchar_long,
     is_default_favorites BOOLEAN DEFAULT FALSE,
     item_count INTEGER DEFAULT 0,
-    medium_id INTEGER NOT NULL REFERENCES medium(id)
+    medium_id INTEGER NOT NULL REFERENCES medium(id),
     last_updated server_time_with_default NOT NULL
 );
 
