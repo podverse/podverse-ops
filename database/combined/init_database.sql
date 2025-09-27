@@ -49,7 +49,8 @@ CREATE DOMAIN short_id_v2 AS VARCHAR(15);
 
 CREATE DOMAIN varchar_short AS VARCHAR(50);
 CREATE DOMAIN varchar_normal AS VARCHAR(255);
-CREATE DOMAIN varchar_long AS VARCHAR(10000);
+CREATE DOMAIN varchar_long AS VARCHAR(2500);
+CREATE DOMAIN varchar_longer AS VARCHAR(10000);
 
 CREATE DOMAIN varchar_email AS VARCHAR(255) CHECK (VALUE ~ '^.+@.+\..+$');
 CREATE DOMAIN varchar_fcm_token AS VARCHAR(255);
@@ -408,7 +409,7 @@ CREATE INDEX idx_channel_chat_channel_id ON channel_chat(channel_id);
 CREATE TABLE channel_description (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL UNIQUE REFERENCES channel(id) ON DELETE CASCADE,
-    value varchar_long NOT NULL
+    value varchar_longer NOT NULL
 );
 
 CREATE INDEX idx_channel_description_channel_id ON channel_description(channel_id);
@@ -829,7 +830,7 @@ CREATE INDEX idx_item_content_link_item_id ON item_content_link(item_id);
 CREATE TABLE item_description (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL UNIQUE REFERENCES item(id) ON DELETE CASCADE,
-    value varchar_long NOT NULL
+    value varchar_longer NOT NULL
 );
 
 CREATE INDEX idx_item_description_item_id ON item_description(item_id);

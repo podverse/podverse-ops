@@ -328,7 +328,7 @@ CREATE INDEX idx_channel_chat_channel_id ON channel_chat(channel_id);
 CREATE TABLE channel_description (
     id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL UNIQUE REFERENCES channel(id) ON DELETE CASCADE,
-    value varchar_long NOT NULL
+    value varchar_longer NOT NULL
 );
 
 CREATE INDEX idx_channel_description_channel_id ON channel_description(channel_id);
@@ -749,7 +749,7 @@ CREATE INDEX idx_item_content_link_item_id ON item_content_link(item_id);
 CREATE TABLE item_description (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL UNIQUE REFERENCES item(id) ON DELETE CASCADE,
-    value varchar_long NOT NULL
+    value varchar_longer NOT NULL
 );
 
 CREATE INDEX idx_item_description_item_id ON item_description(item_id);

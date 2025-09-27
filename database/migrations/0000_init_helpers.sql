@@ -49,7 +49,8 @@ CREATE DOMAIN short_id_v2 AS VARCHAR(15);
 
 CREATE DOMAIN varchar_short AS VARCHAR(50);
 CREATE DOMAIN varchar_normal AS VARCHAR(255);
-CREATE DOMAIN varchar_long AS VARCHAR(10000);
+CREATE DOMAIN varchar_long AS VARCHAR(2500);
+CREATE DOMAIN varchar_longer AS VARCHAR(10000);
 
 CREATE DOMAIN varchar_email AS VARCHAR(255) CHECK (VALUE ~ '^.+@.+\..+$');
 CREATE DOMAIN varchar_fcm_token AS VARCHAR(255);
