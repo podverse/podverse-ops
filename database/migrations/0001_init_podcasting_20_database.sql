@@ -693,6 +693,7 @@ CREATE TABLE item_chapter (
     id SERIAL PRIMARY KEY,
     id_text short_id_v2 UNIQUE NOT NULL,
     item_chapters_feed_id INTEGER NOT NULL REFERENCES item_chapters_feed(id) ON DELETE CASCADE,
+    data_hash varchar_md5 NOT NULL,
     start_time media_player_time NOT NULL,
     end_time media_player_time,
     title varchar_normal,
