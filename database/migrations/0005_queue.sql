@@ -5,7 +5,8 @@ CREATE TABLE queue (
     id_text short_id_v2 UNIQUE NOT NULL,
     account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     medium_id INTEGER NOT NULL REFERENCES medium(id),
-    UNIQUE (account_id, medium_id)
+    UNIQUE (account_id, medium_id),
+    is_active_queue BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE INDEX idx_queue_account_id ON queue(account_id);
