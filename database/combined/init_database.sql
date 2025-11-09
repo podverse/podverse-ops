@@ -620,7 +620,7 @@ CREATE TABLE channel_trailer (
     url varchar_url NOT NULL,
     title varchar_normal,
     pub_date TIMESTAMPTZ NOT NULL,
-    length INTEGER,
+    length BIGINT,
     type varchar_short,
     channel_season_id INTEGER REFERENCES channel_season(id),
     UNIQUE (channel_id, url)
@@ -845,7 +845,7 @@ CREATE TABLE item_enclosure (
     id SERIAL PRIMARY KEY,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     type varchar_short NOT NULL,
-    length INTEGER,
+    length BIGINT,
     bitrate INTEGER,
     height INTEGER,
     language varchar_short,
