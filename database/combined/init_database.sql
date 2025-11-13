@@ -45,7 +45,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, USAGE, UPDATE ON SEQUENC
 -- In the previous version of the app, short_id was 7-14 characters long.
 -- To make migration to v2 easier, we will use a 15 character long short_id,
 -- so we can easily distinguish between v1 and v2 short_ids.
-CREATE DOMAIN short_id_v2 AS VARCHAR(15);
+CREATE DOMAIN nano_id_v2 AS VARCHAR(15);
 
 CREATE DOMAIN varchar_short AS VARCHAR(50);
 CREATE DOMAIN varchar_normal AS VARCHAR(255);
@@ -324,7 +324,7 @@ CREATE INDEX idx_feed_log_feed_id ON feed_log(feed_id);
 -- <channel>
 CREATE TABLE channel (
     id SERIAL PRIMARY KEY,
-    id_text short_id_v2 UNIQUE NOT NULL,
+    id_text nano_id_v2 UNIQUE NOT NULL,
     slug varchar_slug,
     feed_id INTEGER NOT NULL UNIQUE REFERENCES feed(id) ON DELETE CASCADE,
     podcast_index_id INTEGER UNIQUE NOT NULL,
@@ -695,7 +695,7 @@ INSERT INTO item_flag_status (status) VALUES ('active'), ('pending-archive'), ('
 -- <channel> -> <item>
 CREATE TABLE item (
     id SERIAL PRIMARY KEY,
-    id_text short_id_v2 UNIQUE NOT NULL,
+    id_text nano_id_v2 UNIQUE NOT NULL,
     slug varchar_slug,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     guid varchar_uri, -- <guid>
@@ -772,7 +772,7 @@ CREATE INDEX idx_item_chapters_feed_log_item_chapters_feed_id ON item_chapters_f
 -- -- <item> -> <podcast:chapters> -> chapter items correspond with jsonChapters.md example file
 CREATE TABLE item_chapter (
     id SERIAL PRIMARY KEY,
-    id_text short_id_v2 UNIQUE NOT NULL,
+    id_text nano_id_v2 UNIQUE NOT NULL,
     item_chapters_feed_id INTEGER NOT NULL REFERENCES item_chapters_feed(id) ON DELETE CASCADE,
     data_hash varchar_md5 NOT NULL,
     start_time media_player_time NOT NULL,
@@ -992,7 +992,7 @@ CREATE INDEX idx_item_social_interact_item_id ON item_social_interact(item_id);
 -- <item> -> <podcast:soundbite>
 CREATE TABLE item_soundbite (
     id SERIAL PRIMARY KEY,
-    id_text short_id_v2 UNIQUE NOT NULL,
+    id_text nano_id_v2 UNIQUE NOT NULL,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     start_time media_player_time NOT NULL,
     duration media_player_time NOT NULL,
@@ -1141,7 +1141,7 @@ INSERT INTO sharable_status (status) VALUES ('public'), ('unlisted'), ('private'
 
 CREATE TABLE account (
     id SERIAL PRIMARY KEY,
-    id_text short_id_v2 UNIQUE NOT NULL,
+    id_text nano_id_v2 UNIQUE NOT NULL,
     verified BOOLEAN DEFAULT FALSE,
     sharable_status_id INTEGER NOT NULL REFERENCES sharable_status(id)
 );
@@ -1215,7 +1215,7 @@ CREATE INDEX idx_account_membership_status_account_membership_id ON account_memb
 
 CREATE TABLE clip (
     id SERIAL PRIMARY KEY,
-    id_text short_id_v2 UNIQUE NOT NULL,
+    id_text nano_id_v2 UNIQUE NOT NULL,
     account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     start_time media_player_time NOT NULL,
@@ -1235,7 +1235,7 @@ CREATE INDEX idx_clip_created_at ON clip(created_at);
 
 CREATE TABLE playlist (
     id SERIAL PRIMARY KEY,
-    id_text short_id_v2 UNIQUE NOT NULL,
+    id_text nano_id_v2 UNIQUE NOT NULL,
     account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     sharable_status_id INTEGER NOT NULL REFERENCES sharable_status(id),
     title varchar_normal,
@@ -1311,7 +1311,7 @@ EXECUTE FUNCTION enforce_playlist_resource_limit();
 
 CREATE TABLE queue (
     id SERIAL PRIMARY KEY,
-    id_text short_id_v2 UNIQUE NOT NULL,
+    id_text nano_id_v2 UNIQUE NOT NULL,
     account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     medium_id INTEGER NOT NULL REFERENCES medium(id),
     UNIQUE (account_id, medium_id),

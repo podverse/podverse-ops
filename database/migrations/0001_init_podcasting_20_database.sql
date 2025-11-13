@@ -243,7 +243,7 @@ CREATE INDEX idx_feed_log_feed_id ON feed_log(feed_id);
 -- <channel>
 CREATE TABLE channel (
     id SERIAL PRIMARY KEY,
-    id_text short_id_v2 UNIQUE NOT NULL,
+    id_text nano_id_v2 UNIQUE NOT NULL,
     slug varchar_slug,
     feed_id INTEGER NOT NULL UNIQUE REFERENCES feed(id) ON DELETE CASCADE,
     podcast_index_id INTEGER UNIQUE NOT NULL,
@@ -614,7 +614,7 @@ INSERT INTO item_flag_status (status) VALUES ('active'), ('pending-archive'), ('
 -- <channel> -> <item>
 CREATE TABLE item (
     id SERIAL PRIMARY KEY,
-    id_text short_id_v2 UNIQUE NOT NULL,
+    id_text nano_id_v2 UNIQUE NOT NULL,
     slug varchar_slug,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     guid varchar_uri, -- <guid>
@@ -691,7 +691,7 @@ CREATE INDEX idx_item_chapters_feed_log_item_chapters_feed_id ON item_chapters_f
 -- -- <item> -> <podcast:chapters> -> chapter items correspond with jsonChapters.md example file
 CREATE TABLE item_chapter (
     id SERIAL PRIMARY KEY,
-    id_text short_id_v2 UNIQUE NOT NULL,
+    id_text nano_id_v2 UNIQUE NOT NULL,
     item_chapters_feed_id INTEGER NOT NULL REFERENCES item_chapters_feed(id) ON DELETE CASCADE,
     data_hash varchar_md5 NOT NULL,
     start_time media_player_time NOT NULL,
@@ -911,7 +911,7 @@ CREATE INDEX idx_item_social_interact_item_id ON item_social_interact(item_id);
 -- <item> -> <podcast:soundbite>
 CREATE TABLE item_soundbite (
     id SERIAL PRIMARY KEY,
-    id_text short_id_v2 UNIQUE NOT NULL,
+    id_text nano_id_v2 UNIQUE NOT NULL,
     item_id INTEGER NOT NULL REFERENCES item(id) ON DELETE CASCADE,
     start_time media_player_time NOT NULL,
     duration media_player_time NOT NULL,

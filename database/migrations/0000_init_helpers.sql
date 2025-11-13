@@ -45,7 +45,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, USAGE, UPDATE ON SEQUENC
 -- In the previous version of the app, short_id was 7-14 characters long.
 -- To make migration to v2 easier, we will use a 15 character long short_id,
 -- so we can easily distinguish between v1 and v2 short_ids.
-CREATE DOMAIN short_id_v2 AS VARCHAR(15);
+CREATE DOMAIN nano_id_v2 AS VARCHAR(15);
 
 CREATE DOMAIN varchar_short AS VARCHAR(50);
 CREATE DOMAIN varchar_normal AS VARCHAR(255);

@@ -2,7 +2,7 @@
 
 CREATE TABLE queue (
     id SERIAL PRIMARY KEY,
-    id_text short_id_v2 UNIQUE NOT NULL,
+    id_text nano_id_v2 UNIQUE NOT NULL,
     account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     medium_id INTEGER NOT NULL REFERENCES medium(id),
     UNIQUE (account_id, medium_id),
