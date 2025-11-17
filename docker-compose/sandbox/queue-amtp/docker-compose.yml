@@ -1,5 +1,5 @@
 volumes:
-  activeMQArtemis_data:
+  artemis_data:
 
 networks:
   podverse_sandbox_network:
@@ -20,7 +20,7 @@ services:
     restart: always
     shm_size: 1gb
     volumes:
-      - activeMQArtemis_data:/var/lib/activeMQArtemis
+      - artemis_data:/var/lib/activemq-artemis
     logging:
       driver: "syslog"
       options:

@@ -37,6 +37,7 @@ local_db_down:
 .PHONY: local_mq_up
 local_mq_up: config/podverse-local-mq.env
 	docker compose -f docker-compose/local/mq/docker-compose.yml up podverse_local_mq -d
+	@./scripts/mq/provision_queues.sh podverse_local_mq config/podverse-local-mq.env
 
 .PHONY: local_mq_down
 local_mq_down:
