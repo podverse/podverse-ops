@@ -10,7 +10,7 @@ This document assumes you have already published the npm modules and docker imag
 - alpha_network_create - the docker external network used by the infrastructure
 - alpha_db_up - start the empty database
 - alpha_db_init - import the full schema to the database
-- alpha_queue_amtp_up - start the amtp queue
+- alpha_mq_up - start the message queue
 - alpha_workers_up - pull the workers image
 
 ## Updates

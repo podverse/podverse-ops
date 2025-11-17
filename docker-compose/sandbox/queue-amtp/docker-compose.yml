@@ -1,5 +1,5 @@
 volumes:
-  rabbitmq_data:
+  activeMQArtemis_data:
 
 networks:
   podverse_sandbox_network:
@@ -7,20 +7,20 @@ networks:
 
 services:
 
-  podverse_sandbox_queue_amtp:
-    image: rabbitmq:3-management
-    container_name: podverse_sandbox_queue_amtp
+  podverse_sandbox_mq:
+    image: apache/activemq-artemis:2.37.0
+    container_name: podverse_sandbox_mq
     env_file:
-      - ../../../config/podverse-sandbox-queue-amtp.env
+      - ../../../config/podverse-sandbox-mq.env
     ports:
-      - '5672:5672'
-      - '15672:15672'
+      - '5672:5672'   # AMQP 1.0
+      - '8161:8161'   # Web console
     networks:
       - podverse_sandbox_network
     restart: always
     shm_size: 1gb
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+      - activeMQArtemis_data:/var/lib/activeMQArtemis
     logging:
       driver: "syslog"
       options:

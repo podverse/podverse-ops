@@ -1,5 +1,5 @@
 volumes:
-  rabbitmq_data:
+  artemis_data:
 
 networks:
   podverse_local_network:
@@ -7,20 +7,19 @@ networks:
 
 services:
 
-  podverse_local_queue_amtp:
-    image: rabbitmq:3-management
-    container_name: podverse_local_queue_amtp
+  podverse_local_mq:
+    image: apache/activemq-artemis:2.37.0
+    container_name: podverse_local_mq
     env_file:
-      - ../../../config/podverse-local-queue-amtp.env
+      - ../../../config/podverse-local-mq.env
     ports:
-      - '5672:5672'
-      - '15672:15672'
+      - '5672:5672'   # AMQP 1.0
+      - '8161:8161'   # Web console
     networks:
       - podverse_local_network
     restart: always
-    shm_size: 1gb
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+      - artemis_data:/var/lib/artemis-instance
     logging:
       driver: 'json-file'
       options:

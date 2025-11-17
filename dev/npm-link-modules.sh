@@ -157,7 +157,7 @@ npm link podverse-external-services podverse-helpers podverse-orm podverse-parse
 echo "Linking podverse-api dependencies..."
 cd ../podverse-api
 nvm use
-npm link podverse-external-services podverse-helpers podverse-orm podverse-parser
+npm link podverse-external-services podverse-helpers podverse-orm podverse-parser podverse-queue
 
 echo "Linking podverse-web dependencies..."
 cd ../podverse-web

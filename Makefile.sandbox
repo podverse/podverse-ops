@@ -1,12 +1,12 @@
 .PHONY: sandbox_validate_init
-sandbox_validate_init: config/podverse-sandbox-db.env config/podverse-sandbox-queue-amtp.env config/podverse-sandbox-workers.env config/podverse-sandbox-api.env config/podverse-sandbox-web.env
+sandbox_validate_init: config/podverse-sandbox-db.env config/podverse-sandbox-mq.env config/podverse-sandbox-workers.env config/podverse-sandbox-api.env config/podverse-sandbox-web.env
 
 config/podverse-sandbox-db.env:
 	@echo "Missing: $@"
 	@echo "Copying from example file"
 	cp ./$@.example ./$@
 
-config/podverse-sandbox-queue-amtp.env:
+config/podverse-sandbox-mq.env:
 	@echo "Missing: $@"
 	@echo "Copying from example file"
 	cp ./$@.example ./$@
@@ -34,13 +34,13 @@ sandbox_db_up: config/podverse-sandbox-db.env
 sandbox_db_down:
 	docker compose -f docker-compose/sandbox/db/docker-compose.yml down --remove-orphans --rmi all
 
-.PHONY: sandbox_queue_amtp_up
-sandbox_queue_amtp_up: config/podverse-sandbox-queue-amtp.env
-	docker compose -f docker-compose/sandbox/queue-amtp/docker-compose.yml up podverse_sandbox_queue_amtp -d
+.PHONY: sandbox_mq_up
+sandbox_mq_up: config/podverse-sandbox-mq.env
+	docker compose -f docker-compose/sandbox/mq/docker-compose.yml up podverse_sandbox_mq -d
 
-.PHONY: sandbox_queue_amtp_down
-sandbox_queue_amtp_down:
-	docker compose -f docker-compose/sandbox/queue-amtp/docker-compose.yml down --remove-orphans --rmi all
+.PHONY: sandbox_mq_down
+sandbox_mq_down:
+	docker compose -f docker-compose/sandbox/mq/docker-compose.yml down --remove-orphans --rmi all
 
 .PHONY: sandbox_workers_up
 sandbox_workers_up: config/podverse-sandbox-workers.env
@@ -71,5 +71,5 @@ sandbox_all_down:
 	$(MAKE) sandbox_web_down
 	$(MAKE) sandbox_api_down
 	$(MAKE) sandbox_workers_down
-	$(MAKE) sandbox_queue_amtp_down
+	$(MAKE) sandbox_mq_down
 	$(MAKE) sandbox_db_down
