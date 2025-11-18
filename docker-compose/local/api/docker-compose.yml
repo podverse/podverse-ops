@@ -5,7 +5,7 @@ networks:
 services:
 
   podverse_local_api:
-    image: ghcr.io/podverse/podverse-api/podverse-api:5.1.0-alpha.1
+    image: ghcr.io/podverse/podverse-api/podverse-api:5.1.3-alpha.1
     container_name: podverse_local_api
     env_file:
       - ../../../config/podverse-local-api.env
