@@ -37,7 +37,7 @@ When you start a clean instance of `podverse_db`, you will need to initialize th
 To initialize the database, run the SQL found in the `podverse-ops/database/init_database.sql` file. Execute the following command from the root of the `podverse-ops` repo:
 
 ```
-docker exec -i podverse_db psql -U user -d postgres -f /opt/database/combined/init_database.sql
+docker exec -i podverse_db psql -U postgres -d postgres -f /opt/database/combined/init_database.sql
 ```
 
 Note: the `user` and `postgres` value may need to change depending on your environment variables.

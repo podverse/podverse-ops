@@ -34,6 +34,13 @@ local_db_up: config/podverse-local-db.env
 local_db_down:
 	docker compose -f docker-compose/local/db/docker-compose.yml down --remove-orphans --rmi all
 
+.PHONY: local_db_init
+local_db_init: config/podverse-local-db.env
+	@echo "Creating read/read_write roles (idempotent)..."
+	@set -a; . config/podverse-local-db.env; set +a; \
+	docker compose -f docker-compose/local/db/docker-compose.yml exec podverse_local_db bash -c "POSTGRES_READ_PASSWORD=$$POSTGRES_READ_PASSWORD POSTGRES_READ_WRITE_PASSWORD=$$POSTGRES_READ_WRITE_PASSWORD /opt/database/init-scripts/01-create-users.sh"
+	docker exec -i podverse_local_db psql -U postgres -d postgres -f /opt/database/combined/init_database.sql
+
 .PHONY: local_mq_up
 local_mq_up: config/podverse-local-mq.env
 	docker compose -f docker-compose/local/mq/docker-compose.yml up podverse_local_mq -d
@@ -72,5 +79,5 @@ local_all_down:
 	$(MAKE) local_web_down
 	$(MAKE) local_api_down
 	$(MAKE) local_workers_down
-	$(MAKE) local_queue_down
+	$(MAKE) local_mq_down
 	$(MAKE) local_db_down

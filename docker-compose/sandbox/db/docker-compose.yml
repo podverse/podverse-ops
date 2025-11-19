@@ -16,7 +16,7 @@ services:
     networks:
       - podverse_sandbox_network
     # to initialize the database with the schema, you can run:
-    # docker exec -i podverse_db psql -U user -d postgres -f /opt/database/combined/init_database.sql
+    # docker exec -i podverse_db psql -U postgres -d postgres -f /opt/database/combined/init_database.sql
     volumes:
       - podverse_sandbox_db_data:/var/lib/postgresql/data
       - ../../../database/combined/init_database.sql:/opt/database/combined/init_database.sql
