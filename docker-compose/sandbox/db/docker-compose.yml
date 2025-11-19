@@ -15,11 +15,10 @@ services:
       - '5432:5432'
     networks:
       - podverse_sandbox_network
-    # to initialize the database with the schema, you can run:
-    # docker exec -i podverse_db psql -U postgres -d postgres -f /opt/database/combined/init_database.sql
     volumes:
       - podverse_sandbox_db_data:/var/lib/postgresql/data
       - ../../../database/combined/init_database.sql:/opt/database/combined/init_database.sql
+      - ../../../database/init-scripts/01-create-users.sh:/opt/database/init-scripts/01-create-users.sh
     command: >
       postgres -c max_connections=200
                -c superuser_reserved_connections=20

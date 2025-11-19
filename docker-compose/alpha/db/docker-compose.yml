@@ -12,16 +12,14 @@ services:
     container_name: podverse_alpha_db
     env_file:
       - ../../../config/podverse-alpha-db.env
-    environment:
-      - POSTGRES_READ_PASSWORD=${POSTGRES_READ_PASSWORD}
-      - POSTGRES_READ_WRITE_PASSWORD=${POSTGRES_READ_WRITE_PASSWORD}
     ports:
       - '5432:5432'
     networks:
       - podverse_alpha_network
     volumes:
       - /mnt/podverse_alpha_db_data:/var/lib/postgresql/data
-      - ../../../database/init-scripts:/docker-entrypoint-initdb.d
+      - ../../../database/combined/init_database.sql:/opt/database/combined/init_database.sql
+      - ../../../database/init-scripts/01-create-users.sh:/opt/database/init-scripts/01-create-users.sh
     command: >
       postgres -c max_connections=200
                -c superuser_reserved_connections=20
