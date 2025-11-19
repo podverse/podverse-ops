@@ -12,6 +12,12 @@ config/podverse-local-workers.env
 
 config/podverse-test-db.env
 
+config/podverse-alpha-api.env
+config/podverse-alpha-db.env
+config/podverse-alpha-mq.env
+config/podverse-alpha-web.env
+config/podverse-alpha-workers.env
+
 config/podverse-sandbox-api.env
 config/podverse-sandbox-db.env
 config/podverse-sandbox-mq.env
