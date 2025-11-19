@@ -39,6 +39,7 @@ services:
     restart: always
     shm_size: 1gb
     logging:
-      driver: "syslog"
+      driver: 'json-file'
       options:
-        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        max-file: '1'
+        max-size: '50m'
