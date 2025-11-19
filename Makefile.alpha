@@ -1,0 +1,83 @@
+.PHONY: alpha_validate_init
+alpha_validate_init: config/podverse-alpha-db.env config/podverse-alpha-mq.env config/podverse-alpha-workers.env config/podverse-alpha-api.env config/podverse-alpha-web.env
+
+config/podverse-alpha-db.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+config/podverse-alpha-mq.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+config/podverse-alpha-workers.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+config/podverse-alpha-api.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+config/podverse-alpha-web.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+.PHONY: alpha_db_up
+alpha_db_up: config/podverse-alpha-db.env
+	docker compose -f docker-compose/alpha/db/docker-compose.yml up podverse_alpha_db -d
+
+.PHONY: alpha_db_down
+alpha_db_down:
+	docker compose -f docker-compose/alpha/db/docker-compose.yml down --remove-orphans --rmi all
+
+.PHONY: alpha_db_init
+alpha_db_init: config/podverse-alpha-db.env
+	@echo "Creating read/read_write roles (idempotent)..."
+	@set -a; . config/podverse-alpha-db.env; set +a; \
+	docker compose -f docker-compose/alpha/db/docker-compose.yml exec podverse_alpha_db bash -c "POSTGRES_READ_PASSWORD=$$POSTGRES_READ_PASSWORD POSTGRES_READ_WRITE_PASSWORD=$$POSTGRES_READ_WRITE_PASSWORD /opt/database/init-scripts/01-create-users.sh"
+	docker exec -i podverse_alpha_db psql -U postgres -d postgres -f /opt/database/combined/init_database.sql
+
+.PHONY: alpha_mq_up
+alpha_mq_up: config/podverse-alpha-mq.env
+	docker compose -f docker-compose/alpha/mq/docker-compose.yml up podverse_alpha_mq -d
+	@./scripts/mq/provision_queues.sh podverse_alpha_mq config/podverse-alpha-mq.env
+
+.PHONY: alpha_mq_down
+alpha_mq_down:
+	docker compose -f docker-compose/alpha/mq/docker-compose.yml down --remove-orphans --rmi all
+
+.PHONY: alpha_workers_up
+alpha_workers_up: config/podverse-alpha-workers.env
+	docker compose -f docker-compose/alpha/workers/docker-compose.yml pull podverse_alpha_workers
+
+.PHONY: alpha_workers_down
+alpha_workers_down:
+	docker compose -f docker-compose/alpha/workers/docker-compose.yml down --remove-orphans --rmi all
+
+.PHONY: alpha_api_up
+alpha_api_up: config/podverse-alpha-api.env
+	docker compose -f docker-compose/alpha/api/docker-compose.yml up podverse_alpha_api -d
+
+.PHONY: alpha_api_down
+alpha_api_down:
+	docker compose -f docker-compose/alpha/api/docker-compose.yml down --remove-orphans --rmi all
+
+.PHONY: alpha_web_up
+alpha_web_up: config/podverse-alpha-web.env
+	docker compose -f docker-compose/alpha/web/docker-compose.yml up podverse_alpha_web -d
+
+.PHONY: alpha_web_down
+alpha_web_down:
+	docker compose -f docker-compose/alpha/web/docker-compose.yml down --remove-orphans --rmi all
+
+.PHONY: alpha_all_down
+alpha_all_down:
+	$(MAKE) alpha_web_down
+	$(MAKE) alpha_api_down
+	$(MAKE) alpha_workers_down
+	$(MAKE) alpha_mq_down
+	$(MAKE) alpha_db_down

@@ -34,6 +34,13 @@ sandbox_db_up: config/podverse-sandbox-db.env
 sandbox_db_down:
 	docker compose -f docker-compose/sandbox/db/docker-compose.yml down --remove-orphans --rmi all
 
+.PHONY: sandbox_db_init
+sandbox_db_init: config/podverse-sandbox-db.env
+	@echo "Creating read/read_write roles (idempotent)..."
+	@set -a; . config/podverse-sandbox-db.env; set +a; \
+	docker compose -f docker-compose/sandbox/db/docker-compose.yml exec podverse_sandbox_db bash -c "POSTGRES_READ_PASSWORD=$$POSTGRES_READ_PASSWORD POSTGRES_READ_WRITE_PASSWORD=$$POSTGRES_READ_WRITE_PASSWORD /opt/database/init-scripts/01-create-users.sh"
+	docker exec -i podverse_sandbox_db psql -U postgres -d postgres -f /opt/database/combined/init_database.sql
+
 .PHONY: sandbox_mq_up
 sandbox_mq_up: config/podverse-sandbox-mq.env
 	docker compose -f docker-compose/sandbox/mq/docker-compose.yml up podverse_sandbox_mq -d

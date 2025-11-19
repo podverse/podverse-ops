@@ -1,0 +1,21 @@
+networks:
+  podverse_alpha_network:
+    external: true
+
+services:
+
+  podverse_alpha_api:
+    image: ghcr.io/podverse/podverse-api/podverse-api:REPLACE_WITH_API_VERSION
+    container_name: podverse_alpha_api
+    env_file:
+      - ../../../config/podverse-alpha-api.env
+    networks:
+      - podverse_alpha_network
+    ports:
+      - "1234:1234"
+    command: npm start
+    shm_size: 1gb
+    logging:
+      driver: "syslog"
+      options:
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"

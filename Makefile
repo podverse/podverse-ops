@@ -9,6 +9,7 @@ else
 endif
 
 include Makefile.local
+include Makefile.alpha
 include Makefile.sandbox
 include Makefile.test
 include Makefile.certs

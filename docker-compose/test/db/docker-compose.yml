@@ -1,5 +1,5 @@
 networks:
-  podverse_sandbox_network:
+  podverse_test_network:
     external: true
 
 services:

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Idempotent Artemis queue provisioning for local/sandbox
+# Idempotent Artemis queue provisioning
 # Usage: ./scripts/mq/provision_queues.sh <container_name> <env_file_path> [queue1 queue2 ...]
 set -euo pipefail
 
