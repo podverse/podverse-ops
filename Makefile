@@ -17,3 +17,7 @@ include Makefile.certs
 .PHONY: say_hello
 say_hello:
 	@echo "Hello Podverse"
+
+.PHONY: prune_images
+prune_images:
+	docker image prune -a -f
