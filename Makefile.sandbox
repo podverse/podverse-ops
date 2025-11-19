@@ -76,8 +76,8 @@ sandbox_web_down:
 
 .PHONY: sandbox_all_down
 sandbox_all_down:
-	$(MAKE) sandbox_web_down
-	$(MAKE) sandbox_api_down
-	$(MAKE) sandbox_workers_down
-	$(MAKE) sandbox_mq_down
-	$(MAKE) sandbox_db_down
+	-$(MAKE) sandbox_web_down
+	-$(MAKE) sandbox_api_down
+	-$(MAKE) sandbox_workers_down
+	-$(MAKE) sandbox_mq_down
+	-$(MAKE) sandbox_db_down

@@ -76,8 +76,8 @@ alpha_web_down:
 
 .PHONY: alpha_all_down
 alpha_all_down:
-	$(MAKE) alpha_web_down
-	$(MAKE) alpha_api_down
-	$(MAKE) alpha_workers_down
-	$(MAKE) alpha_mq_down
-	$(MAKE) alpha_db_down
+	-$(MAKE) alpha_web_down
+	-$(MAKE) alpha_api_down
+	-$(MAKE) alpha_workers_down
+	-$(MAKE) alpha_mq_down
+	-$(MAKE) alpha_db_down

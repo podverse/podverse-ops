@@ -76,8 +76,8 @@ local_web_down:
 
 .PHONY: local_all_down
 local_all_down:
-	$(MAKE) local_web_down
-	$(MAKE) local_api_down
-	$(MAKE) local_workers_down
-	$(MAKE) local_mq_down
-	$(MAKE) local_db_down
+	-$(MAKE) local_web_down
+	-$(MAKE) local_api_down
+	-$(MAKE) local_workers_down
+	-$(MAKE) local_mq_down
+	-$(MAKE) local_db_down
