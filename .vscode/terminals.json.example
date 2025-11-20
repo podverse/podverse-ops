@@ -32,6 +32,12 @@
       "open": true
     },
     {
+      "name": "Podverse MQ",
+      "description": "podverse-mq",
+      "cwd": "~/repos/podverse-mq",
+      "open": true
+    },
+    {
       "name": "Podverse Ops",
       "description": "podverse-ops",
       "cwd": "~/repos/podverse-ops",
@@ -53,12 +59,6 @@
       "name": "Podverse QA",
       "description": "podverse-qa",
       "cwd": "~/repos/podverse-qa",
-      "open": true
-    },
-    {
-      "name": "Podverse MQ",
-      "description": "podverse-mq",
-      "cwd": "~/repos/podverse-mq",
       "open": true
     },
     {
