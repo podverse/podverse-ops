@@ -38,7 +38,7 @@ git checkout v5-develop
 
 sleep 60
 
-cd ~/repos/podverse-queue
+cd ~/repos/podverse-mq
 git checkout v5-develop
 git pull origin v5-develop
 git checkout v5-alpha

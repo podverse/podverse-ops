@@ -8,7 +8,7 @@ The order is:
 2) podverse-external-services
 3) podverse-orm
 4) podverse-parser
-5) podverse-queue
+5) podverse-mq
 6) podverse-workers
 7) podverse-api
 8) podverse-web

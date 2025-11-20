@@ -55,8 +55,8 @@ rm -rf node_modules
 rm -rf dist
 npm install
 
-echo "Installing podverse-queue dependencies..."
-cd ../podverse-queue
+echo "Installing podverse-mq dependencies..."
+cd ../podverse-mq
 git pull origin v5-develop
 nvm use
 rm -rf node_modules
@@ -117,8 +117,8 @@ cd ../podverse-parser
 nvm use
 npm link
 
-echo "Linking podverse-queue dependency..."
-cd ../podverse-queue
+echo "Linking podverse-mq dependency..."
+cd ../podverse-mq
 nvm use
 npm link
 
@@ -139,15 +139,15 @@ cd ../podverse-parser
 nvm use
 npm link podverse-external-services podverse-helpers podverse-orm
 
-echo "Linking podverse-queue dependencies..."
-cd ../podverse-queue
+echo "Linking podverse-mq dependencies..."
+cd ../podverse-mq
 nvm use
 npm link podverse-external-services podverse-helpers podverse-orm podverse-parser
 
 echo "Linking podverse-workers dependencies..."
 cd ../podverse-workers
 nvm use
-npm link podverse-external-services podverse-helpers podverse-orm podverse-parser podverse-queue
+npm link podverse-external-services podverse-helpers podverse-orm podverse-parser podverse-mq
 
 echo "Linking podverse-api dependencies..."
 cd ../podverse-api
@@ -186,8 +186,8 @@ cd ../podverse-parser
 nvm use
 npm run build
 
-echo "Building podverse-queue..."
-cd ../podverse-queue
+echo "Building podverse-mq..."
+cd ../podverse-mq
 nvm use
 npm run build
 
