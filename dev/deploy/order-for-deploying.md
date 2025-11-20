@@ -12,14 +12,11 @@ This document assumes you have already published the npm modules and docker imag
 - alpha_db_init - import the full schema to the database
 - alpha_mq_up - start the message queue
 - alpha_workers_up - pull the workers image
+- alpha_api_up - start the api router for http requests
+- alpha_web_up - start the web app
 
 ## Updates
 
 Pause all scheduled jobs: 
 - alpha_workers_archive_all
 - alpha_workers_podcast_index_dead_feeds_flag_and_merge
-
-
-Update jobs:
-- alpha_ops_git_pull - make sure you are using the latest ops docker configs
-- to be continued...
