@@ -8,7 +8,7 @@ volumes:
 services:
 
   podverse_local_workers:
-    image: ghcr.io/podverse/podverse-workers/podverse-workers:5.1.3-alpha.1
+    image: ghcr.io/podverse/podverse-workers/podverse-workers:5.1.4-alpha.1
     container_name: podverse_local_workers
     env_file:
       - ../../../config/podverse-local-workers.env
