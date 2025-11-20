@@ -18,7 +18,6 @@ This document assumes you have already published the npm modules and docker imag
 Pause all scheduled jobs: 
 - alpha_workers_archive_all
 - alpha_workers_podcast_index_dead_feeds_flag_and_merge
-- alpha_workers_queue_rss_add_recently_updated_feeds_from_podcast_index
 
 
 Update jobs:
