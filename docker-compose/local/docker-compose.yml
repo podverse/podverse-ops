@@ -81,7 +81,7 @@ services:
         max-size: '50m'
 
   podverse_api:
-    build: ./projects/podverse-api
+    build: ../projects/podverse-api
     container_name: podverse_api_local
     privileged: true
     depends_on:
@@ -104,7 +104,7 @@ services:
         max-size: "50m"
 
   podverse_web:
-    build: ./projects/podverse-web
+    build: ../projects/podverse-web
     container_name: podverse_web_local
     depends_on:
       # - podverse_nginx_proxy
@@ -125,7 +125,7 @@ services:
         max-size: "50m"
 
   podverse_api_worker:
-    build: ./projects/podverse-api
+    build: ../projects/podverse-api
     container_name: podverse_api_worker_local
     env_file:
       - ../../config/podverse-api-local.env
@@ -136,7 +136,7 @@ services:
         max-size: "50m"
 
   podverse_maintenance_mode_web:
-    build: ./projects/podverse-web/maintenance_mode
+    build: ../projects/podverse-web/maintenance_mode
     container_name: podverse_maintenance_mode_web_local
     # depends_on:
       # - podverse_nginx_proxy

@@ -1,0 +1,49 @@
+{
+  "name": "Podverse API",
+  "dockerComposeFile": [
+    "../../docker-compose/local/docker-compose.yml",
+    "../docker-compose.yml"
+  ],
+  "service": "podverse_api",
+  "workspaceFolder": "/workspaces/projects/podverse-api",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils": {},
+    "ghcr.io/devcontainers-extra/features/prettier": {},
+    "ghcr.io/robbert229/devcontainer-features/postgresql-client:1": {
+      "version": "16"
+    }
+  },
+  "portsAttributes": {
+    "3000": {
+      "label": "Podverse Web",
+      "onAutoForward": "openBrowserOnce"
+    },
+    "1234": {
+      "label": "Podverse API"
+    },
+    "5432": {
+      "label": "Podverse Database"
+    },
+    "9306": {
+      "label": "Manticore"
+    },
+    "9308": {
+      "label": "Manticore"
+    }
+  },
+  "runServices": ["podverse_web", "podverse_db", "podverse_manticore"],
+  // Uncomment the next line if you want to keep your containers running after VS Code shuts down.
+  // This is needed if you have a multi-container dev environment with frontend and backend.
+  // You will need to manually shutdown containers when you're done.
+  "shutdownAction": "none"
+
+  // Uncomment the next line to run commands after the container is created.
+  // "postCreateCommand": "cat /etc/os-release",
+  // "onCreateCommand": "make local_git_sub_init"
+
+  // Configure tool-specific properties.
+  // "customizations": {},
+
+  // Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
+  // "remoteUser": "devcontainer"
+}
