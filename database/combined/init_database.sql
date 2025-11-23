@@ -234,6 +234,7 @@ INSERT INTO feed_flag_status (status) VALUES ('active'), ('always-parse'), ('spa
 CREATE TABLE feed (
     id SERIAL PRIMARY KEY,
     url varchar_url UNIQUE NOT NULL,
+    podcast_index_id INTEGER UNIQUE NOT NULL,
 
     -- feed flag
     feed_flag_status_id INTEGER NOT NULL REFERENCES feed_flag_status(id),
@@ -287,7 +288,6 @@ CREATE TABLE channel (
     id_text nano_id_v2 UNIQUE NOT NULL,
     slug varchar_slug,
     feed_id INTEGER NOT NULL UNIQUE REFERENCES feed(id) ON DELETE CASCADE,
-    podcast_index_id INTEGER UNIQUE NOT NULL,
     podcast_guid UUID UNIQUE, -- <podcast:guid>
     title varchar_normal,
     sortable_title varchar_short, -- all lowercase, ignores articles at beginning of title
