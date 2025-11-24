@@ -11,7 +11,6 @@ services:
       - ../../../config/podverse-alpha-workers.env
     networks:
       - podverse_alpha_network
-    shm_size: 1gb
     volumes:
       - ../../../config/firebase/firebase-key.json:/app/config/firebase-key.json:ro
     logging:

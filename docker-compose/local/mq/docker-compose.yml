@@ -13,11 +13,11 @@ services:
     env_file:
       - ../../../config/podverse-local-mq.env
     ports:
-      - '5672:5672'   # AMQP 1.0
-      - '8161:8161'   # Web console
+      - 127.0.0.1:5672:5672   # AMQP 1.0
+      - 127.0.0.1:8161:8161   # Web console
     networks:
       - podverse_local_network
-    restart: always
+    restart: unless-stopped
     volumes:
       - artemis_data:/var/lib/artemis-instance
     logging:

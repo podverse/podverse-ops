@@ -14,7 +14,6 @@ services:
       - ../../../config/podverse-sandbox-workers.env
     networks:
       - podverse_sandbox_network
-    shm_size: 1gb
     volumes:
       - ../../../config/firebase/firebase-key.json:/app/config/firebase-key.json:ro
       - podverse_sandbox_workers_data:/data

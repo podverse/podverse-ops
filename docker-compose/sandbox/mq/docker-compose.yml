@@ -17,8 +17,7 @@ services:
       - '8161:8161'   # Web console
     networks:
       - podverse_sandbox_network
-    restart: always
-    shm_size: 1gb
+    restart: unless-stopped
     volumes:
       - artemis_data:/var/lib/activemq-artemis
     logging:

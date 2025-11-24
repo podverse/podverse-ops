@@ -12,9 +12,8 @@ services:
     networks:
       - podverse_local_network
     ports:
-      - "3000:3000"
+      - 127.0.0.1:3000:3000
     command: sh -c "npm run build && npm start"
-    shm_size: 1gb
     logging:
       driver: 'json-file'
       options:

@@ -14,7 +14,6 @@ services:
     ports:
       - "1234:1234"
     command: npm start
-    shm_size: 1gb
     logging:
       driver: "syslog"
       options:
