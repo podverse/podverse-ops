@@ -1,0 +1,18 @@
+pipeline {
+    agent {
+        label 'pv-alpha-srv'
+    }
+
+    stages {
+        stage('Run Script') {
+            steps {
+                sh """#!/usr/bin/env bash
+                    set -e
+                    pushd /opt/podverse-ops
+                    make alpha_api_down
+                    popd
+                """
+            }
+        }
+    }
+}
