@@ -1,31 +1,36 @@
 pipeline {
     agent {
-        // Runs this pipeline only on nodes with this specific label
         label 'pv-alpha-aux'
     }
 
     parameters {
-        // Defines the string parameter with a default value
         string(name: 'GIT_BRANCH_NAME', defaultValue: 'v5-develop', description: 'Branch to build')
     }
 
     stages {
         stage('Run Script') {
             steps {
-                // Access the parameter using params.GIT_BRANCH_NAME or ${GIT_BRANCH_NAME}
-                sh """
-                    echo "Running on branch: ${params.GIT_BRANCH_NAME}"
-                    #!/usr/bin/env bash
-
+                sh """#!/usr/bin/env bash
                     set -e
+                    
+                    echo "Running on branch: ${params.GIT_BRANCH_NAME}"
 
-                    pushd /opt/podverse-ops
+                    # Ensure the directory exists before pushing
+                    if [ -d "/opt/podverse-ops" ]; then
+                        pushd /opt/podverse-ops
+                        
+                        # Fetch latest refs to ensure the branch exists locally
+                        git fetch origin
 
-                    git checkout ${GIT_BRANCH_NAME}
+                        git checkout ${params.GIT_BRANCH_NAME}
 
-                    git pull origin ${GIT_BRANCH_NAME}
+                        git pull origin ${params.GIT_BRANCH_NAME}
 
-                    popd
+                        popd
+                    else
+                        echo "Error: /opt/podverse-ops directory not found on this node."
+                        exit 1
+                    fi
                 """
             }
         }
