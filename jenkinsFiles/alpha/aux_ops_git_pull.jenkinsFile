@@ -1,0 +1,33 @@
+pipeline {
+    agent {
+        // Runs this pipeline only on nodes with this specific label
+        label 'pv-alpha-aux'
+    }
+
+    parameters {
+        // Defines the string parameter with a default value
+        string(name: 'GIT_BRANCH_NAME', defaultValue: 'v5-develop', description: 'Branch to build')
+    }
+
+    stages {
+        stage('Run Script') {
+            steps {
+                // Access the parameter using params.GIT_BRANCH_NAME or ${GIT_BRANCH_NAME}
+                sh """
+                    echo "Running on branch: ${params.GIT_BRANCH_NAME}"
+                    #!/usr/bin/env bash
+
+                    set -e
+
+                    pushd /opt/podverse-ops
+
+                    git checkout ${GIT_BRANCH_NAME}
+
+                    git pull origin ${GIT_BRANCH_NAME}
+
+                    popd
+                """
+            }
+        }
+    }
+}
