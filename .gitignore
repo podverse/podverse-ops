@@ -32,3 +32,7 @@ config/podverse-prod-web.env
 config/podverse-prod-workers.env
 
 config/firebase/firebase-key.json
+config/segment/segment-key.txt
+
+*.jar
+*.log
