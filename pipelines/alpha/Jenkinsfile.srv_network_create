@@ -1,0 +1,27 @@
+pipeline {
+    // Maps to <assignedNode>pv-alpha-srv</assignedNode>
+    agent {
+        label 'pv-alpha-srv'
+    }
+
+    // Maps to <concurrentBuild>false</concurrentBuild>
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    stages {
+        stage('Create Docker Network') {
+            steps {
+                script {
+                    // Maps to 'pushd /opt/podverse-ops'
+                    dir('/opt/podverse-ops') {
+                        // Maps to 'docker network create podverse_alpha_network'
+                        // Matches 'set -e': fails if network already exists.
+                        sh 'docker network create podverse_alpha_network'
+                    }
+                }
+            }
+        }
+    }
+}

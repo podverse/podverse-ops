@@ -1,0 +1,26 @@
+pipeline {
+    // Maps to <assignedNode>pv-alpha-aux</assignedNode>
+    agent {
+        label 'pv-alpha-aux'
+    }
+
+    // Maps to <concurrentBuild>false</concurrentBuild>
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    stages {
+        stage('Start Alpha DB') {
+            steps {
+                script {
+                    // Maps to 'pushd /opt/podverse-ops'
+                    dir('/opt/podverse-ops') {
+                        // Maps to 'make alpha_db_up'
+                        sh 'make alpha_db_up'
+                    }
+                }
+            }
+        }
+    }
+}

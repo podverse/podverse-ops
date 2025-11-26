@@ -1,7 +1,7 @@
 pipeline {
-    // Maps to <assignedNode>pv-alpha-aux</assignedNode>
+    // Maps to <assignedNode>pv-alpha-srv</assignedNode>
     agent {
-        label 'pv-alpha-aux'
+        label 'pv-alpha-srv'
     }
 
     // Maps to <concurrentBuild>false</concurrentBuild>
@@ -24,7 +24,7 @@ pipeline {
                 script {
                     // Maps to 'pushd /opt/podverse-ops'
                     dir('/opt/podverse-ops') {
-                        // We use double quotes to interpolate the parameter ${GIT_BRANCH_NAME}
+                        // Maps to the git commands using the parameter
                         sh """
                             git checkout ${params.GIT_BRANCH_NAME}
                             git pull origin ${params.GIT_BRANCH_NAME}

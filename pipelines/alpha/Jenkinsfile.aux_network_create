@@ -1,0 +1,28 @@
+pipeline {
+    // Maps to <assignedNode>pv-alpha-aux</assignedNode>
+    agent {
+        label 'pv-alpha-aux'
+    }
+
+    // Maps to <concurrentBuild>false</concurrentBuild>
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    stages {
+        stage('Create Docker Network') {
+            steps {
+                script {
+                    // Maps to 'pushd /opt/podverse-ops'
+                    dir('/opt/podverse-ops') {
+                        // Maps to 'docker network create podverse_alpha_network'
+                        // Note: If the network already exists, this command will fail (exit 1),
+                        // which matches the 'set -e' behavior in your original XML.
+                        sh 'docker network create podverse_alpha_network'
+                    }
+                }
+            }
+        }
+    }
+}
