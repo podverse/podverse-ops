@@ -1,17 +1,25 @@
 pipeline {
+    // Maps to <assignedNode>pv-alpha-srv</assignedNode>
     agent {
         label 'pv-alpha-srv'
     }
 
+    // Maps to <concurrentBuild>false</concurrentBuild>
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
     stages {
-        stage('Run Script') {
+        stage('Stop Alpha API') {
             steps {
-                sh """#!/usr/bin/env bash
-                    set -e
-                    pushd /opt/podverse-ops
-                    make alpha_api_down
-                    popd
-                """
+                script {
+                    // Maps to 'pushd /opt/podverse-ops'
+                    dir('/opt/podverse-ops') {
+                        // Maps to 'make alpha_api_down'
+                        sh 'make alpha_api_down'
+                    }
+                }
             }
         }
     }
