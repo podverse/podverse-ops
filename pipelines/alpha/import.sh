@@ -33,15 +33,15 @@ if [[ "${line}" != *:* ]]; then
 fi
 
 AUTH="${line}"
-USER="${AUTH%%:*}"
-PASS="${AUTH#*:}"
+USER="$(echo "${AUTH}" | cut -d: -f1)"
+PASS="$(echo "${AUTH}" | cut -d: -f2-)"
 
 if [[ -z "${USER}" || -z "${PASS}" ]]; then
     echo "ERROR: Parsed username or password is empty." >&2
     exit 1
 fi
 
-echo "Using Jenkins auth for user: ${USER}"
+echo "Authenticated as: ${USER}"
 
 # 1. Ensure the folder exists
 echo '<com.cloudbees.hudson.plugins.folder.Folder/>' | \
