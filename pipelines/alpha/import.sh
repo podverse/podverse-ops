@@ -3,9 +3,8 @@
 set -euo pipefail
 
 # Usage: ./import.sh <credentials_file> [jenkins_url] [folder_name]
-# credentials_file format options:
-#   1) Single line: username:token
-#   2) Two lines: first line username, second line token
+# credentials_file format:
+#   Single line: username:password
 
 if [ $# -lt 1 ]; then
     echo "Usage: $0 <credentials_file> [jenkins_url] [folder_name]" >&2
@@ -21,25 +20,28 @@ if [ ! -f "${CRED_FILE}" ]; then
     exit 1
 fi
 
-first_line="$(sed -n '1p' "${CRED_FILE}" | tr -d '\r')"
-second_line="$(sed -n '2p' "${CRED_FILE}" | tr -d '\r' || true)"
+line="$(sed -n '1p' "${CRED_FILE}" | tr -d '\r')"
 
-if [[ -z "${first_line}" ]]; then
+if [[ -z "${line}" ]]; then
     echo "ERROR: Credentials file is empty or first line blank." >&2
     exit 1
 fi
 
-if [[ "${first_line}" == *:* ]]; then
-    AUTH="${first_line}"
-else
-    if [[ -z "${second_line}" ]]; then
-        echo "ERROR: Credentials file missing second line (token/password)." >&2
-        exit 1
-    fi
-    AUTH="${first_line}:${second_line}"
+if [[ "${line}" != *:* ]]; then
+    echo "ERROR: Credentials file must be single line in format username:password" >&2
+    exit 1
 fi
 
-echo "Using Jenkins auth for user: ${first_line}"
+AUTH="${line}"
+USER="${AUTH%%:*}"
+PASS="${AUTH#*:}"
+
+if [[ -z "${USER}" || -z "${PASS}" ]]; then
+    echo "ERROR: Parsed username or password is empty." >&2
+    exit 1
+fi
+
+echo "Using Jenkins auth for user: ${USER}"
 
 # 1. Ensure the folder exists
 echo '<com.cloudbees.hudson.plugins.folder.Folder/>' | \
