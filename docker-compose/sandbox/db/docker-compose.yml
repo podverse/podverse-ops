@@ -7,7 +7,7 @@ volumes:
 
 services:
   podverse_sandbox_db:
-    image: postgres:16.3
+    image: postgres:18.1
     container_name: podverse_sandbox_db
     env_file:
       - ../../../config/podverse-sandbox-db.env
