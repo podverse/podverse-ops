@@ -39,7 +39,7 @@ else
     AUTH="${first_line}:${second_line}"
 fi
 
-echo "Using Jenkins auth for user: ${AUTH%%:*}"
+echo "Using Jenkins auth for user: ${first_line}"
 
 # 1. Ensure the folder exists
 echo '<com.cloudbees.hudson.plugins.folder.Folder/>' | \
