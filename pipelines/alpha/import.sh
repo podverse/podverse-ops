@@ -92,14 +92,19 @@ declare -a FILES=(
     # "./pipelines/alpha/Jenkinsfile.u_ops_git_pull"
 )
 
-# 3. Create jobs for each file
+# 3. Create or update jobs for each file
 for FILE_PATH in "${FILES[@]}"; do
     # Extract job name (e.g., 'pipelines/alpha/Jenkinsfile.srv_api_up' -> 'srv_api_up')
     JOB_NAME=$(basename "$FILE_PATH" | sed 's/Jenkinsfile.//')
     
-    echo "Creating job: $FOLDER/$JOB_NAME pointing to $FILE_PATH"
-
-    # Use sed to inject the correct script path into the XML and pipe it to the CLI
-    sed "s|REPLACE_SCRIPT_PATH|$FILE_PATH|g" "${SCRIPT_DIR}/scm-job.xml" | \
-    java -jar "${SCRIPT_DIR}/jenkins-cli.jar" -s "$JENKINS_URL" -auth "$AUTH" create-job "$FOLDER/$JOB_NAME"
+    # Check if job already exists
+    if java -jar "${SCRIPT_DIR}/jenkins-cli.jar" -s "$JENKINS_URL" -auth "$AUTH" get-job "$FOLDER/$JOB_NAME" > /dev/null 2>&1; then
+        echo "Updating job: $FOLDER/$JOB_NAME pointing to $FILE_PATH"
+        sed "s|REPLACE_SCRIPT_PATH|$FILE_PATH|g" "${SCRIPT_DIR}/scm-job.xml" | \
+        java -jar "${SCRIPT_DIR}/jenkins-cli.jar" -s "$JENKINS_URL" -auth "$AUTH" update-job "$FOLDER/$JOB_NAME"
+    else
+        echo "Creating job: $FOLDER/$JOB_NAME pointing to $FILE_PATH"
+        sed "s|REPLACE_SCRIPT_PATH|$FILE_PATH|g" "${SCRIPT_DIR}/scm-job.xml" | \
+        java -jar "${SCRIPT_DIR}/jenkins-cli.jar" -s "$JENKINS_URL" -auth "$AUTH" create-job "$FOLDER/$JOB_NAME"
+    fi
 done
