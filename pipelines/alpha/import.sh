@@ -59,7 +59,7 @@ shopt -s nullglob
 declare -a FILES=()
 for jf in "$SCRIPT_DIR"/Jenkinsfile.*; do
     # Convert to relative path starting with './'
-    rel="./$(basename "$jf")"
+    rel="./$jf"
     FILES+=("$rel")
 done
 shopt -u nullglob
