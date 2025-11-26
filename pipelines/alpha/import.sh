@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # Usage: ./import.sh <credentials_file> [jenkins_url] [folder_name]
 # credentials_file format:
 #   Single line: username:password
@@ -45,7 +48,7 @@ echo "Authenticated as: ${USER}"
 
 # 1. Ensure the folder exists
 echo '<com.cloudbees.hudson.plugins.folder.Folder/>' | \
-java -jar jenkins-cli.jar -s "$JENKINS_URL" -auth "$AUTH" create-job "$FOLDER" 2>/dev/null || true
+java -jar "${SCRIPT_DIR}/jenkins-cli.jar" -s "$JENKINS_URL" -auth "$AUTH" create-job "$FOLDER" 2>/dev/null || true
 
 echo "Folder '$FOLDER' is ready (created or already exists)"
 
@@ -97,6 +100,6 @@ for FILE_PATH in "${FILES[@]}"; do
     echo "Creating job: $FOLDER/$JOB_NAME pointing to $FILE_PATH"
 
     # Use sed to inject the correct script path into the XML and pipe it to the CLI
-    sed "s|REPLACE_SCRIPT_PATH|$FILE_PATH|g" scm-job.xml | \
-    java -jar jenkins-cli.jar -s "$JENKINS_URL" -auth "$AUTH" create-job "$FOLDER/$JOB_NAME"
+    sed "s|REPLACE_SCRIPT_PATH|$FILE_PATH|g" "${SCRIPT_DIR}/scm-job.xml" | \
+    java -jar "${SCRIPT_DIR}/jenkins-cli.jar" -s "$JENKINS_URL" -auth "$AUTH" create-job "$FOLDER/$JOB_NAME"
 done
