@@ -1,0 +1,43 @@
+pipeline {
+    // We set 'agent none' here because we define specific agents for each parallel stage below.
+    agent none
+
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    stages {
+        stage('Stop Alpha Services') {
+            parallel {
+                stage('Stop on Aux') {
+                    agent {
+                        label 'pv-alpha-aux'
+                    }
+                    steps {
+                        script {
+                            // Maps to logic from Jenkinsfile.aux_all_down
+                            dir('/opt/podverse-ops') {
+                                sh 'make alpha_all_down'
+                            }
+                        }
+                    }
+                }
+
+                stage('Stop on Srv') {
+                    agent {
+                        label 'pv-alpha-srv'
+                    }
+                    steps {
+                        script {
+                            // Maps to logic from Jenkinsfile.srv_all_down
+                            dir('/opt/podverse-ops') {
+                                sh 'make alpha_all_down'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

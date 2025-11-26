@@ -1,0 +1,57 @@
+pipeline {
+    // Agent is set to none so we can define specific agents for parallel stages
+    agent none
+
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    parameters {
+        string(
+            name: 'GIT_BRANCH_NAME', 
+            defaultValue: 'v5-develop', 
+            description: 'The git branch name to check out, before pulling the latest changes for the branch.'
+        )
+    }
+
+    stages {
+        stage('Update Ops Repo') {
+            parallel {
+                stage('Update on Aux') {
+                    agent {
+                        label 'pv-alpha-aux'
+                    }
+                    steps {
+                        script {
+                            // Maps to logic from Jenkinsfile.aux_ops_git_pull
+                            dir('/opt/podverse-ops') {
+                                sh """
+                                    git checkout ${params.GIT_BRANCH_NAME}
+                                    git pull origin ${params.GIT_BRANCH_NAME}
+                                """
+                            }
+                        }
+                    }
+                }
+
+                stage('Update on Srv') {
+                    agent {
+                        label 'pv-alpha-srv'
+                    }
+                    steps {
+                        script {
+                            // Maps to logic from Jenkinsfile.srv_ops_git_pull
+                            dir('/opt/podverse-ops') {
+                                sh """
+                                    git checkout ${params.GIT_BRANCH_NAME}
+                                    git pull origin ${params.GIT_BRANCH_NAME}
+                                """
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
