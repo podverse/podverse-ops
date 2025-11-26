@@ -45,7 +45,9 @@ echo "Using Jenkins auth for user: ${USER}"
 
 # 1. Ensure the folder exists
 echo '<com.cloudbees.hudson.plugins.folder.Folder/>' | \
-java -jar jenkins-cli.jar -s "$JENKINS_URL" -auth "$AUTH" create-job "$FOLDER" 2>/dev/null
+java -jar jenkins-cli.jar -s "$JENKINS_URL" -auth "$AUTH" create-job "$FOLDER" 2>/dev/null || true
+
+echo "Folder '$FOLDER' is ready (created or already exists)"
 
 # 2. List of Jenkinsfiles in your repo structure
 # (Based on the file structure you provided earlier)
