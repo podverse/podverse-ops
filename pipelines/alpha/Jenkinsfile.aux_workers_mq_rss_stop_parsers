@@ -1,0 +1,44 @@
+pipeline {
+    // Maps to <assignedNode>pv-alpha-aux</assignedNode>
+    agent {
+        label 'pv-alpha-aux'
+    }
+
+    // Maps to <concurrentBuild>false</concurrentBuild>
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    stages {
+        stage('Stop Feed Parsers') {
+            steps {
+                script {
+                    // Maps to 'pushd /opt/podverse-ops/docker-compose/alpha/workers'
+                    dir('/opt/podverse-ops/docker-compose/alpha/workers') {
+                        // We use triple single-quotes (''') to create a raw string.
+                        // This prevents Groovy from trying to interpret the '$' variables,
+                        // passing the script exactly as written to the shell.
+                        sh '''
+                            set -eux
+
+                            # List all matching containers
+                            # "|| true" ensures the script doesn't fail if grep finds nothing
+                            CONTAINERS=$(docker ps -a --format '{{.Names}}' | grep '^podverse_alpha_workers_parser_') || true
+
+                            if [ -n "$CONTAINERS" ]; then
+                              echo "Stopping and removing containers: $CONTAINERS"
+                              # Stop all matching containers
+                              docker stop $CONTAINERS || true
+                              # Remove all matching containers
+                              docker rm $CONTAINERS || true
+                            else
+                              echo "No matching containers found."
+                            fi
+                        '''
+                    }
+                }
+            }
+        }
+    }
+}

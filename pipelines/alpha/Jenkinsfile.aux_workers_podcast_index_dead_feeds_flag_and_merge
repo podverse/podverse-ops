@@ -1,0 +1,30 @@
+pipeline {
+    // Maps to <assignedNode>pv-alpha-aux</assignedNode>
+    agent {
+        label 'pv-alpha-aux'
+    }
+
+    // Maps to <concurrentBuild>false</concurrentBuild>
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    stages {
+        stage('Flag Dead Feeds') {
+            steps {
+                script {
+                    // Maps to 'pushd /opt/podverse-ops/docker-compose/alpha/workers'
+                    dir('/opt/podverse-ops/docker-compose/alpha/workers') {
+                        // Maps to the docker compose command.
+                        // We use triple single-quotes to preserve 'set -eux' behavior strictly.
+                        sh '''
+                            set -eux
+                            docker compose -f docker-compose.yml run --rm podverse_alpha_workers npm run podcast_index_dead_feeds_flag_and_merge
+                        '''
+                    }
+                }
+            }
+        }
+    }
+}

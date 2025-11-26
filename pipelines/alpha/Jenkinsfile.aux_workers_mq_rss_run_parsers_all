@@ -1,0 +1,40 @@
+pipeline {
+    // Maps to <assignedNode>pv-alpha-aux</assignedNode>
+    agent {
+        label 'pv-alpha-aux'
+    }
+
+    // Maps to <concurrentBuild>false</concurrentBuild>
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    stages {
+        stage('Start Default Feed Parsers') {
+            steps {
+                script {
+                    // Maps to 'pushd /opt/podverse-ops/docker-compose/alpha/workers'
+                    dir('/opt/podverse-ops/docker-compose/alpha/workers') {
+                        // Maps to the sequence of docker compose run commands.
+                        // 'set -eux' is preserved for verbose logging and error handling.
+                        // Note: If containers with these names already exist, this step will fail.
+                        sh '''
+                            set -eux
+
+                            # Start RSS Normal (1 instance)
+                            docker compose -f docker-compose.yml run -d --name podverse_alpha_workers_parser_rss_normal_1 podverse_alpha_workers npm run mq_rss_run_parser -- -q rss-normal
+
+                            # Start RSS On-Demand (2 instances)
+                            docker compose -f docker-compose.yml run -d --name podverse_alpha_workers_parser_rss_on_demand_1 podverse_alpha_workers npm run mq_rss_run_parser -- -q rss-on-demand
+                            docker compose -f docker-compose.yml run -d --name podverse_alpha_workers_parser_rss_on_demand_2 podverse_alpha_workers npm run mq_rss_run_parser -- -q rss-on-demand
+
+                            # Start RSS Live (1 instance)
+                            docker compose -f docker-compose.yml run -d --name podverse_alpha_workers_parser_rss_live_1 podverse_alpha_workers npm run mq_rss_run_parser -- -q rss-live
+                        '''
+                    }
+                }
+            }
+        }
+    }
+}

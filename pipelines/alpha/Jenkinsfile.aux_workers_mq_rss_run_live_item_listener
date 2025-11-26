@@ -1,0 +1,32 @@
+pipeline {
+    // Maps to <assignedNode>pv-alpha-aux</assignedNode>
+    agent {
+        label 'pv-alpha-aux'
+    }
+
+    // Maps to <concurrentBuild>false</concurrentBuild>
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    stages {
+        stage('Start Live Item Listener') {
+            steps {
+                script {
+                    // Maps to 'pushd /opt/podverse-ops/docker-compose/alpha/workers'
+                    dir('/opt/podverse-ops/docker-compose/alpha/workers') {
+                        // Maps to the docker compose run command.
+                        // We use 'set -eux' to match the XML.
+                        // Note: '-d' runs this in the background, so the Jenkins job will 
+                        // finish successfully as soon as the container starts.
+                        sh '''
+                            set -eux
+                            docker compose -f docker-compose.yml run -d --name podverse_alpha_workers_parser_rss_live_item_listener podverse_alpha_workers npm run mq_rss_run_live_item_listener
+                        '''
+                    }
+                }
+            }
+        }
+    }
+}

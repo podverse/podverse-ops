@@ -1,0 +1,50 @@
+pipeline {
+    // Maps to <assignedNode>pv-alpha-aux</assignedNode>
+    agent {
+        label 'pv-alpha-aux'
+    }
+
+    // Maps to <concurrentBuild>false</concurrentBuild>
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    parameters {
+        string(
+            name: 'PODCAST_INDEX_ID', 
+            description: 'The id of the feed in the Podcast Index directory.',
+            trim: false
+        )
+
+        choice(
+            name: 'FEED_FLAG_STATUS_ID', 
+            choices: ['1', '2', '3', '4', '5', '6'], 
+            description: '''The feed flag status id you want to change the feed to.
+Active = 1
+AlwaysParse = 2
+Spam = 3
+PendingArchive = 4
+Archived = 5
+Takedown = 6'''
+        )
+    }
+
+    stages {
+        stage('Update Feed Flag') {
+            steps {
+                script {
+                    // Maps to 'pushd /opt/podverse-ops/docker-compose/alpha/workers'
+                    dir('/opt/podverse-ops/docker-compose/alpha/workers') {
+                        // Maps to the docker compose run command.
+                        // We use triple double-quotes (""") to interpolate the Jenkins parameters.
+                        sh """
+                            set -eux
+                            docker compose -f docker-compose.yml run --rm podverse_alpha_workers npm run orm_feed_update_flag_status -- ${params.PODCAST_INDEX_ID} ${params.FEED_FLAG_STATUS_ID}
+                        """
+                    }
+                }
+            }
+        }
+    }
+}

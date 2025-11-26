@@ -1,0 +1,53 @@
+pipeline {
+    // Maps to <assignedNode>pv-alpha-aux</assignedNode>
+    agent {
+        label 'pv-alpha-aux'
+    }
+
+    // Maps to <concurrentBuild>false</concurrentBuild>
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    parameters {
+        choice(
+            name: 'MQ_QUEUE_NAME', 
+            choices: ['rss-normal', 'rss-on-demand', 'rss-live'], 
+            description: 'The mq queue which the feeds should be added to for parsing.'
+        )
+        
+        string(
+            name: 'SINCE_RANGE', 
+            defaultValue: '900', 
+            description: 'The value in seconds of the range of historical data you want to request from Podcast Index. Example: 900 = 15 minutes.'
+        )
+    }
+
+    stages {
+        stage('Add Recent Feeds to Queue') {
+            steps {
+                script {
+                    // Maps to 'pushd /opt/podverse-ops/docker-compose/alpha/workers'
+                    dir('/opt/podverse-ops/docker-compose/alpha/workers') {
+                        // Maps to the shell command logic.
+                        // We use triple double-quotes (""") to allow Groovy interpolation of ${params}.
+                        // Shell variables (like $CONTAINER_NAME) are escaped with a backslash (\$).
+                        sh """
+                            set -eux
+
+                            # Logic preserved from XML:
+                            # Convert MQ_QUEUE_NAME to lowercase and replace '-' with '_'
+                            # Note: This variable was calculated in your original script but not explicitly used in the final docker command below.
+                            MQ_QUEUE_NAME_UNDERSCORE=\$(echo "${params.MQ_QUEUE_NAME}" | tr '[:upper:]' '[:lower:]' | tr '-' '_')
+
+                            CONTAINER_NAME="podverse_alpha_workers_mq_rss_add_recently_updated_feeds_from_podcast_index"
+                            
+                            docker compose -f docker-compose.yml run --rm --name "\$CONTAINER_NAME" podverse_alpha_workers npm run mq_rss_add_recently_updated_feeds_from_podcast_index -- -q "${params.MQ_QUEUE_NAME}" -sr "${params.SINCE_RANGE}"
+                        """
+                    }
+                }
+            }
+        }
+    }
+}

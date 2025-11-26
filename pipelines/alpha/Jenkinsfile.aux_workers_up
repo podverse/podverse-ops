@@ -1,0 +1,83 @@
+pipeline {
+    // Maps to <assignedNode>pv-alpha-aux</assignedNode>
+    agent {
+        label 'pv-alpha-aux'
+    }
+
+    // Maps to <concurrentBuild>false</concurrentBuild>
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    parameters {
+        string(
+            name: 'IMAGE_VERSION',
+            defaultValue: 'alpha',
+            description: 'Specify the podverse_workers alpha docker image version.'
+        )
+
+        choice(
+            name: 'GHCR_IMAGE_PATH',
+            choices: ['podverse/podverse-workers/podverse-workers'],
+            description: 'The path to the image hosted in GHCR.'
+        )
+
+        credentials(
+            name: 'GHCR_REGISTRY_TOKEN',
+            defaultValue: 'ghcr_pat_read_only_packages',
+            credentialType: 'SecretText',
+            required: true,
+            description: 'The GHCR PAT'
+        )
+    }
+
+    stages {
+        stage('Prepare Configuration') {
+            steps {
+                script {
+                    // Maps to 'pushd /opt/podverse-ops/docker-compose/alpha/workers'
+                    dir('/opt/podverse-ops/docker-compose/alpha/workers') {
+                        // Maps to the templating logic.
+                        // We use triple single-quotes (''') so that shell variables (like $WORKERS_VERSION)
+                        // are handled by Bash. Parameters (like $IMAGE_VERSION) are injected 
+                        // as environment variables automatically.
+                        sh '''#!/bin/bash
+                        set -euo pipefail
+
+                        if [[ "${IMAGE_VERSION}" == "alpha" ]]; then
+                          WORKERS_VERSION=$(/opt/podverse-ops/scripts/ghcr/getLatestAlphaTag.sh)
+                          if [[ -z "${WORKERS_VERSION}" ]]; then
+                            echo "ERROR: No alpha tag found from getLatestAlphaTag.sh" >&2
+                            exit 1
+                          fi
+                        else
+                          WORKERS_VERSION="${IMAGE_VERSION}"
+                        fi
+
+                        echo "Using WORKERS_VERSION=${WORKERS_VERSION}"
+
+                        sed "s/REPLACE_WITH_WORKERS_VERSION/${WORKERS_VERSION}/g" docker-compose.yml.template > docker-compose.yml
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Start Alpha Workers') {
+            steps {
+                script {
+                    // Maps to 'pushd /opt/podverse-ops'
+                    dir('/opt/podverse-ops') {
+                        // Maps to 'make alpha_workers_up'
+                        // Preserving 'set -eux' from the XML for verbose output
+                        sh '''
+                            set -eux
+                            make alpha_workers_up
+                        '''
+                    }
+                }
+            }
+        }
+    }
+}
