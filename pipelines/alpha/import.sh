@@ -52,45 +52,23 @@ java -jar "${SCRIPT_DIR}/jenkins-cli.jar" -s "$JENKINS_URL" -auth "$AUTH" create
 
 echo "Folder '$JENKINS_FOLDER' is ready (created or already exists)"
 
-# 2. List of Jenkinsfiles in your repo structure
-# (Based on the file structure you provided earlier)
-declare -a FILES=(
-    "./Jenkinsfile.aux_all_down"
-    "./Jenkinsfile.aux_db_down"
-    "./Jenkinsfile.aux_db_drop_everything"
-    "./Jenkinsfile.aux_db_init"
-    "./Jenkinsfile.aux_db_up"
-    "./Jenkinsfile.aux_docker_prune_images"
-    "./Jenkinsfile.aux_mq_down"
-    "./Jenkinsfile.aux_mq_up"
-    "./Jenkinsfile.aux_network_create"
-    "./Jenkinsfile.aux_network_remove"
-    "./Jenkinsfile.aux_ops_git_pull"
-    "./Jenkinsfile.aux_workers_archive_all"
-    "./Jenkinsfile.aux_workers_down"
-    "./Jenkinsfile.aux_workers_mq_rss_add"
-    "./Jenkinsfile.aux_workers_mq_rss_add_recently_updated_feeds_from_podcast_index"
-    "./Jenkinsfile.aux_workers_mq_rss_run_live_item_listener"
-    "./Jenkinsfile.aux_workers_mq_rss_run_parsers"
-    "./Jenkinsfile.aux_workers_mq_rss_run_parsers_all"
-    "./Jenkinsfile.aux_workers_mq_rss_stop_parsers"
-    "./Jenkinsfile.aux_workers_orm_feed_update_flag_status"
-    "./Jenkinsfile.aux_workers_parser_rss_parse_feed"
-    "./Jenkinsfile.aux_workers_podcast_index_dead_feeds_delete_cache"
-    "./Jenkinsfile.aux_workers_podcast_index_dead_feeds_flag_and_merge"
-    "./Jenkinsfile.aux_workers_up"
-    "./Jenkinsfile.srv_all_down"
-    "./Jenkinsfile.srv_api_down"
-    "./Jenkinsfile.srv_api_up"
-    "./Jenkinsfile.srv_docker_prune_images"
-    "./Jenkinsfile.srv_network_create"
-    "./Jenkinsfile.srv_network_remove"
-    "./Jenkinsfile.srv_ops_git_pull"
-    "./Jenkinsfile.srv_web_down"
-    "./Jenkinsfile.srv_web_up"
-    "./Jenkinsfile.u_all_down"
-    "./Jenkinsfile.u_ops_git_pull"
-)
+# 2. Discover Jenkinsfiles in the current script directory
+# Builds the FILES array from any files starting with 'Jenkinsfile.'
+# Paths are set relative to the script's directory for consistency.
+shopt -s nullglob
+declare -a FILES=()
+for jf in "$SCRIPT_DIR"/Jenkinsfile.*; do
+    # Convert to relative path starting with './'
+    rel="./$(basename "$jf")"
+    FILES+=("$rel")
+done
+shopt -u nullglob
+
+# Fail early if no Jenkinsfiles are found
+if [[ ${#FILES[@]} -eq 0 ]]; then
+    echo "ERROR: No files matching 'Jenkinsfile.*' found in $SCRIPT_DIR" >&2
+    exit 1
+fi
 
 # 3. Create or update jobs for each file
 for FILE_PATH in "${FILES[@]}"; do
