@@ -1,17 +1,26 @@
 pipeline {
+    // Maps to <assignedNode>pv-alpha-aux</assignedNode>
     agent {
         label 'pv-alpha-aux'
     }
 
+    // Maps to <concurrentBuild>false</concurrentBuild>
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
     stages {
-        stage('Run Script') {
+        stage('Stop Alpha Services') {
             steps {
-                sh """#!/usr/bin/env bash
-                    set -e
-                    pushd /opt/podverse-ops
-                    make alpha_all_down
-                    popd
-                """
+                script {
+                    // Maps to 'pushd /opt/podverse-ops'
+                    // The dir() block sets the working directory for the contained steps
+                    dir('/opt/podverse-ops') {
+                        // Maps to 'make alpha_all_down'
+                        sh 'make alpha_all_down'
+                    }
+                }
             }
         }
     }
