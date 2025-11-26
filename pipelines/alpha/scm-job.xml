@@ -9,6 +9,7 @@
       <userRemoteConfigs>
         <hudson.plugins.git.UserRemoteConfig>
           <url>https://github.com/podverse/podverse-ops.git</url>
+          <credentialsId>d793d818-3df6-4f30-b137-c849b43ce6fe</credentialsId>
           </hudson.plugins.git.UserRemoteConfig>
       </userRemoteConfigs>
       <branches>
