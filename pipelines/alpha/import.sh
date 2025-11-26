@@ -5,6 +5,14 @@ set -euo pipefail
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Determine the Git repo root to make paths relative to it
+if REPO_ROOT=$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null); then
+    :
+else
+    echo "ERROR: Unable to determine Git repo root. Ensure this script runs within a Git repository." >&2
+    exit 1
+fi
+
 # Usage: ./import.sh <credentials_file> [jenkins_url] [jenkins_folder_name]
 # credentials_file format:
 #   Single line: username:password
@@ -58,8 +66,10 @@ echo "Folder '$JENKINS_FOLDER' is ready (created or already exists)"
 shopt -s nullglob
 declare -a FILES=()
 for jf in "$SCRIPT_DIR"/Jenkinsfile.*; do
-    # Convert to relative path starting with './'
-    rel="./$jf"
+    # Convert absolute path to repo-root-relative path starting with './'
+    # Strip the repo root prefix
+    rel_path="${jf#$REPO_ROOT/}"
+    rel="./$rel_path"
     FILES+=("$rel")
 done
 shopt -u nullglob
