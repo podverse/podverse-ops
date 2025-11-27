@@ -4,6 +4,10 @@ pipeline {
         label 'pv-alpha-aux'
     }
 
+    triggers {
+        cron('H/5 * * * *')
+    }
+
     // Maps to <concurrentBuild>false</concurrentBuild>
     options {
         disableConcurrentBuilds()
