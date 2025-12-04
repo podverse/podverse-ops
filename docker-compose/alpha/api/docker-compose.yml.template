@@ -18,3 +18,4 @@ services:
       driver: "syslog"
       options:
         tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+    restart: unless-stopped
