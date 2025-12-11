@@ -14,7 +14,7 @@ services:
       - ../../../config/podverse-alpha-mq.env
     ports:
       - '5672:5672'   # AMQP 1.0
-      - 0.0.0.0:8161:8161   # Web console
+      - 100.108.65.23:8161:8161   # Web console Tailscale ip address
     networks:
       - podverse_alpha_network
     restart: unless-stopped
