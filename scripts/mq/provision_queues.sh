@@ -53,12 +53,14 @@ for q in "${QUEUES[@]}"; do
     --user '$ARTEMIS_USER' --password '$ARTEMIS_PASSWORD' --url tcp://localhost:61616 \
     --name '$q' --anycast \
     --dead-letter-address '$DLQ' --max-delivery-attempts 5 \
+    --redelivery-delay 60000 \
     --consumer-window-size 0 --ring-size -1 \
     --message-expiry-thread-priority 3 --silent >/dev/null 2>&1 || \
     /var/lib/artemis-instance/bin/artemis address update \
     --user '$ARTEMIS_USER' --password '$ARTEMIS_PASSWORD' --url tcp://localhost:61616 \
     --name '$q' \
     --dead-letter-address '$DLQ' --max-delivery-attempts 5 \
+    --redelivery-delay 60000 \
     --consumer-window-size 0 --ring-size -1 \
     --message-expiry-thread-priority 3 --silent >/dev/null 2>&1 || true"
 
