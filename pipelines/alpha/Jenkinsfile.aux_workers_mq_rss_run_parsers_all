@@ -24,6 +24,7 @@ pipeline {
 
                             # Start RSS Normal (1 instance)
                             docker compose -f docker-compose.yml run -d --name podverse_alpha_workers_parser_rss_normal_1 podverse_alpha_workers npm run mq_rss_run_parser -- -q rss-normal
+                            docker compose -f docker-compose.yml run -d --name podverse_alpha_workers_parser_rss_normal_2 podverse_alpha_workers npm run mq_rss_run_parser -- -q rss-normal
 
                             # Start RSS On-Demand (2 instances)
                             docker compose -f docker-compose.yml run -d --name podverse_alpha_workers_parser_rss_on_demand_1 podverse_alpha_workers npm run mq_rss_run_parser -- -q rss-on-demand
