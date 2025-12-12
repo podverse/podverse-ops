@@ -10,13 +10,7 @@ pipeline {
         timestamps()
     }
 
-    parameters {
-        string(
-            name: 'PODCAST_INDEX_ID', 
-            description: 'The id of the feed in the Podcast Index directory.',
-            trim: false
-        )
-        
+    parameters {        
         choice(
             name: 'MQ_QUEUE_NAME', 
             choices: ['rss-normal', 'rss-slow', 'rss-on-demand', 'rss-live'],
