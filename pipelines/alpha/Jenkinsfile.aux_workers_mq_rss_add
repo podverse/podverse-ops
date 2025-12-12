@@ -19,7 +19,7 @@ pipeline {
         
         choice(
             name: 'MQ_QUEUE_NAME', 
-            choices: ['rss-normal', 'rss-on-demand', 'rss-live'], 
+            choices: ['rss-normal', 'rss-slow', 'rss-on-demand', 'rss-live'], 
             description: 'Select the target queue.'
         )
     }
