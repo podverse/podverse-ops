@@ -18,8 +18,6 @@ services:
     networks:
       - podverse_local_network
     restart: unless-stopped
-    volumes:
-      - artemis_data:/var/lib/artemis-instance
     logging:
       driver: 'json-file'
       options:

@@ -13,6 +13,7 @@ services:
       - podverse_alpha_network
     volumes:
       - ../../../config/firebase/firebase-key.json:/app/config/firebase-key.json:ro
+      - ../../../logs/workers:/app/logs
     logging:
       driver: "syslog"
       options:

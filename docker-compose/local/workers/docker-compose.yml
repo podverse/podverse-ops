@@ -18,3 +18,4 @@ services:
         max-size: '50m'
     volumes:
       - ../../../config/firebase/firebase-key.json:/app/config/firebase-key.json:ro
+      - ../../../logs/workers:/app/logs
