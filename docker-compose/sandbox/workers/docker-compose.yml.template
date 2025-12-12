@@ -15,7 +15,7 @@ services:
     networks:
       - podverse_sandbox_network
     volumes:
-      - ../../../config/firebase/firebase-key.json:/app/config/firebase-key.json:ro
+      - ../../../config/firebase/firebase-key.json:/opt/config/firebase-key.json:ro
       - podverse_sandbox_workers_data:/data
     logging:
       driver: "syslog"

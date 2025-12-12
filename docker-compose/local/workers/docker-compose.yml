@@ -17,5 +17,5 @@ services:
         max-file: '1'
         max-size: '50m'
     volumes:
-      - ../../../config/firebase/firebase-key.json:/app/config/firebase-key.json:ro
-      - ../../../logs/workers:/app/logs
+      - ../../../config/firebase/firebase-key.json:/opt/config/firebase-key.json:ro
+      - ../../../logs/workers:/opt/logs
