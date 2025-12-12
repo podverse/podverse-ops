@@ -19,3 +19,4 @@ services:
       options:
         tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
     restart: unless-stopped
+    stop_grace_period: 5m

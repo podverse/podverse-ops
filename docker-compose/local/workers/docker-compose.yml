@@ -19,3 +19,4 @@ services:
     volumes:
       - ../../../config/firebase/firebase-key.json:/opt/config/firebase-key.json:ro
       - ../../../logs/workers:/opt/logs
+    stop_grace_period: 5m
