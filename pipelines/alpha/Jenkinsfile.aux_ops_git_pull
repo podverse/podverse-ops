@@ -26,6 +26,7 @@ pipeline {
                     dir('/opt/podverse-ops') {
                         // We use double quotes to interpolate the parameter ${GIT_BRANCH_NAME}
                         sh """
+                            rm /opt/podverse-ops/docker-compose/alpha/workers/docker-compose.yml || true
                             git checkout ${params.GIT_BRANCH_NAME}
                             git pull origin ${params.GIT_BRANCH_NAME}
                         """

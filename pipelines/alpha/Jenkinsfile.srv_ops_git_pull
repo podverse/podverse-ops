@@ -26,6 +26,8 @@ pipeline {
                     dir('/opt/podverse-ops') {
                         // Maps to the git commands using the parameter
                         sh """
+                            rm /opt/podverse-ops/docker-compose/alpha/api/docker-compose.yml || true
+                            rm /opt/podverse-ops/docker-compose/alpha/web/docker-compose.yml || true
                             git checkout ${params.GIT_BRANCH_NAME}
                             git pull origin ${params.GIT_BRANCH_NAME}
                         """
