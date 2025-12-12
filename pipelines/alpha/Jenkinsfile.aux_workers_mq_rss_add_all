@@ -1,0 +1,46 @@
+pipeline {
+    // Maps to <assignedNode>pv-alpha-aux</assignedNode>
+    agent {
+        label 'pv-alpha-aux'
+    }
+
+    // Maps to <concurrentBuild>false</concurrentBuild>
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    parameters {
+        string(
+            name: 'PODCAST_INDEX_ID', 
+            description: 'The id of the feed in the Podcast Index directory.',
+            trim: false
+        )
+        
+        choice(
+            name: 'MQ_QUEUE_NAME', 
+            choices: ['rss-normal', 'rss-slow', 'rss-on-demand', 'rss-live'],
+            description: 'Select the target queue.'
+        )
+    }
+
+    stages {
+        stage('Queue All RSS Feeds') {
+            steps {
+                script {
+                    // Maps to 'pushd /opt/podverse-ops/docker-compose/alpha/workers'
+                    dir('/opt/podverse-ops/docker-compose/alpha/workers') {
+                        // Maps to the docker compose run command.
+                        // We use triple double-quotes (""") to allow Groovy to interpolate
+                        // the ${params.X} values into the shell string.
+                        // 'set -eux' is preserved for verbose debugging and error handling.
+                        sh """
+                            set -eux
+                            docker compose -f docker-compose.yml run --rm podverse_alpha_workers npm run mq_rss_add_all -- -q ${params.MQ_QUEUE_NAME}
+                        """
+                    }
+                }
+            }
+        }
+    }
+}
