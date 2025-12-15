@@ -47,8 +47,19 @@ pipeline {
 
                             CONTAINER_NAME="podverse_alpha_workers_mq_rss_add_recently_updated_feeds_from_podcast_index"
                             
-                            docker compose -f docker-compose.yml run --rm --name "\$CONTAINER_NAME" podverse_alpha_workers npm run mq_rss_add_recently_updated_feeds_from_podcast_index -- -q "${params.MQ_QUEUE_NAME}" -sr "${params.SINCE_RANGE}"
+                            if docker image inspect podverse_alpha_workers >/dev/null 2>&1; then
+                                docker compose -f docker-compose.yml run --rm --name "$CONTAINER_NAME" podverse_alpha_workers npm run mq_rss_add_recently_updated_feeds_from_podcast_index -- -q "${params.MQ_QUEUE_NAME}" -sr "${params.SINCE_RANGE}"
+                            else
+                                echo "Image podverse_alpha_workers not found. Marking build NOT_BUILT and skipping."
+                                exit 0
+                            fi
                         """
+                        script {
+                            def hasImage = sh(script: 'docker image inspect podverse_alpha_workers >/dev/null 2>&1', returnStatus: true) == 0
+                            if (!hasImage) {
+                                currentBuild.result = 'NOT_BUILT'
+                            }
+                        }
                     }
                 }
             }

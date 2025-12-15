@@ -27,8 +27,20 @@ pipeline {
                         // Jenkins sh implies 'set -e' automatically.
                         sh '''
                             set -ux
-                            docker compose -f docker-compose.yml run --rm podverse_alpha_workers npm run archive_all
+                            if docker image inspect podverse_alpha_workers >/dev/null 2>&1; then
+                                docker compose -f docker-compose.yml run --rm podverse_alpha_workers npm run archive_all
+                            else
+                                echo "Image podverse_alpha_workers not found. Marking build NOT_BUILT and skipping."
+                                exit 0
+                            fi
                         '''
+                        // Mark build as NOT_BUILT when image is missing
+                        script {
+                            def hasImage = sh(script: 'docker image inspect podverse_alpha_workers >/dev/null 2>&1', returnStatus: true) == 0
+                            if (!hasImage) {
+                                currentBuild.result = 'NOT_BUILT'
+                            }
+                        }
                     }
                 }
             }

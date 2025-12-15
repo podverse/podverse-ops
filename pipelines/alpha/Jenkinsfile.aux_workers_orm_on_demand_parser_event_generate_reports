@@ -19,8 +19,19 @@ pipeline {
                     dir('/opt/podverse-ops/docker-compose/alpha/workers') {
                         sh """
                             set -eux
-                            docker compose -f docker-compose.yml run --rm podverse_alpha_workers npm run orm_on_demand_parser_event_generate_reports
+                            if docker image inspect podverse_alpha_workers >/dev/null 2>&1; then
+                                docker compose -f docker-compose.yml run --rm podverse_alpha_workers npm run orm_on_demand_parser_event_generate_reports
+                            else
+                                echo "Image podverse_alpha_workers not found. Marking build NOT_BUILT and skipping."
+                                exit 0
+                            fi
                         """
+                        script {
+                            def hasImage = sh(script: 'docker image inspect podverse_alpha_workers >/dev/null 2>&1', returnStatus: true) == 0
+                            if (!hasImage) {
+                                currentBuild.result = 'NOT_BUILT'
+                            }
+                        }
                     }
                 }
             }
