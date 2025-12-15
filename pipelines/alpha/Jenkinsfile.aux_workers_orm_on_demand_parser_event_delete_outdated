@@ -20,7 +20,7 @@ pipeline {
                         sh """
                             set -eux
                             # Proceed if any podverse-workers image is available (local or GHCR)
-                            if docker image ls --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)podverse-workers(:|/)|(^|/)podverse_alpha_workers(:|$)'; then
+                            if docker image ls --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)podverse-workers(:|/)|(^|/)podverse_alpha_workers(:|\$)'; then
                                 docker compose -f docker-compose.yml run --rm podverse_alpha_workers npm run orm_on_demand_parser_event_delete_outdated
                             else
                                 echo "No podverse-workers image found locally. Marking build NOT_BUILT and skipping."
@@ -28,7 +28,7 @@ pipeline {
                             fi
                         """
                         script {
-                            def hasImage = sh(script: "docker image ls --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)podverse-workers(:|/)|(^|/)podverse_alpha_workers(:|$)' >/dev/null 2>&1", returnStatus: true) == 0
+                            def hasImage = sh(script: "docker image ls --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)podverse-workers(:|/)|(^|/)podverse_alpha_workers(:|\\$)' >/dev/null 2>&1", returnStatus: true) == 0
                             if (!hasImage) {
                                 currentBuild.result = 'NOT_BUILT'
                             }

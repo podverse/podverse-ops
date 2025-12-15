@@ -37,7 +37,7 @@ pipeline {
                         '''
                         // Mark build as NOT_BUILT when image is missing
                         script {
-                            def hasImage = sh(script: "docker image ls --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)podverse-workers(:|/)|(^|/)podverse_alpha_workers(:|$)' >/dev/null 2>&1", returnStatus: true) == 0
+                            def hasImage = sh(script: "docker image ls --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)podverse-workers(:|/)|(^|/)podverse_alpha_workers(:|\\$)' >/dev/null 2>&1", returnStatus: true) == 0
                             if (!hasImage) {
                                 currentBuild.result = 'NOT_BUILT'
                             }

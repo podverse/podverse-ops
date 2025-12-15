@@ -49,7 +49,7 @@ pipeline {
                             MQ_QUEUE_NAME_UNDERSCORE="${mqQueueNameUnderscore}"
 
                             # Check for any available podverse-workers image (local or GHCR) and proceed if present
-                            if docker image ls --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)podverse-workers(:|/)|(^|/)podverse_alpha_workers(:|$)'; then
+                            if docker image ls --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)podverse-workers(:|/)|(^|/)podverse_alpha_workers(:|\$)'; then
                                 docker compose -f docker-compose.yml run --rm --name "${containerName}" podverse_alpha_workers npm run mq_rss_add_recently_updated_feeds_from_podcast_index -- -q "${params.MQ_QUEUE_NAME}" -sr "${params.SINCE_RANGE}"
                             else
                                 echo "No podverse-workers image found locally. Marking build NOT_BUILT and skipping."
@@ -57,7 +57,7 @@ pipeline {
                             fi
                         """
                         script {
-                            def hasImage = sh(script: "docker image ls --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)podverse-workers(:|/)|(^|/)podverse_alpha_workers(:|$)' >/dev/null 2>&1", returnStatus: true) == 0
+                            def hasImage = sh(script: "docker image ls --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)podverse-workers(:|/)|(^|/)podverse_alpha_workers(:|\\$)' >/dev/null 2>&1", returnStatus: true) == 0
                             if (!hasImage) {
                                 currentBuild.result = 'NOT_BUILT'
                             }
