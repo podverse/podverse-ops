@@ -55,8 +55,7 @@ pipeline {
 
                         sh '''#!/bin/bash
                             set -euo pipefail
-                            export API_VERSION=''' + apiVersion + '''
-                            envsubst < docker-compose.yml.template > docker-compose.yml
+                            sed -e "s|REPLACE_WITH_API_VERSION|''' + apiVersion + '''|g" docker-compose.yml.template > docker-compose.yml
                         '''
                     }
                 }

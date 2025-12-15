@@ -56,8 +56,7 @@ pipeline {
 
                         sh '''#!/bin/bash
                             set -euo pipefail
-                            export WORKERS_VERSION=''' + workersVersion + '''
-                            envsubst < docker-compose.yml.template > docker-compose.yml
+                            sed -e "s|REPLACE_WITH_WORKERS_VERSION|''' + workersVersion + '''|g" docker-compose.yml.template > docker-compose.yml
                         '''
                     }
                 }
