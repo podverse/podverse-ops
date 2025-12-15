@@ -54,10 +54,11 @@ pipeline {
 
                         echo "Using WEB_VERSION=${webVersion}"
 
-                        sh """
-                                set -euo pipefail
-                                sed "s/REPLACE_WITH_WEB_VERSION/${webVersion}/g" docker-compose.yml.template > docker-compose.yml
-                        """
+                        sh '''#!/bin/bash
+                            set -euo pipefail
+                            export WEB_VERSION=''' + webVersion + '''
+                            envsubst < docker-compose.yml.template > docker-compose.yml
+                        '''
                     }
                 }
             }
