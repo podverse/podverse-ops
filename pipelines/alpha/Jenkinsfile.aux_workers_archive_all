@@ -27,16 +27,17 @@ pipeline {
                         // Jenkins sh implies 'set -e' automatically.
                         sh '''
                             set -ux
-                            if docker image inspect podverse_alpha_workers >/dev/null 2>&1; then
+                            # Proceed if any podverse-workers image is available (local or GHCR)
+                            if docker image ls --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)podverse-workers(:|/)|(^|/)podverse_alpha_workers(:|$)'; then
                                 docker compose -f docker-compose.yml run --rm podverse_alpha_workers npm run archive_all
                             else
-                                echo "Image podverse_alpha_workers not found. Marking build NOT_BUILT and skipping."
+                                echo "No podverse-workers image found locally. Marking build NOT_BUILT and skipping."
                                 exit 0
                             fi
                         '''
                         // Mark build as NOT_BUILT when image is missing
                         script {
-                            def hasImage = sh(script: 'docker image inspect podverse_alpha_workers >/dev/null 2>&1', returnStatus: true) == 0
+                            def hasImage = sh(script: "docker image ls --format '{{.Repository}}:{{.Tag}}' | grep -E '(^|/)podverse-workers(:|/)|(^|/)podverse_alpha_workers(:|$)' >/dev/null 2>&1", returnStatus: true) == 0
                             if (!hasImage) {
                                 currentBuild.result = 'NOT_BUILT'
                             }
