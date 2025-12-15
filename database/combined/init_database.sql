@@ -202,9 +202,8 @@ CREATE TABLE medium (
     id SERIAL PRIMARY KEY,
     value TEXT UNIQUE CHECK (VALUE IN (
         'publisher',
-        'podcast', 'music', 'video', 'film', 'audiobook', 'newsletter', 'blog', 'publisher', 'course',
-        'mixed', 'podcastL', 'musicL', 'videoL', 'filmL', 'audiobookL', 'newsletterL', 'blogL', 'publisherL', 'courseL',
-        'av'
+        'podcast', 'music', 'video', 'film', 'audiobook', 'newsletter', 'blog', 'course',
+        'mixed', 'podcastL', 'musicL', 'videoL', 'filmL', 'audiobookL', 'newsletterL', 'blogL', 'publisherL', 'courseL', 'av'
     ))
 );
 
@@ -1717,4 +1716,21 @@ CREATE INDEX stats_aggregated_account_day_current_count_idx ON stats_aggregated_
 CREATE INDEX stats_aggregated_account_week_current_count_idx ON stats_aggregated_account(week_current_count);
 CREATE INDEX stats_aggregated_account_month_current_count_idx ON stats_aggregated_account(month_current_count);
 CREATE INDEX stats_aggregated_account_all_time_count_idx ON stats_aggregated_account(all_time_count);
+
+CREATE TYPE on_demand_parser_event_type AS ENUM ('add', 'refresh', 'remoteItem');
+
+CREATE TABLE on_demand_parser_event (
+    id SERIAL PRIMARY KEY,
+    account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    podcast_index_id INTEGER NOT NULL,
+    remote_parent_podcast_index_id INTEGER,
+    type on_demand_parser_event_type NOT NULL,
+    created_at server_time_with_default NOT NULL
+);
+
+CREATE INDEX idx_on_demand_parser_event_account_id ON on_demand_parser_event(account_id);
+CREATE INDEX idx_on_demand_parser_event_podcast_index_id ON on_demand_parser_event(podcast_index_id);
+CREATE INDEX idx_on_demand_parser_event_remote_parent_podcast_index_id ON on_demand_parser_event(remote_parent_podcast_index_id);
+CREATE INDEX idx_on_demand_parser_event_type ON on_demand_parser_event(type);
+CREATE INDEX idx_on_demand_parser_event_created_at ON on_demand_parser_event(created_at DESC);
 
