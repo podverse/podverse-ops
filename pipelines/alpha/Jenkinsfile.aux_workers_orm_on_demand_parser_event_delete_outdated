@@ -1,0 +1,29 @@
+pipeline {
+    agent {
+        label 'pv-alpha-aux'
+    }
+
+    triggers {
+        cron('0 1 * * *') // Run once a day at 1 AM
+    }
+
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    stages {
+        stage('Delete Outdated On Demand Parser Events') {
+            steps {
+                script {
+                    dir('/opt/podverse-ops/docker-compose/alpha/workers') {
+                        sh """
+                            set -eux
+                            docker compose -f docker-compose.yml run --rm podverse_alpha_workers npm run orm_on_demand_parser_event_delete_outdated
+                        """
+                    }
+                }
+            }
+        }
+    }
+}
