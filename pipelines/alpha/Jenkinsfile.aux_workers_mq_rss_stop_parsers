@@ -16,26 +16,20 @@ pipeline {
                 script {
                     // Maps to 'pushd /opt/podverse-ops/docker-compose/alpha/workers'
                     dir('/opt/podverse-ops/docker-compose/alpha/workers') {
-                        // We use triple single-quotes (''') to create a raw string.
-                        // This prevents Groovy from trying to interpret the '$' variables,
-                        // passing the script exactly as written to the shell.
-                        sh '''
-                            set -eux
+                        // Avoid subshells entirely; pipe matches directly into docker commands
+                        sh """
+                                set -eux
 
-                            # List all matching containers
-                            # "|| true" ensures the script doesn't fail if grep finds nothing
-                            CONTAINERS=$(docker ps -a --format '{{.Names}}' | grep '^podverse_alpha_workers_parser_') || true
-
-                            if [ -n "$CONTAINERS" ]; then
-                              echo "Stopping and removing containers: $CONTAINERS"
-                              # Stop all matching containers
-                              docker stop $CONTAINERS || true
-                              # Remove all matching containers
-                              docker rm $CONTAINERS || true
-                            else
-                              echo "No matching containers found."
-                            fi
-                        '''
+                                MATCHES_COUNT=\$(docker ps -a --format '{{.Names}}' | grep '^podverse_alpha_workers_parser_' | wc -l || true)
+                                if [ \"\$MATCHES_COUNT\" -gt 0 ]; then
+                                    echo "Stopping matching containers"
+                                    docker ps -a --format '{{.Names}}' | grep '^podverse_alpha_workers_parser_' | xargs -r docker stop || true
+                                    echo "Removing matching containers"
+                                    docker ps -a --format '{{.Names}}' | grep '^podverse_alpha_workers_parser_' | xargs -r docker rm || true
+                                else
+                                    echo "No matching containers found."
+                                fi
+                        """
                     }
                 }
             }

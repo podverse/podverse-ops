@@ -41,26 +41,22 @@ pipeline {
                     // Maps to 'pushd /opt/podverse-ops/docker-compose/alpha/api'
                     dir('/opt/podverse-ops/docker-compose/alpha/api') {
                         // We use a multi-line shell script to preserve the logic from the XML
-                        sh '''#!/bin/bash
-                        set -euo pipefail
+                        def apiVersion
+                        if (params.IMAGE_VERSION == 'alpha') {
+                            apiVersion = sh(script: '/opt/podverse-ops/scripts/ghcr/getLatestAlphaTag.sh', returnStdout: true).trim()
+                            if (!apiVersion) {
+                                error('ERROR: No alpha tag found from getLatestAlphaTag.sh')
+                            }
+                        } else {
+                            apiVersion = params.IMAGE_VERSION
+                        }
 
-                        if [[ "${IMAGE_VERSION}" == "alpha" ]]; then
-                            # Calls the external script to get the tag
-                            API_VERSION=$(/opt/podverse-ops/scripts/ghcr/getLatestAlphaTag.sh)
-                            
-                            if [[ -z "${API_VERSION}" ]]; then
-                                echo "ERROR: No alpha tag found from getLatestAlphaTag.sh" >&2
-                                exit 1
-                            fi
-                        else
-                            API_VERSION="${IMAGE_VERSION}"
-                        fi
+                        echo "Using API_VERSION=${apiVersion}"
 
-                        echo "Using API_VERSION=${API_VERSION}"
-
-                        # Generates the actual docker-compose file from the template
-                        sed "s/REPLACE_WITH_API_VERSION/${API_VERSION}/g" docker-compose.yml.template > docker-compose.yml
-                        '''
+                        sh """
+                            set -euo pipefail
+                            sed "s/REPLACE_WITH_API_VERSION/${apiVersion}/g" docker-compose.yml.template > docker-compose.yml
+                        """
                     }
                 }
             }

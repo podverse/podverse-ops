@@ -30,25 +30,17 @@ pipeline {
                 script {
                     // Maps to 'pushd /opt/podverse-ops/docker-compose/alpha/workers'
                     dir('/opt/podverse-ops/docker-compose/alpha/workers') {
-                        // Maps to the loop logic.
-                        // We use triple double-quotes (""") to interpolate Jenkins parameters.
-                        // IMPORTANT: Shell variables ($i, $MQ_QUEUE_NAME_UNDERSCORE) are escaped with '\' 
-                        // so Groovy ignores them and passes them to Bash.
-                        sh """
-                            set -eux
-
-                            # Bash logic to format the queue name (rss-normal -> rss_normal)
-                            MQ_QUEUE_NAME_UNDERSCORE=\$(echo "${params.MQ_QUEUE_NAME}" | tr '[:upper:]' '[:lower:]' | tr '-' '_')
-
-                            # Loop from 1 to PARSER_TOTAL
-                            for i in \$(seq 1 ${params.PARSER_TOTAL}); do
-                                CONTAINER_NAME="podverse_alpha_workers_parser_\${MQ_QUEUE_NAME_UNDERSCORE}_\${i}"
-                                
-                                echo "Starting container: \$CONTAINER_NAME"
-                                
-                                docker compose -f docker-compose.yml run -d --name "\$CONTAINER_NAME" podverse_alpha_workers npm run mq_rss_run_parser -- -q "${params.MQ_QUEUE_NAME}"
-                            done
-                        """
+                        // Compute formatted queue name and loop in Groovy to avoid shell subshells in GStrings
+                        def mqQueueNameUnderscore = params.MQ_QUEUE_NAME.toLowerCase().replace('-', '_')
+                        int total = params.PARSER_TOTAL as int
+                        for (int i = 1; i <= total; i++) {
+                            def containerName = "podverse_alpha_workers_parser_${mqQueueNameUnderscore}_${i}"
+                            sh """
+                                set -eux
+                                echo "Starting container: ${containerName}"
+                                docker compose -f docker-compose.yml run -d --name "${containerName}" podverse_alpha_workers npm run mq_rss_run_parser -- -q "${params.MQ_QUEUE_NAME}"
+                            """
+                        }
                     }
                 }
             }

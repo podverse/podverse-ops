@@ -42,23 +42,22 @@ pipeline {
                         // We use triple single quotes (''') so that shell variables (like $WEB_VERSION)
                         // are evaluated by bash, not Groovy. Parameters (like $IMAGE_VERSION) 
                         // are automatically injected as environment variables.
-                        sh '''#!/bin/bash
-                        set -euo pipefail
+                        def webVersion
+                        if (params.IMAGE_VERSION == 'alpha') {
+                                webVersion = sh(script: '/opt/podverse-ops/scripts/ghcr/getLatestAlphaTag.sh', returnStdout: true).trim()
+                                if (!webVersion) {
+                                        error('ERROR: No alpha tag found from getLatestAlphaTag.sh')
+                                }
+                        } else {
+                                webVersion = params.IMAGE_VERSION
+                        }
 
-                        if [[ "${IMAGE_VERSION}" == "alpha" ]]; then
-                          WEB_VERSION=$(/opt/podverse-ops/scripts/ghcr/getLatestAlphaTag.sh)
-                          if [[ -z "${WEB_VERSION}" ]]; then
-                            echo "ERROR: No alpha tag found from getLatestAlphaTag.sh" >&2
-                            exit 1
-                          fi
-                        else
-                          WEB_VERSION="${IMAGE_VERSION}"
-                        fi
+                        echo "Using WEB_VERSION=${webVersion}"
 
-                        echo "Using WEB_VERSION=${WEB_VERSION}"
-
-                        sed "s/REPLACE_WITH_WEB_VERSION/${WEB_VERSION}/g" docker-compose.yml.template > docker-compose.yml
-                        '''
+                        sh """
+                                set -euo pipefail
+                                sed "s/REPLACE_WITH_WEB_VERSION/${webVersion}/g" docker-compose.yml.template > docker-compose.yml
+                        """
                     }
                 }
             }

@@ -42,23 +42,22 @@ pipeline {
                         // We use triple single-quotes (''') so that shell variables (like $WORKERS_VERSION)
                         // are handled by Bash. Parameters (like $IMAGE_VERSION) are injected 
                         // as environment variables automatically.
-                        sh '''#!/bin/bash
-                        set -euo pipefail
+                        def workersVersion
+                        if (params.IMAGE_VERSION == 'alpha') {
+                                workersVersion = sh(script: '/opt/podverse-ops/scripts/ghcr/getLatestAlphaTag.sh', returnStdout: true).trim()
+                                if (!workersVersion) {
+                                        error('ERROR: No alpha tag found from getLatestAlphaTag.sh')
+                                }
+                        } else {
+                                workersVersion = params.IMAGE_VERSION
+                        }
 
-                        if [[ "${IMAGE_VERSION}" == "alpha" ]]; then
-                          WORKERS_VERSION=$(/opt/podverse-ops/scripts/ghcr/getLatestAlphaTag.sh)
-                          if [[ -z "${WORKERS_VERSION}" ]]; then
-                            echo "ERROR: No alpha tag found from getLatestAlphaTag.sh" >&2
-                            exit 1
-                          fi
-                        else
-                          WORKERS_VERSION="${IMAGE_VERSION}"
-                        fi
+                        echo "Using WORKERS_VERSION=${workersVersion}"
 
-                        echo "Using WORKERS_VERSION=${WORKERS_VERSION}"
-
-                        sed "s/REPLACE_WITH_WORKERS_VERSION/${WORKERS_VERSION}/g" docker-compose.yml.template > docker-compose.yml
-                        '''
+                        sh """
+                                set -euo pipefail
+                                sed "s/REPLACE_WITH_WORKERS_VERSION/${workersVersion}/g" docker-compose.yml.template > docker-compose.yml
+                        """
                     }
                 }
             }
