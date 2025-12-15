@@ -19,7 +19,7 @@ aux = hosts everything else in the infrastructure, specifically the db (postgres
 - aux_db_up - runs the database.
 - aux_db_init - initializes the table schema.
 - aux_mq_up - runs the message queue.
-- aux_workers_up - pulls the docker image for the worker containers.
+- aux_workers_pull - pulls the docker image for the worker containers.
 - aux_workers_mq_rss_run_parsers_all - runs the rss feed parsers (these pull messages from mq and parse feeds).
 - aux_workers_mq_rss_run_live_item_listener - runs the rss live item listener (runs continuously, and adds messages to mq).
 - srv_api_up - runs the https data api.

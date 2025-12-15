@@ -50,8 +50,8 @@ alpha_mq_up: config/podverse-alpha-mq.env
 alpha_mq_down:
 	docker compose -f docker-compose/alpha/mq/docker-compose.yml down --remove-orphans --rmi all
 
-.PHONY: alpha_workers_up
-alpha_workers_up: config/podverse-alpha-workers.env
+.PHONY: alpha_workers_pull
+alpha_workers_pull: config/podverse-alpha-workers.env
 	docker compose -f docker-compose/alpha/workers/docker-compose.yml pull podverse_alpha_workers
 
 .PHONY: alpha_workers_down

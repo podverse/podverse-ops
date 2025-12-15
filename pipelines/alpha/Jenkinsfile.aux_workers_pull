@@ -69,11 +69,11 @@ pipeline {
                 script {
                     // Maps to 'pushd /opt/podverse-ops'
                     dir('/opt/podverse-ops') {
-                        // Maps to 'make alpha_workers_up'
+                        // Maps to 'make alpha_workers_pull'
                         // Preserving 'set -eux' from the XML for verbose output
                         sh '''
                             set -eux
-                            make alpha_workers_up
+                            make alpha_workers_pull
                         '''
                     }
                 }

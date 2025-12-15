@@ -50,8 +50,8 @@ sandbox_mq_up: config/podverse-sandbox-mq.env
 sandbox_mq_down:
 	docker compose -f docker-compose/sandbox/mq/docker-compose.yml down --remove-orphans --rmi all
 
-.PHONY: sandbox_workers_up
-sandbox_workers_up: config/podverse-sandbox-workers.env
+.PHONY: sandbox_workers_pull
+sandbox_workers_pull: config/podverse-sandbox-workers.env
 	docker compose -f docker-compose/sandbox/workers/docker-compose.yml pull podverse_sandbox_workers
 
 .PHONY: sandbox_workers_down

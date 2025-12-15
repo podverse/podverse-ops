@@ -50,8 +50,8 @@ local_mq_up: config/podverse-local-mq.env
 local_mq_down:
 	docker compose -f docker-compose/local/mq/docker-compose.yml down --remove-orphans --rmi all
 
-.PHONY: local_workers_up
-local_workers_up: config/podverse-local-workers.env
+.PHONY: local_workers_pull
+local_workers_pull: config/podverse-local-workers.env
 	docker compose -f docker-compose/local/workers/docker-compose.yml pull podverse_local_workers
 
 .PHONY: local_workers_down
