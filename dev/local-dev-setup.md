@@ -25,17 +25,16 @@ Publicly, we sometimes refer to the new Podverse we're building as "Podverse 2.0
 The `v5` infrastructure is highly modularized. You will need to clone all of the following repos within the same directory locally, and checkout the `v5-develop` branch on each one.
 
 I am listing them in a top-down order (ex. `podverse-helpers` is used by everything, `podverse-orm` is used by `podverse-parser` and `podverse-api` etc.):
-
-[podverse-ops](https://github.com/podverse/podverse-ops/blob/v5-develop/)
-[podverse-helpers](https://github.com/podverse/podverse-ops/blob/v5-develop/)
-[podverse-external-services](https://github.com/podverse/podverse-external-services/blob/v5-develop/)
-[podverse-orm](https://github.com/podverse/podverse-orm/blob/v5-develop/)
-[podverse-parser](https://github.com/podverse/podverse-parser/blob/v5-develop/)
-[podverse-mq](https://github.com/podverse/podverse-mq/blob/v5-develop/)
-[podverse-api](https://github.com/podverse/podverse-api/blob/v5-develop/)
-[podverse-web](https://github.com/podverse/podverse-web/blob/v5-develop/)
-[podverse-workers](https://github.com/podverse/podverse-web/blob/v5-develop/)
-[podverse-qa](https://github.com/podverse/podverse-qa/blob/v5-develop/)
+- [podverse-ops](https://github.com/podverse/podverse-ops/blob/v5-develop/)
+- [podverse-helpers](https://github.com/podverse/podverse-ops/blob/v5-develop/)
+- [podverse-external-services](https://github.com/podverse/podverse-external-services/blob/v5-develop/)
+- [podverse-orm](https://github.com/podverse/podverse-orm/blob/v5-develop/)
+- [podverse-parser](https://github.com/podverse/podverse-parser/blob/v5-develop/)
+- [podverse-mq](https://github.com/podverse/podverse-mq/blob/v5-develop/)
+- [podverse-api](https://github.com/podverse/podverse-api/blob/v5-develop/)
+- [podverse-web](https://github.com/podverse/podverse-web/blob/v5-develop/)
+- [podverse-workers](https://github.com/podverse/podverse-web/blob/v5-develop/)
+- [podverse-qa](https://github.com/podverse/podverse-qa/blob/v5-develop/)
 
 ## Environment Variables
 
