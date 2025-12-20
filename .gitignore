@@ -3,6 +3,7 @@ node_modules
 *.DS_Store
 
 .vscode/terminals.json
+.vscode/terminals-norun.json
 .vscode/terminals-rundev.json
 
 config/podverse-local-api.env
