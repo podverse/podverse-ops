@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# VERSION: 2 (Secure Pipe)
-# Helper to create the encrypted Database secret without writing plain text to disk.
+# VERSION: 3 (Aliases + Secure Pipe)
+# Helper to create the encrypted Database secret.
+# It includes ALIASES so the same secret works for the DB (POSTGRES_*) and Apps (DB_*).
 
 set -euo pipefail
 
@@ -53,8 +54,10 @@ mkdir -p "$(dirname "$OUTPUT_FILE")"
 
 echo "Generating and encrypting secret..."
 
-# We pipe kubectl output directly to sops using /dev/stdin
-# --input-type=yaml tells sops explicitly that the incoming stream is YAML
+# We pipe kubectl output directly to sops.
+# We include both the standard POSTGRES_* keys AND the DB_* aliases 
+# so the API and Workers can use this secret directly.
+
 kubectl create secret generic "${SECRET_NAME}" \
     --namespace "${NAMESPACE}" \
     --from-literal=POSTGRES_DB="${POSTGRES_DB}" \
@@ -62,6 +65,10 @@ kubectl create secret generic "${SECRET_NAME}" \
     --from-literal=POSTGRES_PASSWORD="${POSTGRES_PASSWORD}" \
     --from-literal=POSTGRES_READ_PASSWORD="${POSTGRES_READ_PASSWORD}" \
     --from-literal=POSTGRES_READ_WRITE_PASSWORD="${POSTGRES_READ_WRITE_PASSWORD}" \
+    \
+    --from-literal=DB_READ_PASSWORD="${POSTGRES_READ_PASSWORD}" \
+    --from-literal=DB_READ_WRITE_PASSWORD="${POSTGRES_READ_WRITE_PASSWORD}" \
+    \
     --dry-run=client -o yaml | \
 sops --encrypt --encrypted-regex '^(data|stringData)$' \
     --input-type=yaml /dev/stdin > "${OUTPUT_FILE}"
