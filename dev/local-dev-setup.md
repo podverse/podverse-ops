@@ -40,7 +40,7 @@ I am listing them in a top-down order (ex. `podverse-helpers` is used by everyth
 
 Before running a Podverse Docker service, you will need to create an enviroment variable file for it within the `podverse-ops/config` directory.
 
-Duplicate each of the `.env.example` files found within `podverse-ops/config` and add the corresponding values.
+Duplicate each of the `.env.example` files found within `podverse-ops/config` and add the corresponding values (e.g. podverse-local-api.env, etc.).
 
 The Podverse repos that run locally (the ones that don't simply need to build, but need to run) will need their own `.env` file within their project directory for local development purposes. For example, for local dev, you will need a corresponding `podverse-api/.env` file, `podverse-web/.env`, and a `podverse-workers/.env` file.
 
