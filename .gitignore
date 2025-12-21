@@ -38,3 +38,5 @@ config/segment/segment-key.txt
 *.jar
 *.log
 logs/
+
+.direnv
