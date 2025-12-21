@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# VERSION: 1
-# Helper to create the encrypted Database secret with the correct keys.
+# VERSION: 2 (Secure Pipe)
+# Helper to create the encrypted Database secret without writing plain text to disk.
 
 set -euo pipefail
 
@@ -11,7 +11,6 @@ echo "Running create_db_secret.sh"
 # ------------------------------------------------------------------
 SECRET_NAME="podverse-db-secret"
 NAMESPACE="podverse-alpha"
-# Outputting to k8s/secrets as requested (relative to where script is run, usually repo root)
 OUTPUT_FILE="./k8s/secrets/podverse-db-secret.enc.yaml"
 
 # ------------------------------------------------------------------
@@ -21,7 +20,6 @@ echo "You are generating the PostgreSQL credentials."
 echo "Press Enter to use the default value."
 echo ""
 
-# Standard defaults
 DEFAULT_DB="postgres"
 DEFAULT_USER="postgres"
 
@@ -53,9 +51,10 @@ if [ -z "$POSTGRES_READ_WRITE_PASSWORD" ]; then echo "Error: Password required."
 # Ensure secrets dir exists
 mkdir -p "$(dirname "$OUTPUT_FILE")"
 
-echo "Generating secret manifest..."
+echo "Generating and encrypting secret..."
 
-# We use dry-run to generate the valid YAML without applying it.
+# We pipe kubectl output directly to sops using /dev/stdin
+# --input-type=yaml tells sops explicitly that the incoming stream is YAML
 kubectl create secret generic "${SECRET_NAME}" \
     --namespace "${NAMESPACE}" \
     --from-literal=POSTGRES_DB="${POSTGRES_DB}" \
@@ -63,16 +62,9 @@ kubectl create secret generic "${SECRET_NAME}" \
     --from-literal=POSTGRES_PASSWORD="${POSTGRES_PASSWORD}" \
     --from-literal=POSTGRES_READ_PASSWORD="${POSTGRES_READ_PASSWORD}" \
     --from-literal=POSTGRES_READ_WRITE_PASSWORD="${POSTGRES_READ_WRITE_PASSWORD}" \
-    --dry-run=client -o yaml > temp_secret.yaml
-
-echo "Encrypting with SOPS to ${OUTPUT_FILE}..."
-
-# Encrypt the 'data' or 'stringData' fields
+    --dry-run=client -o yaml | \
 sops --encrypt --encrypted-regex '^(data|stringData)$' \
-    temp_secret.yaml > "${OUTPUT_FILE}"
-
-# Cleanup
-rm temp_secret.yaml
+    --input-type=yaml /dev/stdin > "${OUTPUT_FILE}"
 
 echo "----------------------------------------------------"
 echo "SUCCESS: Encrypted secret created at ${OUTPUT_FILE}"
