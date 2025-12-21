@@ -1,0 +1,12 @@
+# Version: 1
+# This file defines the isolation boundary (Namespace) for the Alpha environment.
+# All subsequent resources (Deployments, Services) will reside here.
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: podverse-alpha
+  labels:
+    name: podverse-alpha
+    environment: alpha
+    managed-by: argocd
