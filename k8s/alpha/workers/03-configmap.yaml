@@ -1,0 +1,44 @@
+# Version: 1
+# Non-sensitive configuration for the Workers.
+# Mapped from config/podverse-workers.env.example
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: podverse-workers-config
+  namespace: podverse-alpha
+  labels:
+    app: podverse-workers
+    environment: alpha
+data:
+  # General
+  NODE_ENV: "development"
+  USER_AGENT: "Podverse/2/Alpha/Worker"
+  
+  # Logs
+  # We will log to stdout for Kubernetes, so we leave LOG_DIR empty or set to console conventions.
+  # If the app requires a specific path, the volume mount in the next step will handle it, 
+  # but standardizing on stdout is best for K3s/ArgoCD.
+  LOG_LEVEL: "info"
+  LOG_TIMER: "true"
+  
+  # Database Networking (Internal K8s Service)
+  DB_HOST: "podverse-db"
+  DB_PORT: "5432"
+  DB_DATABASE: "postgres"
+  DB_READ_USERNAME: "read"
+  DB_READ_WRITE_USERNAME: "read_write"
+  DB_SSL_CONNECTION: "false"
+
+  # RabbitMQ Networking (Internal K8s Service)
+  MESSAGE_QUEUE_HOST: "podverse-mq"
+  MESSAGE_QUEUE_PORT: "5672"
+  MESSAGE_QUEUE_USERNAME: "admin" # Changed from 'user' to match the 'admin' user we set in MQ step. Check your MQ secret.
+
+  # Podcast Index
+  PODCAST_INDEX_BASE_URL: "https://api.podcastindex.org/api/1.0"
+
+  # Firebase
+  # This path matches where we will mount the secret in the Deployment
+  FIREBASE_PATH_TO_AUTH_JSON: "/opt/config/firebase-key.json"
+  FIREBASE_PROJECT_ID: "REPLACE_with_your_project_id"

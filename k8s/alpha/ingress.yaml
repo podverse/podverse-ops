@@ -1,0 +1,38 @@
+# Version: 1
+# The Ingress defines how external traffic flows to your internal services.
+# It uses the default K3s Ingress Controller (Traefik).
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: podverse-ingress
+  namespace: podverse-alpha
+  labels:
+    app: podverse
+    environment: alpha
+  annotations:
+    # We will stick to HTTP for now.
+    # Later, we can add 'cert-manager' annotations here to auto-generate SSL certificates.
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+  - host: alpha.podverse.podcastdj.com
+    http:
+      paths:
+      # Route /api traffic to the API service
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: podverse-api
+            port:
+              number: 1234
+      
+      # Route everything else to the Web frontend
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: podverse-web
+            port:
+              number: 3000

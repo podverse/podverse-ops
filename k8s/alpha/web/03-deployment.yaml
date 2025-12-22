@@ -1,0 +1,53 @@
+# Version: 1
+# The Deployment for the Podverse Web frontend.
+# We retain the runtime build command to match your Docker Compose workflow.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: podverse-web
+  namespace: podverse-alpha
+  labels:
+    app: podverse-web
+    environment: alpha
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: podverse-web
+  template:
+    metadata:
+      labels:
+        app: podverse-web
+        environment: alpha
+    spec:
+      containers:
+      - name: web
+        # UPDATE THIS TAG to your desired version
+        image: ghcr.io/podverse/podverse-web/podverse-web:latest
+        
+        # We allow the container to build on start, as per your Compose file
+        command: ["/bin/sh", "-c"]
+        args: ["npm run build && npm start"]
+        
+        ports:
+        - containerPort: 3000
+          name: http
+        
+        envFrom:
+        - configMapRef:
+            name: podverse-web-config
+            
+        # Health checks (assuming / returns 200 OK)
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30 # Increased delay for 'npm run build' time
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 60
+          periodSeconds: 20
