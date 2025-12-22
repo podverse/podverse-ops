@@ -1,3 +1,4 @@
+# Version: 2 (Added DB Secret Ref)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,6 +23,10 @@ spec:
             name: podverse-workers-config
         - secretRef:
             name: podverse-workers-secret
+        # Load DB secrets (DB_READ_PASSWORD, etc.)
+        - secretRef:
+            name: podverse-db-secret
+            
         volumeMounts:
         - name: firebase-config
           mountPath: /opt/config/firebase-key.json
