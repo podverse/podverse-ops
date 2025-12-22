@@ -1,22 +1,23 @@
+# Source: Jenkinsfile.aux_workers_mq_rss_run_dlq_consumer
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: worker-parser-normal
+  name: worker-consumer-dlq
   namespace: podverse-alpha
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: worker-parser-normal
+      app: worker-consumer-dlq
   template:
     metadata:
       labels:
-        app: worker-parser-normal
+        app: worker-consumer-dlq
     spec:
       containers:
       - name: worker
         image: ghcr.io/podverse/podverse-workers/podverse-workers:latest
-        command: ["npm", "run", "mq_rss_run_parser", "--", "-q", "rss-normal"]
+        command: ["npm", "run", "mq_rss_run_dlq_consumer"]
         envFrom:
         - configMapRef:
             name: podverse-workers-config
