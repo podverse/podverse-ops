@@ -1,6 +1,7 @@
-# Version: 1
-# The Ingress defines how external traffic flows to your internal services.
-# It uses the default K3s Ingress Controller (Traefik).
+# Version: 2 (Host-based Routing)
+# This Ingress routes traffic based on the subdomain.
+# api.alpha... -> API Service
+# alpha...     -> Web Service
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -11,24 +12,26 @@ metadata:
     app: podverse
     environment: alpha
   annotations:
-    # We will stick to HTTP for now.
-    # Later, we can add 'cert-manager' annotations here to auto-generate SSL certificates.
+    # K3s uses Traefik by default. This ensures we listen on the standard web (HTTP) entrypoint.
     traefik.ingress.kubernetes.io/router.entrypoints: web
 spec:
   rules:
-  - host: alpha.podverse.podcastdj.com
+  # Rule 1: API Subdomain
+  - host: api.alpha.podverse.podcastdj.com
     http:
       paths:
-      # Route /api traffic to the API service
-      - path: /api
+      - path: /
         pathType: Prefix
         backend:
           service:
             name: podverse-api
             port:
               number: 1234
-      
-      # Route everything else to the Web frontend
+
+  # Rule 2: Web (Frontend) Domain
+  - host: alpha.podverse.podcastdj.com
+    http:
+      paths:
       - path: /
         pathType: Prefix
         backend:

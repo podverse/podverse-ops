@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: podverse-alpha
+  namespace: argocd
+spec:
+  project: default
+  source:
+    # UPDATE THIS to your actual Gitea repository URL
+    repoURL: https://gitea.ser.ink/YOUR_USERNAME/podverse-ops.git
+    targetRevision: v5-develop
+    path: k8s/alpha
+  destination:
+    server: https://kubernetes.default.svc
+    # We deploy into the namespace we defined in 00-namespace.yaml
+    namespace: podverse-alpha
+  
+  # Sync Policy: Automatically fix drift (Self-Healing)
+  syncPolicy:
+    automated:
+      prune: true    # Delete resources that are removed from Git
+      selfHeal: true # Fix resources that are changed manually on the cluster
+    syncOptions:
+      - CreateNamespace=true # Ensures the namespace exists if 00-namespace.yaml fails

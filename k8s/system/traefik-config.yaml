@@ -1,0 +1,26 @@
+# Version: 1
+# This file configures the internal K3s Traefik instance.
+# It enables HTTP/3 (QUIC) and ensures the LoadBalancer listens on UDP/443.
+
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    # Enable HTTP/3 on the 'websecure' entrypoint
+    ports:
+      websecure:
+        port: 8443
+        expose: true
+        exposedPort: 443
+        protocol: TCP
+        # HTTP/3 requires UDP on the same port
+        http3:
+          enabled: true
+      
+    # Enable experimental HTTP/3 support (Required for Traefik v2)
+    experimental:
+      http3:
+        enabled: true
