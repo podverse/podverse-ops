@@ -1,0 +1,33 @@
+# Source: Jenkinsfile.aux_workers_orm_on_demand_parser_event_delete_outdated
+# Schedule: 1 AM daily
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: worker-delete-outdated
+  namespace: podverse-alpha
+spec:
+  schedule: "0 1 * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: worker
+            image: ghcr.io/podverse/podverse-workers/podverse-workers:latest
+            command: ["npm", "run", "orm_on_demand_parser_event_delete_outdated"]
+            envFrom:
+            - configMapRef:
+                name: podverse-workers-config
+            - secretRef:
+                name: podverse-workers-secret
+            volumeMounts:
+            - name: firebase-config
+              mountPath: /opt/config/firebase-key.json
+              subPath: firebase-key.json
+              readOnly: true
+          volumes:
+          - name: firebase-config
+            secret:
+              secretName: podverse-workers-firebase-secret
+          restartPolicy: OnFailure
