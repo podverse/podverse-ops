@@ -16,7 +16,7 @@ services:
     networks:
       - podverse_local_network
     volumes:
-      - podverse_local_db_data:/var/lib/postgresql/data
+      - podverse_local_db_data:/var/lib/postgresql
       - ../../../database/combined/init_database.sql:/opt/database/combined/init_database.sql
       - ../../../database/init-scripts/01-create-users.sh:/opt/database/init-scripts/01-create-users.sh
     command: >
