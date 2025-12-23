@@ -11,7 +11,7 @@ services:
       - podverse_alpha_network
     ports:
       - 127.0.0.1:3000:3000
-    command: sh -c "npm start"
+    command: sh -c "node server.js"
     logging:
       driver: "syslog"
       options:
