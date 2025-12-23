@@ -7,13 +7,11 @@ services:
   podverse_alpha_web:
     image: ghcr.io/podverse/podverse-web/podverse-web:REPLACE_WITH_WEB_VERSION
     container_name: podverse_alpha_web
-    env_file:
-      - ../../../config/podverse-alpha-web.env
     networks:
       - podverse_alpha_network
     ports:
       - 127.0.0.1:3000:3000
-    command: sh -c "npm run build && npm start"
+    command: sh -c "npm start"
     logging:
       driver: "syslog"
       options:
