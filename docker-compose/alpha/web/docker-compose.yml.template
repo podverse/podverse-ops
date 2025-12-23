@@ -5,7 +5,7 @@ networks:
 services:
 
   podverse_alpha_web:
-    image: ghcr.io/podverse/podverse-web/podverse-web:REPLACE_WITH_WEB_VERSION
+    image: ghcr.io/podverse/podverse-web/podverse-web-build:REPLACE_WITH_WEB_VERSION
     container_name: podverse_alpha_web
     networks:
       - podverse_alpha_network
