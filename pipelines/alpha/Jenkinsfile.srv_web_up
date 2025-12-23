@@ -19,7 +19,7 @@ pipeline {
 
         choice(
             name: 'GHCR_IMAGE_PATH',
-            choices: ['podverse/podverse-web/podverse-web-build'],
+            choices: ['podverse/podverse-web/podverse-web-deploy'],
             description: 'The path to the image hosted in GHCR.'
         )
 

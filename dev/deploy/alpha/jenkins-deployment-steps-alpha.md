@@ -6,7 +6,7 @@ This document assumes you have already published the npm modules and docker imag
 
 The infrastructure assumes two separate servers: srv and aux.
 
-srv = hosts podverse-api and podverse-web-build.
+srv = hosts podverse-api and podverse-web-deploy.
 
 aux = hosts everything else in the infrastructure, specifically the db (postgres), mq (message queue, ActiveMQ), and worker containers (feed parsers and feed update listeners).
 

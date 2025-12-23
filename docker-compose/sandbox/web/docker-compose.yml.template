@@ -5,7 +5,7 @@ networks:
 services:
 
   podverse_sandbox_web:
-    image: ghcr.io/podverse/podverse-web/podverse-web-build:REPLACE_WITH_WEB_VERSION
+    image: ghcr.io/podverse/podverse-web/podverse-web-deploy:REPLACE_WITH_WEB_VERSION
     container_name: podverse_sandbox_web
     env_file:
       - ../../../config/podverse-sandbox-web.env
