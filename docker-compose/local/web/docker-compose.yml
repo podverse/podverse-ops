@@ -5,15 +5,13 @@ networks:
 services:
 
   podverse_local_web:
-    image: ghcr.io/podverse/podverse-web/podverse-web:5.1.5-alpha.0
+    image: podverse-web:latest
     container_name: podverse_local_web
-    env_file:
-      - ../../../config/podverse-local-web.env
     networks:
       - podverse_local_network
     ports:
       - 127.0.0.1:3000:3000
-    command: sh -c "npm run build && npm start"
+    command: sh -c "npm start"
     logging:
       driver: 'json-file'
       options:
