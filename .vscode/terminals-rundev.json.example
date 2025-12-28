@@ -50,6 +50,13 @@
       "command": "npm run build:watch"
     },
     {
+      "name": "Podverse Partytime",
+      "description": "podverse-partytime",
+      "cwd": "~/repos/podverse-partytime",
+      "open": true,
+      "command": "npm run build:watch"
+    },
+    {
       "name": "Podverse QA",
       "description": "podverse-qa",
       "cwd": "~/repos/podverse-qa",
