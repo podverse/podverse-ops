@@ -23,6 +23,14 @@ npm cache clean --force
 echo "Clearing npm cache..."
 npm cache clean --force
 
+echo "Installing podverse-partytime dependencies..."
+cd ../podverse-partytime
+nvm use
+rm -rf node_modules
+rm -rf dist
+rm package-lock.json
+npm install
+
 echo "Installing podverse-helpers dependencies..."
 cd ../podverse-helpers
 nvm use
@@ -97,6 +105,11 @@ npm install
 
 # Link dependencies to npm
 
+echo "Linking podverse-partytime dependency..."
+cd ../podverse-partytime
+nvm use
+npm link
+
 echo "Linking podverse-helpers dependency..."
 cd ../podverse-helpers
 nvm use
@@ -142,7 +155,7 @@ npm link podverse-helpers
 echo "Linking podverse-parser dependencies..."
 cd ../podverse-parser
 nvm use
-npm link podverse-external-services podverse-helpers podverse-orm
+npm link podverse-partytime podverse-external-services podverse-helpers podverse-orm
 
 echo "Linking podverse-mq dependencies..."
 cd ../podverse-mq
@@ -170,6 +183,11 @@ nvm use
 npm link podverse-helpers podverse-external-services podverse-orm podverse-parser
 
 # Build all projects
+
+echo "Building podverse-partytime..."
+cd ../podverse-partytime
+nvm use
+npm run build
 
 echo "Building podverse-helpers..."
 cd ../podverse-helpers

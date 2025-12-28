@@ -44,6 +44,12 @@
       "open": true
     },
     {
+      "name": "Podverse Partytime",
+      "description": "podverse-partytime",
+      "cwd": "~/repos/podverse-partytime",
+      "open": true
+    },
+    {
       "name": "Podverse QA",
       "description": "podverse-qa",
       "cwd": "~/repos/podverse-qa",
