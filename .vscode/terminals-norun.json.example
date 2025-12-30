@@ -2,15 +2,15 @@
   "autorun": false,
   "terminals": [
     {
-      "name": "Podverse API",
-      "description": "podverse-api",
-      "cwd": "~/repos/podverse-api",
+      "name": "Podverse Ops",
+      "description": "podverse-ops",
+      "cwd": "~/repos/podverse-ops",
       "open": true
     },
     {
-      "name": "Podverse External Services",
-      "description": "podverse-external-services",
-      "cwd": "~/repos/podverse-external-services",
+      "name": "Podverse Partytime",
+      "description": "podverse-partytime",
+      "cwd": "~/repos/podverse-partytime",
       "open": true
     },
     {
@@ -20,15 +20,9 @@
       "open": true
     },
     {
-      "name": "Podverse MQ",
-      "description": "podverse-mq",
-      "cwd": "~/repos/podverse-mq",
-      "open": true
-    },
-    {
-      "name": "Podverse Ops",
-      "description": "podverse-ops",
-      "cwd": "~/repos/podverse-ops",
+      "name": "Podverse External Services",
+      "description": "podverse-external-services",
+      "cwd": "~/repos/podverse-external-services",
       "open": true
     },
     {
@@ -44,15 +38,15 @@
       "open": true
     },
     {
-      "name": "Podverse Partytime",
-      "description": "podverse-partytime",
-      "cwd": "~/repos/podverse-partytime",
+      "name": "Podverse MQ",
+      "description": "podverse-mq",
+      "cwd": "~/repos/podverse-mq",
       "open": true
     },
     {
-      "name": "Podverse QA",
-      "description": "podverse-qa",
-      "cwd": "~/repos/podverse-qa",
+      "name": "Podverse API",
+      "description": "podverse-api",
+      "cwd": "~/repos/podverse-api",
       "open": true
     },
     {
@@ -65,6 +59,12 @@
       "name": "Podverse Workers",
       "description": "podverse-workers",
       "cwd": "~/repos/podverse-workers",
+      "open": true
+    },
+    {
+      "name": "Podverse QA",
+      "description": "podverse-qa",
+      "cwd": "~/repos/podverse-qa",
       "open": true
     },
     {
