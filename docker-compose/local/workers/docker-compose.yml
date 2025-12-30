@@ -5,7 +5,7 @@ networks:
 services:
 
   podverse_local_workers:
-    image: ghcr.io/podverse/podverse-workers/podverse-workers:5.1.5-alpha.0
+    image: podverse-workers:latest
     container_name: podverse_local_workers
     env_file:
       - ../../../config/podverse-local-workers.env

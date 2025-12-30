@@ -1,5 +1,5 @@
 .PHONY: local_validate_init
-local_validate_init: config/podverse-local-db.env config/podverse-local-mq.env config/podverse-local-workers.env config/podverse-local-api.env config/podverse-local-web.env
+local_validate_init: config/podverse-local-db.env config/podverse-local-mq.env config/podverse-local-workers.env config/podverse-local-api.env
 
 config/podverse-local-db.env:
 	@echo "Missing: $@"
@@ -17,11 +17,6 @@ config/podverse-local-workers.env:
 	cp ./$@.example ./$@
 
 config/podverse-local-api.env:
-	@echo "Missing: $@"
-	@echo "Copying from example file"
-	cp ./$@.example ./$@
-
-config/podverse-local-web.env:
 	@echo "Missing: $@"
 	@echo "Copying from example file"
 	cp ./$@.example ./$@
@@ -67,7 +62,7 @@ local_api_down:
 	docker compose -f docker-compose/local/api/docker-compose.yml down --remove-orphans --rmi all
 
 .PHONY: local_web_up
-local_web_up: config/podverse-local-web.env
+local_web_up:
 	docker compose -f docker-compose/local/web/docker-compose.yml up podverse_local_web -d
 
 .PHONY: local_web_down
