@@ -14,8 +14,8 @@ The order is:
 8) podverse-web-deploy
 9) podverse-qa
 
-If you update and publish package 1, you need to update and publish packages 2-7.
+If you update and publish package 1, you need to update and publish packages 2-9.
 
-If you update package 4, you need to update and publish packages 5-7.
+If you update package 4, you need to update and publish packages 5-9.
 
 etc.
