@@ -69,8 +69,18 @@ local_web_up:
 local_web_down:
 	docker compose -f docker-compose/local/web/docker-compose.yml down --remove-orphans --rmi all
 
+.PHONY: local_keyvaldb_up
+local_keyvaldb_up: config/podverse-local-keyvaldb.env
+	docker compose -f docker-compose/local/keyvaldb/docker-compose.yml up podverse_local_keyvaldb -d
+	docker compose -f docker-compose/local/keyvaldb/docker-compose.yml up podverse_local_keyvaldb_gui -d
+
+.PHONY: local_keyvaldb_down
+local_keyvaldb_down:
+	docker compose -f docker-compose/local/keyvaldb/docker-compose.yml down --remove-orphans --rmi all
+
 .PHONY: local_all_down
 local_all_down:
+	-$(MAKE) local_keyvaldb_down
 	-$(MAKE) local_web_down
 	-$(MAKE) local_api_down
 	-$(MAKE) local_workers_down

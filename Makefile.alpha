@@ -74,8 +74,18 @@ alpha_web_up: config/podverse-alpha-web.env
 alpha_web_down:
 	docker compose -f docker-compose/alpha/web/docker-compose.yml down --remove-orphans --rmi all
 
+.PHONY: alpha_keyvaldb_up
+alpha_keyvaldb_up: config/podverse-alpha-keyvaldb.env
+	docker compose -f docker-compose/alpha/keyvaldb/docker-compose.yml up podverse_alpha_keyvaldb -d
+	docker compose -f docker-compose/alpha/keyvaldb/docker-compose.yml up podverse_alpha_keyvaldb_gui -d
+
+.PHONY: alpha_keyvaldb_down
+alpha_keyvaldb_down:
+	docker compose -f docker-compose/alpha/keyvaldb/docker-compose.yml down --remove-orphans --rmi all
+
 .PHONY: alpha_all_down
 alpha_all_down:
+	-$(MAKE) alpha_keyvaldb_down
 	-$(MAKE) alpha_web_down
 	-$(MAKE) alpha_api_down
 	-$(MAKE) alpha_workers_down

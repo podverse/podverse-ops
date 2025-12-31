@@ -1,0 +1,42 @@
+networks:
+  podverse_alpha_network:
+    external: true
+
+volumes:
+  podverse_alpha_keyvaldb_data:
+
+services:
+  podverse_alpha_keyvaldb:
+    image: valkey/valkey:9.0.1
+    container_name: podverse_alpha_keyvaldb
+    env_file:
+      - ../../../config/podverse-alpha-keyvaldb.env
+    networks:
+      - podverse_alpha_network
+    ports:
+      - '127.0.0.1:6379:6379'
+    volumes:
+      - podverse_alpha_keyvaldb_data:/var/lib/valkey
+    command: ["valkey-server", "--save", "900 1", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    logging:
+      driver: "syslog"
+      options:
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+
+  podverse_alpha_keyvaldb_gui:
+    image: redislabs/redisinsight:latest
+    container_name: podverse_alpha_keyvaldb_gui
+    ports:
+      - '127.0.0.1:8001:5540'
+      - '100.108.65.23:8001:5540' # GUI exposed on Tailscale
+    networks:
+      - podverse_alpha_network
+    depends_on:
+      - podverse_alpha_keyvaldb
+    restart: unless-stopped

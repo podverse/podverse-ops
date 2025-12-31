@@ -1,0 +1,43 @@
+networks:
+  podverse_local_network:
+    external: true
+
+volumes:
+  podverse_local_keyvaldb_data:
+
+services:
+  podverse_local_keyvaldb:
+    image: valkey/valkey:9.0.1
+    container_name: podverse_local_keyvaldb
+    env_file:
+      - ../../../config/podverse-local-keyvaldb.env
+    networks:
+      - podverse_local_network
+    ports:
+      - 127.0.0.1:6379:6379
+    volumes:
+      - podverse_local_keyvaldb_data:/var/lib/valkey
+    command: ["valkey-server", "--save", "900 1", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'
+
+  podverse_local_keyvaldb_gui:
+    image: redislabs/redisinsight:latest
+    container_name: podverse_local_keyvaldb_gui
+    ports:
+      - 127.0.0.1:8001:5540
+    networks:
+      - podverse_local_network
+    depends_on:
+      - podverse_local_keyvaldb
+    restart: unless-stopped
+

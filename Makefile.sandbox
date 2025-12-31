@@ -74,8 +74,18 @@ sandbox_web_up: config/podverse-sandbox-web.env
 sandbox_web_down:
 	docker compose -f docker-compose/sandbox/web/docker-compose.yml down --remove-orphans --rmi all
 
+.PHONY: sandbox_keyvaldb_up
+sandbox_keyvaldb_up: config/podverse-sandbox-keyvaldb.env
+	docker compose -f docker-compose/sandbox/keyvaldb/docker-compose.yml up podverse_sandbox_keyvaldb -d
+	docker compose -f docker-compose/sandbox/keyvaldb/docker-compose.yml up podverse_sandbox_keyvaldb_gui -d
+
+.PHONY: sandbox_keyvaldb_down
+sandbox_keyvaldb_down:
+	docker compose -f docker-compose/sandbox/keyvaldb/docker-compose.yml down --remove-orphans --rmi all
+
 .PHONY: sandbox_all_down
 sandbox_all_down:
+	-$(MAKE) sandbox_keyvaldb_down
 	-$(MAKE) sandbox_web_down
 	-$(MAKE) sandbox_api_down
 	-$(MAKE) sandbox_workers_down
