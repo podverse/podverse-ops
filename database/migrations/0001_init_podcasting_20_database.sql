@@ -158,7 +158,10 @@ CREATE TABLE medium (
     value TEXT UNIQUE CHECK (VALUE IN (
         'publisher',
         'podcast', 'music', 'video', 'film', 'audiobook', 'newsletter', 'blog', 'course',
-        'mixed', 'podcastL', 'musicL', 'videoL', 'filmL', 'audiobookL', 'newsletterL', 'blogL', 'publisherL', 'courseL', 'av'
+        'mixed', 'podcastL', 'musicL', 'videoL', 'filmL', 'audiobookL', 'newsletterL', 'blogL', 'publisherL', 'courseL',
+        'av',
+        'publisher-podcast', 'publisher-music', 'publisher-video', 'publisher-film', 'publisher-audiobook', 'publisher-newsletter', 'publisher-blog', 'publisher-course',
+        'publisher-av'
     ))
 );
 
@@ -166,7 +169,9 @@ INSERT INTO medium (value) VALUES
     ('publisher'),
     ('podcast'), ('music'), ('video'), ('film'), ('audiobook'), ('newsletter'), ('blog'), ('course'),
     ('mixed'), ('podcastL'), ('musicL'), ('videoL'), ('filmL'), ('audiobookL'), ('newsletterL'), ('blogL'), ('publisherL'), ('courseL'),
-    ('av')
+    ('av'),
+    ('publisher-podcast'), ('publisher-music'), ('publisher-video'), ('publisher-film'), ('publisher-audiobook'), ('publisher-newsletter'), ('publisher-blog'), ('publisher-course'),
+    ('publisher-av')
 ;
 
 ----------** TABLES **----------
@@ -445,6 +450,11 @@ CREATE INDEX idx_channel_podroll_remote_item_feed_guid ON channel_podroll_remote
 CREATE INDEX idx_channel_podroll_remote_item_feed_url ON channel_podroll_remote_item(feed_url);
 CREATE INDEX idx_channel_podroll_remote_item_item_guid ON channel_podroll_remote_item(item_guid);
 
+CREATE UNIQUE INDEX uq_channel_podroll_remote_item_feed_guid_no_item_guid
+    ON channel_podroll_remote_item(channel_podroll_id, feed_guid) WHERE item_guid IS NULL;
+CREATE UNIQUE INDEX uq_channel_podroll_remote_item_feed_guid_item_guid
+    ON channel_podroll_remote_item(channel_podroll_id, feed_guid, item_guid) WHERE item_guid IS NOT NULL;
+
 --** CHANNEL > PUBLISHER
 
 -- <channel> -> <podcast:publisher>
@@ -474,6 +484,11 @@ CREATE INDEX idx_channel_publisher_remote_item_feed_guid ON channel_publisher_re
 CREATE INDEX idx_channel_publisher_remote_item_feed_url ON channel_publisher_remote_item(feed_url);
 CREATE INDEX idx_channel_publisher_remote_item_item_guid ON channel_publisher_remote_item(item_guid);
 
+CREATE UNIQUE INDEX uq_channel_publisher_remote_item_feed_guid_no_item_guid
+    ON channel_publisher_remote_item(channel_publisher_id, feed_guid) WHERE item_guid IS NULL;
+CREATE UNIQUE INDEX uq_channel_publisher_remote_item_feed_guid_item_guid
+    ON channel_publisher_remote_item(channel_publisher_id, feed_guid, item_guid) WHERE item_guid IS NOT NULL;
+
 --** CHANNEL > REMOTE ITEM
 
 -- Remote items at the channel level are only used when the <podcast:medium> for the channel
@@ -495,6 +510,11 @@ CREATE INDEX idx_channel_remote_item_medium_id ON channel_remote_item(medium_id)
 CREATE INDEX idx_channel_remote_item_feed_guid ON channel_remote_item(feed_guid);
 CREATE INDEX idx_channel_remote_item_feed_url ON channel_remote_item(feed_url);
 CREATE INDEX idx_channel_remote_item_item_guid ON channel_remote_item(item_guid);
+
+CREATE UNIQUE INDEX uq_channel_remote_item_feed_guid_no_item_guid
+    ON channel_remote_item(channel_id, feed_guid) WHERE item_guid IS NULL;
+CREATE UNIQUE INDEX uq_channel_remote_item_feed_guid_item_guid
+    ON channel_remote_item(channel_id, feed_guid, item_guid) WHERE item_guid IS NOT NULL;
 
 --** CHANNEL > SEASON
 
@@ -1007,6 +1027,11 @@ CREATE INDEX idx_item_value_time_split_remote_item_item_value_time_split_id ON i
 CREATE INDEX idx_item_value_time_split_remote_item_feed_guid ON item_value_time_split_remote_item(feed_guid);
 CREATE INDEX idx_item_value_time_split_remote_item_feed_url ON item_value_time_split_remote_item(feed_url);
 CREATE INDEX idx_item_value_time_split_remote_item_item_guid ON item_value_time_split_remote_item(item_guid);
+
+CREATE UNIQUE INDEX uq_item_value_time_split_remote_item_feed_guid_no_item_guid
+    ON item_value_time_split_remote_item(item_value_time_split_id, feed_guid) WHERE item_guid IS NULL;
+CREATE UNIQUE INDEX uq_item_value_time_split_remote_item_feed_guid_item_guid
+    ON item_value_time_split_remote_item(item_value_time_split_id, feed_guid, item_guid) WHERE item_guid IS NOT NULL;
 
 --** ITEM > VALUE > TIME SPLIT > VALUE RECIPEINT
 
