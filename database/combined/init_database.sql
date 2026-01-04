@@ -1438,12 +1438,21 @@ CREATE INDEX idx_account_up_device_up_endpoint ON account_up_device(up_endpoint)
 
 CREATE TABLE account_fcm_device (
     id SERIAL PRIMARY KEY,
-    fcm_token varchar_fcm_token UNIQUE NOT NULL,
-    account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE
+    account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    fcm_token varchar_fcm_token NOT NULL UNIQUE,
+    installation_id varchar_guid NOT NULL UNIQUE,
+    created_at server_time_with_default NOT NULL,
+    updated_at server_time_with_default NOT NULL
 );
+
+CREATE TRIGGER set_updated_at_account_fcm_device
+BEFORE UPDATE ON account_fcm_device
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at_field();
 
 CREATE INDEX idx_account_fcm_device_account_id ON account_fcm_device(account_id);
 CREATE INDEX idx_account_fcm_device_fcm_token ON account_fcm_device(fcm_token);
+CREATE INDEX idx_account_fcm_device_installation_id ON account_fcm_device(installation_id);
 
 -- 0008
 
