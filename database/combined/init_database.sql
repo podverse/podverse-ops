@@ -20,6 +20,7 @@ CREATE DOMAIN varchar_email AS VARCHAR(255) CHECK (VALUE ~ '^.+@.+\..+$');
 CREATE DOMAIN varchar_fcm_token AS VARCHAR(255);
 CREATE DOMAIN varchar_fqdn AS VARCHAR(253);
 CREATE DOMAIN varchar_guid AS VARCHAR(36);
+CREATE DOMAIN varchar_locale AS VARCHAR(85);
 CREATE DOMAIN varchar_md5 AS VARCHAR(32);
 -- bcrypt salted hash passwords are always 60 characters long
 CREATE DOMAIN varchar_password AS VARCHAR(60);
@@ -1417,13 +1418,22 @@ CREATE INDEX idx_account_following_add_by_rss_channel_account_id ON account_foll
 -- 0007
 
 CREATE TABLE account_notification_channel (
+    id SERIAL PRIMARY KEY,
     channel_id INTEGER NOT NULL REFERENCES channel(id) ON DELETE CASCADE,
     account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
-    PRIMARY KEY (channel_id, account_id)
+    UNIQUE (channel_id, account_id)
 );
 
 CREATE INDEX idx_account_notification_channel_channel_id ON account_notification_channel(channel_id);
 CREATE INDEX idx_account_notification_channel_account_id ON account_notification_channel(account_id);
+
+CREATE TYPE notification_channel_type_options AS ENUM ('new-item', 'livestream-scheduled', 'livestream-started');
+
+CREATE TABLE account_notification_channel_type (
+    id SERIAL PRIMARY KEY,
+    account_notification_channel_id INTEGER NOT NULL REFERENCES account_notification_channel(id) ON DELETE CASCADE,
+    type notification_channel_type_options NOT NULL
+);
 
 CREATE TABLE account_up_device (
     id SERIAL PRIMARY KEY,
@@ -1436,11 +1446,15 @@ CREATE TABLE account_up_device (
 CREATE INDEX idx_account_up_device_account_id ON account_up_device(account_id);
 CREATE INDEX idx_account_up_device_up_endpoint ON account_up_device(up_endpoint);
 
+CREATE TYPE account_fcm_device_platform_options AS ENUM ('web','ios','android','generic');
+
 CREATE TABLE account_fcm_device (
     id SERIAL PRIMARY KEY,
     account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     fcm_token varchar_fcm_token NOT NULL UNIQUE,
     installation_id varchar_guid NOT NULL UNIQUE,
+    platform account_fcm_device_platform_options NOT NULL,
+    locale varchar_locale NOT NULL,
     created_at server_time_with_default NOT NULL,
     updated_at server_time_with_default NOT NULL
 );
@@ -1453,6 +1467,7 @@ EXECUTE FUNCTION set_updated_at_field();
 CREATE INDEX idx_account_fcm_device_account_id ON account_fcm_device(account_id);
 CREATE INDEX idx_account_fcm_device_fcm_token ON account_fcm_device(fcm_token);
 CREATE INDEX idx_account_fcm_device_installation_id ON account_fcm_device(installation_id);
+CREATE INDEX idx_account_fcm_device_platform ON account_fcm_device(platform);
 
 -- 0008
 
@@ -1767,4 +1782,21 @@ CREATE INDEX idx_on_demand_parser_event_podcast_index_id ON on_demand_parser_eve
 CREATE INDEX idx_on_demand_parser_event_remote_parent_podcast_index_id ON on_demand_parser_event(remote_parent_podcast_index_id);
 CREATE INDEX idx_on_demand_parser_event_type ON on_demand_parser_event(type);
 CREATE INDEX idx_on_demand_parser_event_created_at ON on_demand_parser_event(created_at DESC);
+
+CREATE TABLE account_settings (
+    id SERIAL PRIMARY KEY,
+    account_id integer NOT NULL REFERENCES account(id) ON DELETE CASCADE UNIQUE
+);
+
+CREATE TABLE account_settings_notification (
+    id SERIAL PRIMARY KEY,
+    account_settings_id integer NOT NULL REFERENCES account_settings(id) ON DELETE CASCADE UNIQUE
+);
+
+CREATE TABLE account_settings_notification_type (
+    id SERIAL PRIMARY KEY,
+    account_settings_notification_id INTEGER NOT NULL REFERENCES account_settings_notification(id) ON DELETE CASCADE,
+    type notification_channel_type_options NOT NULL,
+    CONSTRAINT account_settings_notification_type_notification_id_type_unique UNIQUE (account_settings_notification_id, type)
+);
 

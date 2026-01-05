@@ -20,6 +20,7 @@ CREATE DOMAIN varchar_email AS VARCHAR(255) CHECK (VALUE ~ '^.+@.+\..+$');
 CREATE DOMAIN varchar_fcm_token AS VARCHAR(255);
 CREATE DOMAIN varchar_fqdn AS VARCHAR(253);
 CREATE DOMAIN varchar_guid AS VARCHAR(36);
+CREATE DOMAIN varchar_locale AS VARCHAR(85);
 CREATE DOMAIN varchar_md5 AS VARCHAR(32);
 -- bcrypt salted hash passwords are always 60 characters long
 CREATE DOMAIN varchar_password AS VARCHAR(60);
