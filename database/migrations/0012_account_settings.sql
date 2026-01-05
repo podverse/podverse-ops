@@ -3,6 +3,12 @@ CREATE TABLE account_settings (
     account_id integer NOT NULL REFERENCES account(id) ON DELETE CASCADE UNIQUE
 );
 
+CREATE TABLE account_settings_locale (
+    id SERIAL PRIMARY KEY,
+    account_settings_id integer NOT NULL REFERENCES account_settings(id) ON DELETE CASCADE UNIQUE,
+    locale varchar_locale NOT NULL DEFAULT 'en-US'
+);
+
 CREATE TABLE account_settings_notification (
     id SERIAL PRIMARY KEY,
     account_settings_id integer NOT NULL REFERENCES account_settings(id) ON DELETE CASCADE UNIQUE
