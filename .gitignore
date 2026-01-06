@@ -36,7 +36,7 @@ config/podverse-prod-mq.env
 config/podverse-prod-web.env
 config/podverse-prod-workers.env
 
-config/firebase/firebase-key.json
+config/google/firebase/firebase-admin.json
 config/segment/segment-key.txt
 
 *.jar

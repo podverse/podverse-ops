@@ -17,6 +17,6 @@ services:
         max-file: '1'
         max-size: '50m'
     volumes:
-      - ../../../config/firebase/firebase-key.json:/opt/config/firebase-key.json:ro
+      - ../../../config/google/firebase/firebase-admin.json:/opt/config/google/firebase/firebase-admin.json:ro
       - ../../../logs/workers:/opt/logs
     stop_grace_period: 5m
