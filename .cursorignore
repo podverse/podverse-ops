@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Lock files (large, not needed for code understanding)
+yarn.lock
+flake.lock
+
+# Logs
+*.log
+logs/
+
+# Pipeline artifacts (generated files)
+pipelines/**/*.aux_*
+pipelines/**/*.down
+pipelines/**/*.drop_*
