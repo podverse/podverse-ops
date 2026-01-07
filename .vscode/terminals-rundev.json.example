@@ -29,6 +29,13 @@
       "command": "npm run build:watch"
     },
     {
+      "name": "Podverse Notifications",
+      "description": "podverse-notifications",
+      "cwd": "~/repos/podverse-notifications",
+      "open": true,
+      "command": "npm run build:watch"
+    },
+    {
       "name": "Podverse ORM",
       "description": "podverse-orm",
       "cwd": "~/repos/podverse-orm",

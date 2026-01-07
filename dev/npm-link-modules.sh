@@ -47,6 +47,14 @@ rm -rf dist
 rm package-lock.json
 npm install
 
+echo "Installing podverse-notifications dependencies..."
+cd ../podverse-notifications
+nvm use
+rm -rf node_modules
+rm -rf dist
+rm package-lock.json
+npm install
+
 echo "Installing podverse-orm dependencies..."
 cd ../podverse-orm
 nvm use
@@ -120,6 +128,11 @@ cd ../podverse-external-services
 nvm use
 npm link
 
+echo "Linking podverse-notifications dependency..."
+cd ../podverse-notifications
+nvm use
+npm link
+
 echo "Linking podverse-orm dependency..."
 cd ../podverse-orm
 nvm use
@@ -147,6 +160,11 @@ cd ../podverse-external-services
 nvm use
 npm link podverse-helpers
 
+echo "Linking podverse-notifications dependencies..."
+cd ../podverse-notifications
+nvm use
+npm link podverse-helpers podverse-external-services
+
 echo "Linking podverse-orm dependencies..."
 cd ../podverse-orm
 nvm use
@@ -155,7 +173,7 @@ npm link podverse-helpers
 echo "Linking podverse-parser dependencies..."
 cd ../podverse-parser
 nvm use
-npm link podverse-partytime podverse-external-services podverse-helpers podverse-orm
+npm link podverse-partytime podverse-external-services podverse-helpers podverse-orm podverse-notifications
 
 echo "Linking podverse-mq dependencies..."
 cd ../podverse-mq
@@ -196,6 +214,11 @@ npm run build
 
 echo "Building podverse-external-services..."
 cd ../podverse-external-services
+nvm use
+npm run build
+
+echo "Building podverse-notifications..."
+cd ../podverse-notifications
 nvm use
 npm run build
 

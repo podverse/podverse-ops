@@ -26,6 +26,12 @@
       "open": true
     },
     {
+      "name": "Podverse Notifications",
+      "description": "podverse-notifications",
+      "cwd": "~/repos/podverse-notifications",
+      "open": true
+    },
+    {
       "name": "Podverse ORM",
       "description": "podverse-orm",
       "cwd": "~/repos/podverse-orm",
