@@ -26,21 +26,21 @@ The `v5` infrastructure is highly modularized. You will need to clone all of the
 
 I am listing them in a top-down order (ex. `podverse-helpers` is used by everything, `podverse-orm` is used by `podverse-parser` and `podverse-api` etc.):
 - [podverse-ops](https://github.com/podverse/podverse-ops/blob/v5-develop/)
-- [podverse-helpers](https://github.com/podverse/podverse-ops/blob/v5-develop/)
+- [podverse-helpers](https://github.com/podverse/podverse-helpers/blob/v5-develop/)
 - [podverse-external-services](https://github.com/podverse/podverse-external-services/blob/v5-develop/)
 - [podverse-orm](https://github.com/podverse/podverse-orm/blob/v5-develop/)
 - [podverse-parser](https://github.com/podverse/podverse-parser/blob/v5-develop/)
 - [podverse-mq](https://github.com/podverse/podverse-mq/blob/v5-develop/)
 - [podverse-api](https://github.com/podverse/podverse-api/blob/v5-develop/)
 - [podverse-web](https://github.com/podverse/podverse-web/blob/v5-develop/)
-- [podverse-workers](https://github.com/podverse/podverse-web/blob/v5-develop/)
+- [podverse-workers](https://github.com/podverse/podverse-workers/blob/v5-develop/)
 - [podverse-qa](https://github.com/podverse/podverse-qa/blob/v5-develop/)
 
 ## Environment Variables
 
 Before running a Podverse Docker service, you will need to create an enviroment variable file for it within the `podverse-ops/config` directory.
 
-Duplicate each of the `.env.example` files found within `podverse-ops/config` and add the corresponding values.
+Duplicate each of the `.env.example` files found within `podverse-ops/config` and add the corresponding values (e.g. podverse-local-api.env, etc.).
 
 The Podverse repos that run locally (the ones that don't simply need to build, but need to run) will need their own `.env` file within their project directory for local development purposes. For example, for local dev, you will need a corresponding `podverse-api/.env` file, `podverse-web/.env`, and a `podverse-workers/.env` file.
 

@@ -32,19 +32,23 @@ rm package-lock.json
 npm install
 
 echo "Installing podverse-helpers dependencies..."
-cd ../podverse-helpers
+cd ../podverse-helpers || exit 1
+[ -f .nvmrc ] || { echo "Missing .nvmrc in $(pwd)"; exit 1; }
+nvm install
 nvm use
 rm -rf node_modules
 rm -rf dist
-rm package-lock.json
+rm -f package-lock.json
 npm install
 
 echo "Installing podverse-external-services dependencies..."
-cd ../podverse-external-services
+cd ../podverse-external-services || exit 1
+[ -f .nvmrc ] || { echo "Missing .nvmrc in $(pwd)"; exit 1; }
+nvm install
 nvm use
 rm -rf node_modules
 rm -rf dist
-rm package-lock.json
+rm -f package-lock.json
 npm install
 
 echo "Installing podverse-notifications dependencies..."
@@ -56,59 +60,73 @@ rm package-lock.json
 npm install
 
 echo "Installing podverse-orm dependencies..."
-cd ../podverse-orm
+cd ../podverse-orm || exit 1
+[ -f .nvmrc ] || { echo "Missing .nvmrc in $(pwd)"; exit 1; }
+nvm install
 nvm use
 rm -rf node_modules
 rm -rf dist
-rm package-lock.json
+rm -f package-lock.json
 npm install
 
 echo "Installing podverse-parser dependencies..."
-cd ../podverse-parser
+cd ../podverse-parser || exit 1
+[ -f .nvmrc ] || { echo "Missing .nvmrc in $(pwd)"; exit 1; }
+nvm install
 nvm use
 rm -rf node_modules
 rm -rf dist
-rm package-lock.json
+rm -f package-lock.json
 npm install
 
 echo "Installing podverse-mq dependencies..."
-cd ../podverse-mq
+cd ../podverse-mq || exit 1
+[ -f .nvmrc ] || { echo "Missing .nvmrc in $(pwd)"; exit 1; }
+nvm install
 nvm use
 rm -rf node_modules
 rm -rf dist
-rm package-lock.json
+rm -f package-lock.json
 npm install
 
 echo "Installing podverse-workers dependencies..."
-cd ../podverse-workers
+cd ../podverse-workers || exit 1
+[ -f .nvmrc ] || { echo "Missing .nvmrc in $(pwd)"; exit 1; }
+nvm install
 nvm use
 rm -rf node_modules
 rm -rf dist
-rm package-lock.json
+rm -f package-lock.json
 npm install
 
 echo "Installing podverse-api dependencies..."
-cd ../podverse-api
+cd ../podverse-api || exit 1
+[ -f .nvmrc ] || { echo "Missing .nvmrc in $(pwd)"; exit 1; }
+nvm install
 nvm use
 rm -rf node_modules
 rm -rf dist
-rm package-lock.json
+rm -f package-lock.json
 npm install
 
 echo "Installing podverse-web dependencies..."
-cd ../podverse-web
+cd ../podverse-web || exit 1
+[ -f .nvmrc ] || { echo "Missing .nvmrc in $(pwd)"; exit 1; }
+nvm install
 nvm use
 rm -rf node_modules
 rm -rf dist
-rm package-lock.json
+rm -f package-lock.json
 npm install
 
 echo "Installing podverse-qa dependencies..."
-cd ../podverse-qa
+cd ../podverse-qa || exit 1
+[ -f .nvmrc ] || { echo "Missing .nvmrc in $(pwd)"; exit 1; }
+nvm install
 nvm use
 rm -rf node_modules
 rm -rf dist
-rm package-lock.json
+rm -f package-lock.json
 npm install
 
 # Link dependencies to npm
