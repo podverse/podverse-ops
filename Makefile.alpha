@@ -59,9 +59,9 @@ alpha_workers_down:
 	@if [ -f docker-compose/alpha/workers/docker-compose.yml ]; then \
 		docker compose -f docker-compose/alpha/workers/docker-compose.yml down --remove-orphans --rmi all; \
 	else \
-		echo "docker-compose.yml not found, stopping container directly..."; \
-		docker stop podverse_alpha_workers 2>/dev/null || true; \
-		docker rm podverse_alpha_workers 2>/dev/null || true; \
+		echo "docker-compose.yml not found, stopping containers directly..."; \
+		docker ps -aq --filter "name=podverse_alpha_workers" | xargs -r docker stop 2>/dev/null || true; \
+		docker ps -aq --filter "name=podverse_alpha_workers" | xargs -r docker rm 2>/dev/null || true; \
 		docker rmi $$(docker images --filter=reference='ghcr.io/podverse/podverse-workers/*' -q) 2>/dev/null || true; \
 	fi
 
