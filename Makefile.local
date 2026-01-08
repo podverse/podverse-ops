@@ -25,9 +25,18 @@ config/podverse-local-api.env:
 local_db_up: config/podverse-local-db.env
 	docker compose -f docker-compose/local/db/docker-compose.yml up podverse_local_db -d
 
+.PHONY: local_db_stop
+local_db_stop:
+	docker compose -f docker-compose/local/db/docker-compose.yml down --remove-orphans
+
 .PHONY: local_db_down
 local_db_down:
 	docker compose -f docker-compose/local/db/docker-compose.yml down --remove-orphans --rmi all
+
+.PHONY: local_db_reset
+local_db_reset:
+	@echo "Dropping and recreating public schema..."
+	docker exec -i podverse_local_db psql -U postgres -d postgres -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO postgres; GRANT ALL ON SCHEMA public TO public;"
 
 .PHONY: local_db_init
 local_db_init: config/podverse-local-db.env
@@ -35,6 +44,15 @@ local_db_init: config/podverse-local-db.env
 	@set -a; . config/podverse-local-db.env; set +a; \
 	docker compose -f docker-compose/local/db/docker-compose.yml exec podverse_local_db bash -c "POSTGRES_READ_PASSWORD=$$POSTGRES_READ_PASSWORD POSTGRES_READ_WRITE_PASSWORD=$$POSTGRES_READ_WRITE_PASSWORD /opt/database/init-scripts/01-create-users.sh"
 	docker exec -i podverse_local_db psql -U postgres -d postgres -f /opt/database/combined/init_database.sql
+
+.PHONY: local_db_seed_dev
+local_db_seed_dev:
+	@echo "Seeding local dev account (localdev@podverse.fm / Test!1Aa)..."
+	docker exec -i podverse_local_db psql -U postgres -d postgres -f /opt/database/seed-scripts/local-dev-account.sql
+
+.PHONY: local_db_reinit
+local_db_reinit: local_db_reset local_db_init local_db_seed_dev
+	@echo "Database re-initialized with local dev account"
 
 .PHONY: local_mq_up
 local_mq_up: config/podverse-local-mq.env
