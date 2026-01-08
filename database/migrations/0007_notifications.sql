@@ -29,7 +29,7 @@ CREATE TABLE account_up_device (
 CREATE INDEX idx_account_up_device_account_id ON account_up_device(account_id);
 CREATE INDEX idx_account_up_device_up_endpoint ON account_up_device(up_endpoint);
 
-CREATE TYPE account_fcm_device_platform_options AS ENUM ('web','ios','android','generic');
+CREATE TYPE account_fcm_device_platform_options AS ENUM ('web','ios','android');
 
 CREATE TABLE account_fcm_device (
     id SERIAL PRIMARY KEY,
