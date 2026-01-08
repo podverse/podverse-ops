@@ -201,10 +201,15 @@ CREATE TABLE feed (
     url varchar_url UNIQUE NOT NULL,
     podcast_index_id INTEGER UNIQUE NOT NULL,
 
+    -- internal
+
     -- feed flag
     feed_flag_status_id INTEGER NOT NULL REFERENCES feed_flag_status(id),
 
-    -- internal
+    -- the hash of the last parsed feed file.
+    -- used for comparison to determine if full re-parsing is needed.
+    last_parsed_file_hash varchar_md5,
+
 
     -- Used to prevent another thread from parsing the same feed.
     -- Set to current time at beginning of parsing, and NULL at end of parsing. 
@@ -215,10 +220,6 @@ CREATE TABLE feed (
     -- 0 will only be parsed when PI API reports an update.
     -- higher parsing_priority will be parsed more frequently on a schedule.
     parsing_priority INTEGER DEFAULT 0 CHECK (parsing_priority BETWEEN 0 AND 5),
-
-    -- the hash of the last parsed feed file.
-    -- used for comparison to determine if full re-parsing is needed.
-    last_parsed_file_hash varchar_md5,
 
     -- the run-time environment container id
     container_id VARCHAR(12),

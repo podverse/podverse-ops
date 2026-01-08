@@ -51,3 +51,22 @@ CREATE INDEX idx_account_fcm_device_account_id ON account_fcm_device(account_id)
 CREATE INDEX idx_account_fcm_device_fcm_token ON account_fcm_device(fcm_token);
 CREATE INDEX idx_account_fcm_device_installation_id ON account_fcm_device(installation_id);
 CREATE INDEX idx_account_fcm_device_platform ON account_fcm_device(platform);
+
+CREATE TABLE account_webpush_device (
+    id SERIAL PRIMARY KEY,
+    account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    endpoint varchar_url NOT NULL UNIQUE,
+    p256dh varchar_long NOT NULL,
+    auth varchar_long NOT NULL,
+    locale varchar_locale NOT NULL,
+    created_at server_time_with_default NOT NULL,
+    updated_at server_time_with_default NOT NULL
+);
+
+CREATE TRIGGER set_updated_at_account_webpush_device
+BEFORE UPDATE ON account_webpush_device
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at_field();
+
+CREATE INDEX idx_account_webpush_device_account_id ON account_webpush_device(account_id);
+CREATE INDEX idx_account_webpush_device_endpoint ON account_webpush_device(endpoint);

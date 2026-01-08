@@ -247,10 +247,15 @@ CREATE TABLE feed (
     url varchar_url UNIQUE NOT NULL,
     podcast_index_id INTEGER UNIQUE NOT NULL,
 
+    -- internal
+
     -- feed flag
     feed_flag_status_id INTEGER NOT NULL REFERENCES feed_flag_status(id),
 
-    -- internal
+    -- the hash of the last parsed feed file.
+    -- used for comparison to determine if full re-parsing is needed.
+    last_parsed_file_hash varchar_md5,
+
 
     -- Used to prevent another thread from parsing the same feed.
     -- Set to current time at beginning of parsing, and NULL at end of parsing. 
@@ -261,10 +266,6 @@ CREATE TABLE feed (
     -- 0 will only be parsed when PI API reports an update.
     -- higher parsing_priority will be parsed more frequently on a schedule.
     parsing_priority INTEGER DEFAULT 0 CHECK (parsing_priority BETWEEN 0 AND 5),
-
-    -- the hash of the last parsed feed file.
-    -- used for comparison to determine if full re-parsing is needed.
-    last_parsed_file_hash varchar_md5,
 
     -- the run-time environment container id
     container_id VARCHAR(12),
@@ -1468,6 +1469,25 @@ CREATE INDEX idx_account_fcm_device_account_id ON account_fcm_device(account_id)
 CREATE INDEX idx_account_fcm_device_fcm_token ON account_fcm_device(fcm_token);
 CREATE INDEX idx_account_fcm_device_installation_id ON account_fcm_device(installation_id);
 CREATE INDEX idx_account_fcm_device_platform ON account_fcm_device(platform);
+
+CREATE TABLE account_webpush_device (
+    id SERIAL PRIMARY KEY,
+    account_id INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    endpoint varchar_url NOT NULL UNIQUE,
+    p256dh varchar_long NOT NULL,
+    auth varchar_long NOT NULL,
+    locale varchar_locale NOT NULL,
+    created_at server_time_with_default NOT NULL,
+    updated_at server_time_with_default NOT NULL
+);
+
+CREATE TRIGGER set_updated_at_account_webpush_device
+BEFORE UPDATE ON account_webpush_device
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at_field();
+
+CREATE INDEX idx_account_webpush_device_account_id ON account_webpush_device(account_id);
+CREATE INDEX idx_account_webpush_device_endpoint ON account_webpush_device(endpoint);
 
 -- 0008
 
