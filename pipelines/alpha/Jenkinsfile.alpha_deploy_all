@@ -17,7 +17,7 @@ pipeline {
         )
         string(
             name: 'GIT_BRANCH_NAME',
-            defaultValue: 'v5-alpha',
+            defaultValue: 'v5-develop',
             description: 'Git branch to checkout and pull for ops repo'
         )
     }
