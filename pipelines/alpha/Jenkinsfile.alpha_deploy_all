@@ -1,0 +1,136 @@
+pipeline {
+    agent {
+        label 'pv-alpha-srv'
+    }
+
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+
+    parameters {
+        string(
+            name: 'IMAGE_VERSION',
+            defaultValue: 'alpha',
+            description: 'Docker image version to deploy (default: alpha = latest alpha tag)'
+        )
+        string(
+            name: 'GIT_BRANCH_NAME',
+            defaultValue: 'v5-alpha',
+            description: 'Git branch to checkout and pull for ops repo'
+        )
+    }
+
+    stages {
+        stage('1. Stop Workers (aux)') {
+            steps {
+                build job: 'pipelines/alpha/aux_workers_down', wait: true, propagate: true
+            }
+        }
+
+        stage('2. Prune Images (aux)') {
+            steps {
+                build job: 'pipelines/alpha/aux_docker_prune_images', wait: true, propagate: true
+            }
+        }
+
+        stage('3. Stop Web (srv)') {
+            steps {
+                build job: 'pipelines/alpha/srv_web_down', wait: true, propagate: true
+            }
+        }
+
+        stage('4. Stop API (srv)') {
+            steps {
+                build job: 'pipelines/alpha/srv_api_down', wait: true, propagate: true
+            }
+        }
+
+        stage('5. Prune Images (srv)') {
+            steps {
+                build job: 'pipelines/alpha/srv_docker_prune_images', wait: true, propagate: true
+            }
+        }
+
+        stage('6. Git Pull (srv)') {
+            steps {
+                build job: 'pipelines/alpha/srv_ops_git_pull',
+                      wait: true,
+                      propagate: true,
+                      parameters: [
+                          string(name: 'GIT_BRANCH_NAME', value: params.GIT_BRANCH_NAME)
+                      ]
+            }
+        }
+
+        stage('7. Git Pull (aux)') {
+            steps {
+                build job: 'pipelines/alpha/aux_ops_git_pull',
+                      wait: true,
+                      propagate: true,
+                      parameters: [
+                          string(name: 'GIT_BRANCH_NAME', value: params.GIT_BRANCH_NAME)
+                      ]
+            }
+        }
+
+        stage('8. Pull Workers (aux)') {
+            steps {
+                build job: 'pipelines/alpha/aux_workers_pull', wait: true, propagate: true
+            }
+        }
+
+        stage('9. Start Parsers (aux)') {
+            steps {
+                build job: 'pipelines/alpha/aux_workers_mq_rss_run_parsers_all', wait: true, propagate: true
+            }
+        }
+
+        stage('10. Start Live Item Listener (aux)') {
+            steps {
+                build job: 'pipelines/alpha/aux_workers_mq_rss_run_live_item_listener', wait: true, propagate: true
+            }
+        }
+
+        stage('11. Start DLQ Consumer (aux)') {
+            steps {
+                build job: 'pipelines/alpha/aux_workers_mq_rss_run_dlq_consumer', wait: true, propagate: true
+            }
+        }
+
+        stage('12. Start API (srv)') {
+            steps {
+                build job: 'pipelines/alpha/srv_api_up',
+                      wait: true,
+                      propagate: true,
+                      parameters: [
+                          string(name: 'IMAGE_VERSION', value: params.IMAGE_VERSION)
+                      ]
+            }
+        }
+
+        stage('13. Start Web (srv)') {
+            steps {
+                build job: 'pipelines/alpha/srv_web_up',
+                      wait: true,
+                      propagate: true,
+                      parameters: [
+                          string(name: 'IMAGE_VERSION', value: params.IMAGE_VERSION)
+                      ]
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Alpha deployment completed successfully!'
+        }
+        failure {
+            echo '❌ Alpha deployment failed! Check the failed stage above.'
+        }
+        always {
+            echo "Deployment finished at: ${new Date()}"
+        }
+    }
+}
