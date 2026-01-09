@@ -23,8 +23,8 @@ npm cache clean --force
 echo "Clearing npm cache..."
 npm cache clean --force
 
-echo "Installing podverse-partytime dependencies..."
-cd ../podverse-partytime
+echo "Installing partytime dependencies..."
+cd ../partytime
 nvm use
 rm -rf node_modules
 rm -rf dist
