@@ -114,7 +114,7 @@ npm install
 # Link dependencies to npm
 
 echo "Linking podverse-partytime dependency..."
-cd ../podverse-partytime
+cd ../partytime
 nvm use
 npm link
 
@@ -203,7 +203,7 @@ npm link podverse-helpers podverse-external-services podverse-orm podverse-parse
 # Build all projects
 
 echo "Building podverse-partytime..."
-cd ../podverse-partytime
+cd ../partytime
 nvm use
 npm run build
 
