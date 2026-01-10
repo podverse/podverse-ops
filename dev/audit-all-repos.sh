@@ -2,19 +2,32 @@
 
 # Script to run npm audit in all npm module repos and summarize vulnerabilities
 
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Navigate up to the parent directory where all repos should be
+REPOS_BASE_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
 # Array of podverse repos that might have npm packages
-REPOS=(
-  "/Users/mitcheldowney/repos/podverse-helpers"
-  "/Users/mitcheldowney/repos/podverse-external-services"
-  "/Users/mitcheldowney/repos/podverse-notifications"
-  "/Users/mitcheldowney/repos/podverse-orm"
-  "/Users/mitcheldowney/repos/podverse-parser"
-  "/Users/mitcheldowney/repos/podverse-mq"
-  "/Users/mitcheldowney/repos/podverse-api"
-  "/Users/mitcheldowney/repos/podverse-web"
-  "/Users/mitcheldowney/repos/podverse-workers"
-  "/Users/mitcheldowney/repos/podverse-qa"
+# These are relative paths from the base directory
+REPO_NAMES=(
+  "podverse-helpers"
+  "podverse-external-services"
+  "podverse-notifications"
+  "podverse-orm"
+  "podverse-parser"
+  "podverse-mq"
+  "podverse-api"
+  "podverse-web"
+  "podverse-workers"
+  "podverse-qa"
 )
+
+# Build full repo paths
+REPOS=()
+for repo_name in "${REPO_NAMES[@]}"; do
+  REPOS+=("$REPOS_BASE_DIR/$repo_name")
+done
 
 # Associative array to store results
 declare -A RESULTS
@@ -29,9 +42,31 @@ NC='\033[0m' # No Color
 echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}Running npm audit on all repos${NC}"
 echo -e "${BLUE}========================================${NC}"
+echo -e "${BLUE}Base directory: $REPOS_BASE_DIR${NC}"
+echo -e "${BLUE}========================================${NC}"
 echo ""
 
+# Check which repos exist
+existing_repos=()
 for repo in "${REPOS[@]}"; do
+  if [ -d "$repo" ]; then
+    existing_repos+=("$repo")
+  fi
+done
+
+if [ ${#existing_repos[@]} -eq 0 ]; then
+  echo -e "${RED}ERROR: No repos found at $REPOS_BASE_DIR${NC}"
+  echo -e "${YELLOW}Please ensure all podverse repos are in sibling folders next to each other.${NC}"
+  exit 1
+fi
+
+echo -e "${BLUE}Found ${#existing_repos[@]} repo(s) to audit:${NC}"
+for repo in "${existing_repos[@]}"; do
+  echo -e "${BLUE}  - $(basename "$repo")${NC}"
+done
+echo ""
+
+for repo in "${existing_repos[@]}"; do
   repo_name=$(basename "$repo")
   
   # Check if package.json exists
