@@ -1,0 +1,12 @@
+{
+  "name": "podverse-local-utils",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local development utilities for Podverse",
+  "scripts": {
+    "generate-password-hash": "node generate-password-hash.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0"
+  }
+}
