@@ -13,10 +13,23 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Get script directory for finding audit script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # Base directory for repos (parent of podverse-ops)
 # Script is at: podverse-ops/scripts/publish/v5-develop-update-version-all.sh
-# Repos are at: /Users/mitcheldowney/repos/
-REPOS_DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
+# Repos are at: (parent directory, 3 levels up from script)
+REPOS_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+
+# Check if repos are in the expected location
+if [ ! -d "$REPOS_DIR/podverse-helpers" ]; then
+  echo -e "${RED}ERROR: No repos found at $REPOS_DIR${NC}"
+  echo -e "${YELLOW}Please ensure all podverse repos are in sibling folders next to each other.${NC}"
+  exit 1
+fi
+
+# Path to audit script
+AUDIT_SCRIPT="$SCRIPT_DIR/../audit/audit-all-repos.sh"
 
 # Repos to update (same order as publish)
 REPOS=(
@@ -34,10 +47,66 @@ REPOS=(
 # Version passed as argument or empty
 VERSION="$1"
 
-echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE}  Podverse Update Version All Packages ${NC}"
-echo -e "${BLUE}========================================${NC}"
-echo ""
+# Function to check for vulnerabilities
+check_vulnerabilities() {
+  echo -e "${YELLOW}Step 0: Checking for vulnerabilities in all repos...${NC}"
+  echo ""
+  
+  if [ ! -f "$AUDIT_SCRIPT" ]; then
+    echo -e "${YELLOW}Warning: Audit script not found at $AUDIT_SCRIPT${NC}"
+    echo -e "${YELLOW}Skipping vulnerability check.${NC}"
+    echo ""
+    return 0
+  fi
+  
+  # Run audit script and capture output
+  audit_output=$(bash "$AUDIT_SCRIPT" 2>&1)
+  audit_exit_code=$?
+  
+  # Check if audit script itself failed
+  if [ $audit_exit_code -ne 0 ]; then
+    echo -e "${RED}Error: Vulnerability check failed.${NC}"
+    echo "$audit_output"
+    return 1
+  fi
+  
+  # Extract vulnerability count from output
+  # Look for line like: "Total vulnerabilities across X repo(s): Y"
+  vuln_line=$(echo "$audit_output" | grep "Total vulnerabilities across" || true)
+  
+  if [ -n "$vuln_line" ]; then
+    # Extract the number of repos with vulnerabilities
+    repos_with_vulns=$(echo "$vuln_line" | sed -n 's/.*Total vulnerabilities across \([0-9]*\) repo(s):.*/\1/p')
+    
+    if [ -n "$repos_with_vulns" ] && [ "$repos_with_vulns" -gt 0 ]; then
+      # Found vulnerabilities
+      echo "$audit_output"
+      echo ""
+      echo -e "${RED}========================================${NC}"
+      echo -e "${RED}  ABORTED: Vulnerabilities found in repos${NC}"
+      echo -e "${RED}  Please fix vulnerabilities before updating versions${NC}"
+      echo -e "${RED}========================================${NC}"
+      return 1
+    fi
+  fi
+  
+  # Check if output contains "All repos are clean!"
+  if echo "$audit_output" | grep -q "All repos are clean! No vulnerabilities found"; then
+    echo "$audit_output"
+    echo ""
+    echo -e "${GREEN}✓ No vulnerabilities found. Proceeding...${NC}"
+    echo ""
+    return 0
+  fi
+  
+  # If we get here, something unexpected happened
+  echo "$audit_output"
+  echo ""
+  echo -e "${YELLOW}Warning: Could not determine vulnerability status from audit output.${NC}"
+  echo -e "${YELLOW}Proceeding with caution...${NC}"
+  echo ""
+  return 0
+}
 
 # Function to prompt for y/n confirmation with validation
 confirm_prompt() {
@@ -64,6 +133,16 @@ validate_version() {
   fi
   return 0
 }
+
+echo -e "${BLUE}========================================${NC}"
+echo -e "${BLUE}  Podverse Update Version All Packages ${NC}"
+echo -e "${BLUE}========================================${NC}"
+echo ""
+
+# Step 0: Check for vulnerabilities FIRST
+if ! check_vulnerabilities; then
+  exit 1
+fi
 
 # Function to check if repo is on v5-develop and clean
 check_repo_state() {

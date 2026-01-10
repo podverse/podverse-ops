@@ -15,8 +15,14 @@ NC='\033[0m' # No Color
 
 # Base directory for repos (parent of podverse-ops)
 # Script is at: podverse-ops/scripts/publish/alpha-publish-all-packages.sh
-# Repos are at: /Users/mitcheldowney/repos/
-REPOS_DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
+# Repos are at: (parent directory, 3 levels up from script)
+REPOS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+
+# Check if repos are in the expected location
+if [ ! -d "$REPOS_DIR/podverse-helpers" ]; then
+  # Try going up one more level
+  REPOS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
+fi
 
 # Repos in publish order (dependencies first)
 REPOS=(
