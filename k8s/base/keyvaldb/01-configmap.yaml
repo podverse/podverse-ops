@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: podverse-keyvaldb-config
+  labels:
+    app: podverse-keyvaldb
+data:
+  ######
+  ##### podverse-keyvaldb
+  ######
+
+  # NOTE:
+  # These are development defaults. Update for production as needed.
+  PROTECTED_MODE: "yes" # set to yes in production
+  BIND: "0.0.0.0"      # set to 127.0.0.1 in production
+  APPENDONLY: "no"     # set to no in production
+  VALKEY_OPTS: "--maxmemory 1gb --maxclients 10000"
+  GUI_ALLOW_ANONYMOUS_LOGIN: "false" # set to false in production

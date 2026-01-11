@@ -1,0 +1,16 @@
+# Version: 1
+# This Service exposes the Web frontend internally on port 3000.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: podverse-web
+spec:
+  type: ClusterIP
+  selector:
+    app: podverse-web
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+      protocol: TCP

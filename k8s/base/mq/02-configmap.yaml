@@ -1,0 +1,69 @@
+# Version: 3
+# UPDATE: Changed binary path to global 'artemis' command.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: podverse-mq-scripts
+data:
+  provision-queues.sh: |
+    #!/bin/bash
+    set -euo pipefail
+
+    # Configuration
+    BROKER_URL="tcp://podverse-mq:61616"
+    QUEUES=("rss-normal" "rss-on-demand" "rss-live")
+    
+    if [[ -z "$ARTEMIS_USER" || -z "$ARTEMIS_PASSWORD" ]]; then
+      echo "Error: ARTEMIS_USER or ARTEMIS_PASSWORD environment variables are missing."
+      exit 1
+    fi
+
+    echo "[provision] Waiting for broker at $BROKER_URL..."
+    
+    # Use global 'artemis' command
+    for i in $(seq 1 30); do
+      if artemis producer --url "$BROKER_URL" --user "$ARTEMIS_USER" --password "$ARTEMIS_PASSWORD" --message-count 0 --silent >/dev/null 2>&1; then
+        echo "[provision] Broker is reachable."
+        break
+      fi
+      echo "[provision] Attempt $i: Broker not ready yet. Retrying in 5s..."
+      sleep 5
+    done
+
+    echo "[provision] Creating queues: ${QUEUES[*]}"
+
+    for q in "${QUEUES[@]}"; do
+      DLQ="DLQ.$q"
+      echo "[provision] Processing queue: $q (DLQ: $DLQ)"
+
+      # Create or Update Address
+      artemis address create \
+        --user "$ARTEMIS_USER" --password "$ARTEMIS_PASSWORD" --url "$BROKER_URL" \
+        --name "$q" --anycast \
+        --dead-letter-address "$DLQ" --max-delivery-attempts 5 \
+        --redelivery-delay 60000 \
+        --consumer-window-size 0 --ring-size -1 \
+        --message-expiry-thread-priority 3 --silent >/dev/null 2>&1 \
+      || \
+      artemis address update \
+        --user "$ARTEMIS_USER" --password "$ARTEMIS_PASSWORD" --url "$BROKER_URL" \
+        --name "$q" \
+        --dead-letter-address "$DLQ" --max-delivery-attempts 5 \
+        --redelivery-delay 60000 \
+        --consumer-window-size 0 --ring-size -1 \
+        --message-expiry-thread-priority 3 --silent >/dev/null 2>&1 || echo "Warning: Address $q update failed or no change needed."
+
+      # Create Queues
+      artemis queue create \
+        --user "$ARTEMIS_USER" --password "$ARTEMIS_PASSWORD" --url "$BROKER_URL" \
+        --name "$q" --address "$q" \
+        --anycast --durable --auto-create-address --silent >/dev/null 2>&1 || echo "Queue $q likely exists."
+
+      artemis queue create \
+        --user "$ARTEMIS_USER" --password "$ARTEMIS_PASSWORD" --url "$BROKER_URL" \
+        --name "$DLQ" --address "$DLQ" \
+        --anycast --durable --auto-create-address --silent >/dev/null 2>&1 || echo "Queue $DLQ likely exists."
+    done
+
+    echo "[provision] Provisioning complete."

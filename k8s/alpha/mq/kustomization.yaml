@@ -1,0 +1,26 @@
+# Version: 1
+# Filename: kustomization.yaml
+# Description: Bundles MQ resources and centralizes shared labels + image versions.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base/mq/02-configmap.yaml
+  - ../../base/mq/03-service.yaml
+  - ../../base/mq/04-statefulset.yaml
+  - ../../base/mq/05-job-provision.yaml
+
+namespace: podverse-alpha
+
+labels:
+  - pairs:
+      app: podverse-mq
+      environment: alpha
+    # This ensures the labels are also applied to the selectors, 
+    # so the Service correctly finds the Pods.
+    includeSelectors: true
+
+images:
+  - name: apache/activemq-artemis
+    newTag: "2.37.0"

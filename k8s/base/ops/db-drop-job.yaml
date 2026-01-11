@@ -1,0 +1,34 @@
+# Version: 3
+# Pattern: Suspended CronJob (Manual Trigger Only)
+# DANGER: Drops the database schema. Only runs when explicitly triggered.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ops-db-drop-everything
+spec:
+  schedule: "* * * * *"
+  suspend: true          # <--- PREVENTS AUTOMATIC EXECUTION
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 60
+      template:
+        spec:
+          containers:
+          - name: psql
+            image: postgres
+            command: ["psql", "-h", "podverse-db", "-U", "postgres", "-d", "postgres", "-c", "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"]
+            
+            envFrom:
+            - secretRef:
+                name: podverse-db-opaque
+
+            # CRITICAL FIX: Map the secret key to PGPASSWORD for psql
+            env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: podverse-db-opaque
+                  key: POSTGRES_PASSWORD
+
+          restartPolicy: Never

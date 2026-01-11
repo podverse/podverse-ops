@@ -1,0 +1,137 @@
+# Version: 4
+# Non-sensitive configuration for the Podverse API.
+# Mapped from config/podverse-api.env.example
+# UPDATE: Added MESSAGE_QUEUE_HOST and MESSAGE_QUEUE_PORT to connect to the MQ Service.
+# UPDATE: Changed NODE_ENV to production to enable 'trust proxy' and fix ERR_ERL_UNEXPECTED_X_FORWARDED_FOR.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: podverse-api-config
+data:
+  #####
+  ##### podverse-api
+  #####
+
+  # NOTE:
+  # Use lowercase true to enable properties.
+  # Leave value blank or comment out to disable properties.
+
+  #####
+  ##### App / General
+  #####
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"
+
+  API_PORT: "1234"
+  API_PREFIX: "/api"
+  API_VERSION: "/v2"
+
+  API_ALLOWED_CORS_ORIGINS: "http://podverse-web:3000" # Override in environment kustomization.yaml
+
+  ##AUTH_JWT_SECRET: "your-secret-whatever" # in secrets
+
+  USER_AGENT: "Podverse/Ser/2/API/Ser" # TODO:Customize your user agent for outbound requests
+
+  # Use the public facing domain, not the internal docker network ip address.
+  COOKIE_DOMAIN: ".example.com" # Override in environment kustomization.yaml
+
+  # Web App TODO: Update these to your actual web app domain and protocol
+  WEB_PROTOCOL: "http"
+  WEB_DOMAIN: "podverse-web:3000"
+
+  #####
+  ##### Postgres
+  #####
+
+  DB_HOST: "podverse-db"
+  DB_PORT: "5432"
+  # DB_READ_USERNAME: "read"                # in secrets
+  # DB_PASSWORD: "your-db-password"         # in secrets
+  # DB_READ_WRITE_USERNAME: "read_write"    # in secrets
+  # DB_READ_WRITE_PASSWORD: "read_write"    # in secrets
+  # DB_DATABASE: "postgres"                 # in secrets
+  DB_SSL_CONNECTION: "false"
+
+  #####
+  ##### Auth/Membership
+  #####
+
+  EMAIL_VERIFICATION_TOKEN_EXPIRATION: "31540000"
+  EMAIL_CHANGE_VERIFICATION_TOKEN_EXPIRATION: "31540000"
+  RESET_PASSWORD_TOKEN_EXPIRATION: "86400"
+  FREE_TRIAL_EXPIRATION: "2592000"
+  PREMIUM_MEMBERSHIP_EXPIRATION: "31540000"
+  PREMIUM_MEMBERSHIP_COST: "5"
+  RESET_PASSWORD_PAGE_PATH: "/reset-password?token="
+  VERIFY_EMAIL_PAGE_PATH: "/verify-email?token="
+  EMAIL_CHANGE_VERIFICATION_PAGE_PATH: "/email-change-verifying?token="
+
+  #####
+  ##### Email template
+  #####
+  ### These are used in the templates of the auth related emails we send.
+
+  EMAIL_BRAND_COLOR: "#2968B1"
+  EMAIL_HEADER_IMAGE_URL: ""
+  LEGAL_NAME: ""
+  LEGAL_ADDRESS: ""
+  SOCIAL_FACEBOOK_IMAGE_URL: ""
+  SOCIAL_FACEBOOK_PAGE_URL: ""
+  SOCIAL_GITHUB_IMAGE_URL: ""
+  SOCIAL_GITHUB_PAGE_URL: ""
+  SOCIAL_TWITTER_IMAGE_URL: ""
+  SOCIAL_TWITTER_PAGE_URL: ""
+
+  #####
+  ##### Mailer
+  #####
+
+  MAILER_DISABLED: "1"
+  MAILER_HOST: ""
+  MAILER_PORT: ""
+  MAILER_SERVICE: ""
+  MAILER_USERNAME: ""
+  MAILER_PASSWORD: ""
+  MAILER_FROM: ""
+
+  #####
+  ##### Podcast Index
+  #####
+
+  PODCAST_INDEX_BASE_URL: "https://api.podcastindex.org/api/1.0"
+  #PODCAST_INDEX_AUTH_KEY:      "" # in secrets
+  #PODCAST_INDEX_SECRET_KEY:    "" # in secrets
+
+  #####
+  ##### Message Queue
+  #####
+
+  MESSAGE_QUEUE_HOST: "podverse-mq"
+  MESSAGE_QUEUE_PORT: "5672"
+  #MESSAGE_QUEUE_USERNAME: "user"         # in secrets
+  #MESSAGE_QUEUE_PASSWORD: "mysecretpw"   # in secrets
+
+  #####
+  ##### Key-value (Valkey / Redis)
+  #####
+
+  KEYVALDB_HOST: "podverse-keyvaldb"
+  KEYVALDB_PORT: "6379"
+  #KEYVALDB_PASSWORD: ""                # in secrets
+  KEYVALDB_CACHE_TTL_SECONDS: "86400" # 1 day
+
+  #####
+  ##### Default Account Settings
+  #####
+  # These are used as default values when creating new accounts.
+  DEFAULT_ACCOUNT_SETTINGS_LOCALE: "en-US"
+
+  #####
+  ##### Parser
+  #####
+
+  # When true, the parser will add remote items to the message queue for processing.
+  # The parser will recursively follow all remote items, and their remote items, until it runs out.
+  # If a feed is already in the database, it will not add a message for that remote item feed to the queue.
+  PARSER_ADD_REMOTE_ITEMS_TO_MQ: ""

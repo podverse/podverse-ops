@@ -1,0 +1,40 @@
+# Version: 2
+# Fix: Added 'http' backend configuration to route traffic to services.
+# This replaces the need for host-specific logic in the Base.
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: podverse-ingress
+  namespace: podverse-alpha
+spec:
+  tls:
+    - secretName: podverse-tls-cert
+      hosts:
+        - api-alpha-podverse.k.podverse.fm
+        - alpha-podverse.k.podverse.fm
+  rules:
+    # 1. API Route
+    # We must explicitly define where this specific host routes to.
+    - host: api-alpha-podverse.k.podverse.fm
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: podverse-api
+                port:
+                  number: 1234
+
+    # 2. Web (Frontend) Route
+    - host: alpha-podverse.k.podverse.fm
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: podverse-web
+                port:
+                  number: 3000

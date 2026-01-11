@@ -1,0 +1,17 @@
+# Version: 1
+# This Service exposes the PostgreSQL database to other pods within the cluster.
+# It acts as the internal DNS entry for the database.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: podverse-db
+spec:
+  # ClusterIP makes this reachable ONLY from inside the cluster (secure default).
+  type: ClusterIP
+  selector:
+    app: podverse-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

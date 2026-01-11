@@ -1,0 +1,35 @@
+# Version: 1
+# Filename: kustomization.yaml
+# Description: Bundles the worker deployments and configmap while centralizing the worker image tag.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base/workers/03-configmap.yaml
+  - ../../base/workers/consumer-dlq.yaml
+  - ../../base/workers/listener-live.yaml
+  - ../../base/workers/parser-live.yaml
+  - ../../base/workers/parser-normal.yaml
+  - ../../base/workers/parser-ondemand.yaml
+namespace: podverse-alpha
+
+images:
+  - name: ghcr.io/podverse/podverse-workers/podverse-workers
+    newTag: "5.1.23-alpha.0"
+
+configMapGenerator:
+  - name: podverse-workers-config
+    behavior: merge
+    literals:
+      - WEB_DOMAIN=alpha-podverse.k.podverse.fm
+
+labels:
+  - pairs:
+      app: podverse-workers
+      environment: alpha
+    # This ensures the labels are also applied to the selectors,
+    # so the Service correctly finds the Pods.
+    includeSelectors: true
+patchesStrategicMerge:
+  - log-level-debug.yaml

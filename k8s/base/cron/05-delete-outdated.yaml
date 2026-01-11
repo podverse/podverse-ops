@@ -1,0 +1,54 @@
+# File Version: 5
+# Source: Jenkinsfile.aux_workers_orm_on_demand_parser_event_delete_outdated
+# Schedule: 1 AM daily
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: worker-delete-outdated
+spec:
+  schedule: "0 1 * * *"
+  concurrencyPolicy: Forbid
+  
+  # UPDATE: Keep the last 30 runs (30 days of history) for logs.
+  successfulJobsHistoryLimit: 30
+  failedJobsHistoryLimit: 10
+
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: worker
+            image: ghcr.io/podverse/podverse-workers/podverse-workers
+            command: ["npm", "run", "orm_on_demand_parser_event_delete_outdated"]
+            securityContext:
+              runAsUser: 1000
+              runAsGroup: 1000
+              runAsNonRoot: true
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+            resources:
+              requests:
+                memory: "512Mi"
+                cpu: "100m"
+              limits:
+                memory: "1Gi"
+                cpu: "500m"
+            envFrom:
+            - configMapRef:
+                name: podverse-workers-config
+            - secretRef:
+                name: podverse-db-opaque
+            - secretRef:
+                name: podverse-mq-opaque
+            - secretRef:
+                name: podverse-api.podcastindex.org-opaque
+            volumeMounts:
+            - name: logs-volume
+              mountPath: /logs
+            - name: logs-volume
+              mountPath: /opt/logs
+          volumes:
+          - name: logs-volume
+            emptyDir: {}
+          restartPolicy: OnFailure

@@ -1,0 +1,82 @@
+# Version: 3
+# Filename: 04-valkey-deployments.yaml
+# Description: Deployments for Valkey DB and RedisInsight GUI.
+# UPDATE: Removed image tags to strictly enforce Kustomize version management.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: podverse-keyvaldb
+  labels:
+    app: valkey
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: valkey
+  template:
+    metadata:
+      labels:
+        app: valkey
+    spec:
+      containers:
+        - name: valkey
+          # PLACEHOLDER: Kustomize will find this name and append the tag (e.g., :9.0.1)
+          image: valkey/valkey
+          command: ["valkey-server", "--save", "900 1", "--appendonly", "yes"]
+          ports:
+            - containerPort: 6379
+          envFrom:
+            - secretRef:
+                name: podverse-keyvaldb-opaque
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/valkey
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+          livenessProbe:
+            exec:
+              command: ["valkey-cli", "ping"]
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command: ["valkey-cli", "ping"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        # EPHEMERAL STORAGE: Data is lost when pod restarts
+        - name: data
+          emptyDir: {}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: podverse-keyvaldb-gui
+  labels:
+    app: valkey-gui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: valkey-gui
+  template:
+    metadata:
+      labels:
+        app: valkey-gui
+    spec:
+      containers:
+        - name: gui
+          # PLACEHOLDER: Kustomize will find this name and append the tag (e.g., :latest)
+          image: redislabs/redisinsight
+          ports:
+            - containerPort: 5540
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false

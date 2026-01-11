@@ -1,0 +1,28 @@
+# Version: 1
+# Filename: kustomization.yaml
+# Description: Bundles the Web frontend resources and centralizes the web image tag.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base/web/01-configmap.yaml
+  - ../../base/web/02-service.yaml
+  - ../../base/web/03-deployment.yaml
+
+namespace: podverse-alpha
+
+labels:
+  - pairs:
+      app: podverse-web
+      environment: alpha
+    # This ensures the labels are also applied to the selectors,
+    # so the Service correctly finds the Pods.
+    includeSelectors: true
+
+images:
+  - name: ghcr.io/suorcd/podverse-web-deploy
+    newTag: "5.1.23-alpha.0-20"
+
+patches:
+  - path: deployment-link-patch.yaml

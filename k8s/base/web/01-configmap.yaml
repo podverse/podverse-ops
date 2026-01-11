@@ -1,0 +1,10 @@
+# Version: 1
+# Configuration for the Web frontend.
+# Mapped from config/podverse-web.env.example
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: podverse-web-config
+data:
+  NODE_ENV: "development"

@@ -1,0 +1,121 @@
+# Version: 5
+# The Deployment for the Podverse API.
+# It connects to the Database and MQ using the environment variables defined in the ConfigMap/Secret.
+# FIX: Added secretRef for podverse--mq-opaque to resolve Artemis authentication error.
+# KUSTOMIZE UPDATE: Removed explicit image tag. Tag is now managed by kustomization.yaml.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: podverse-api
+  annotations:
+    # ArgoCD Application endpoint annotation for clickable link
+    argocd.argoproj.io/refresh: "hard"
+    argocd.argoproj.io/managed-by: "argocd"
+    argocd.argoproj.io/compare-options: "IgnoreExtraneous"
+    # This is the endpoint that will show up as a clickable link in ArgoCD UI
+    link.argocd.argoproj.io/external-link: https://api.example.com/  # Override in environment overlay
+spec:
+  # replicas: 1
+  selector:
+    matchLabels:
+      app: podverse-api
+  template:
+    metadata:
+    spec:
+      containers:
+      - name: api
+        # UPDATE: Tag removed. Kustomize will inject the version defined in kustomization.yaml
+        image: ghcr.io/podverse/podverse-api/podverse-api
+        command: ["npm", "start"]
+        ports:
+        - containerPort: 1234
+          name: http
+        
+        # Container security hardening
+        securityContext:
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          # Explicitly set UID/GID to satisfy runAsNonRoot when image user is named (node)
+          runAsUser: 1000
+          runAsGroup: 1000
+          runAsNonRoot: true
+
+        # TODO (upstream repo - podverse-api / podverse-helpers):
+        # 1) Build and publish an image that runs as a non-root user.
+        #    - Update the upstream Dockerfile to create a system user/group and switch to it:
+        #      RUN addgroup --system app && adduser --system --ingroup app app
+        #      USER app
+        #    - Ensure all runtime directories are writable by that user (or created during image build).
+        # 2) Make the logging library write to stdout/stderr in container environments.
+        #    - Add an environment-controlled fallback such as `LOG_TO_STDOUT=1` that causes the logger
+        #      to write to process.stdout instead of creating a local 'logs' directory.
+        #    - Example JS fallback (upstream change in podverse-helpers/logger):
+        #      try {
+        #        fs.mkdirSync('logs');
+        #      } catch (e) {
+        #        if (process.env.LOG_TO_STDOUT === '1') {
+        #          // route logs to console.log / console.error
+        #        } else {
+        #          throw e;
+        #        }
+        #      }
+        # 3) Expose/configure an env var in this manifest when upstream supports it, e.g.
+        #      LOG_TO_STDOUT: "1"
+        # 4) Publish a new image tag and update the `image:` reference above. Re-enable `runAsNonRoot`.
+        # 5) Add CI tests in upstream to validate the image runs as non-root and logs to stdout.
+
+
+        # Resource requests and limits
+        resources:
+          requests:
+            memory: "192Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+
+        # Load non-sensitive config
+        envFrom:
+        - configMapRef:
+            name: podverse-api-config
+        # Load API specific secrets (JWT, Mailer)
+        - secretRef:
+            name: podverse-api-opaque
+        # Load DB secrets (DB_READ_PASSWORD, etc.)
+        - secretRef:
+            name: podverse-db-opaque
+        - secretRef:
+            name: podverse-keyvaldb-opaque
+        # Load MQ secrets (MESSAGE_QUEUE_USERNAME, MESSAGE_QUEUE_PASSWORD)
+        - secretRef:
+            name: podverse-mq-opaque
+        - secretRef:
+            name: podverse-api.podcastindex.org-opaque
+        # Mount logs emptyDir to allow local 'logs' directory creation
+        volumeMounts:
+        - name: logs-volume
+          mountPath: /logs
+        - name: logs-volume
+          mountPath: /opt/logs
+
+        # Basic health check
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 1234
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 1234
+          initialDelaySeconds: 30
+          periodSeconds: 20
+      # Mount a writable emptyDir for logs so the container can create a 'logs' directory
+      # The app currently tries to `mkdir 'logs'` relative to its working dir. To avoid
+      # startup failures we mount the same emptyDir at common locations. This is a
+      # temporary workaround — see TODO below to send logs to stdout in upstream.
+      volumes:
+      - name: logs-volume
+        emptyDir: {}

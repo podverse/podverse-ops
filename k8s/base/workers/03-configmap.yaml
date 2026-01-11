@@ -1,0 +1,93 @@
+# Version: 1
+# Non-sensitive configuration for the Workers.
+# Mapped from config/podverse-workers.env.example
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: podverse-workers-config
+  labels:
+    app: podverse-workers
+    environment: alpha
+data:
+  #####
+  ##### General
+  #####
+  NODE_ENV: "development"
+  USER_AGENT: "Podverse/Ser/2/Worker" # change to Alpha, Beta, Production
+  
+  #####
+  ##### Logs
+  #####
+  LOG_LEVEL: "info"
+  LOG_DIR: ""
+  LOG_TIMER: "true"
+  
+  #####
+  ##### Postgres
+  #####
+  DB_HOST: "podverse-db"
+  DB_PORT: "5432"
+  # DB_DATABASE: "postgres"               # in secrets
+  # DB_READ_USERNAME: "read"              # in secrets
+  # DB_READ_WRITE_USERNAME: "read_write"  # in secrets
+  DB_SSL_CONNECTION: "false"
+
+  #####
+  ##### Podcast Index
+  #####
+  PODCAST_INDEX_BASE_URL: "https://api.podcastindex.org/api/1.0"
+  #PODCAST_INDEX_AUTH_KEY: ""   # in secrets
+  #PODCAST_INDEX_SECRET_KEY: "" # in secrets
+
+  #####
+  ##### Message Queue
+  #####  
+  MESSAGE_QUEUE_HOST: "podverse-mq"
+  MESSAGE_QUEUE_PORT: "5672"
+  #MESSAGE_QUEUE_USERNAME: "admin"  # in secrets
+  #MESSAGE_QUEUE_PASSWORD: ""       # in secrets
+
+  #####
+  ##### Google / Firebase
+  #####
+
+  GOOGLE_FIREBASE_NOTIFICATIONS_ENABLED: "" # true or undefined
+  GOOGLE_FIREBASE_ADMIN_JSON_KEY_PATH: "" # Set as absolute path
+
+  #####
+  ##### Website related
+  #####
+  ### NOTE: these are for the *public facing* IP addresses,
+  ### not the internal Docker service network or private IP addresses.
+  ### These are used by some services, e.g. Firebase Cloud Messaging, Unified Push.
+  WEB_PROTOCOL: "https"
+  WEB_DOMAIN: "web.example.com"  # Override in environment kustomization.yaml
+  WEB_ICON_IMAGE_PATH: "/favicon/web-app-manifest-192x192.png"
+
+  #####
+  ##### Default Account Settings
+  #####
+  # These are used as default values when creating new accounts.
+  DEFAULT_ACCOUNT_SETTINGS_LOCALE: "en-US"
+
+  #####
+  ##### Parser
+  #####
+  
+  # IMPORTANT
+  # When true, the parser will add remote items to the message queue for processing.
+  # The parser will recursively follow all remote items, and their remote items, until it runs out.
+  # If a feed is already in the database, it will not add a message for that remote item feed to the queue.
+  PARSER_ADD_REMOTE_ITEMS_TO_MQ: "false"
+
+  #####
+  ##### Web Push (Native)
+  #####
+  # Native browser push notifications using W3C Push API (no third-party dependency)
+  # Generate keys with: npx web-push generate-vapid-keys
+
+  WEBPUSH_ENABLED: "" # true or undefined
+  WEBPUSH_VAPID_PUBLIC_KEY: ""
+  WEBPUSH_VAPID_PRIVATE_KEY: ""
+  WEBPUSH_VAPID_SUBJECT: ""

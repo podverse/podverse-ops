@@ -1,0 +1,6 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: podverse-web
+  annotations:
+    link.argocd.argoproj.io/external-link: https://alpha-podverse.k.podverse.fm/

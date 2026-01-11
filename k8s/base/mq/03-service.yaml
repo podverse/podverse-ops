@@ -1,0 +1,27 @@
+# Version: 1
+# This Service exposes the ActiveMQ Artemis broker.
+# Port 61616 is critical for the provisioning script (Core Protocol).
+# Port 5672 is for the application (AMQP).
+# Port 8161 is for the Web Console.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: podverse-mq
+spec:
+  type: ClusterIP
+  selector:
+    app: podverse-mq
+  ports:
+    - name: amqp
+      port: 5672
+      targetPort: 5672
+      protocol: TCP
+    - name: console
+      port: 8161
+      targetPort: 8161
+      protocol: TCP
+    - name: core
+      port: 61616
+      targetPort: 61616
+      protocol: TCP

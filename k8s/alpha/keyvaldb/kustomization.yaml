@@ -1,0 +1,33 @@
+# Version: 2
+# Filename: kustomization.yaml
+# Description: Bundles resources and acts as the "Variable" manager for images.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# 1. Resources to include in this bundle
+resources:
+  - ../../base/keyvaldb/01-configmap.yaml
+  - ../../base/keyvaldb/02-services.yaml
+  - ../../base/keyvaldb/03-deployments.yaml
+  # Note: We will uncomment the secret line below once you run the generation script
+  # - k8s/secrets/podverse-keyvaldb-secret.enc.yaml
+
+# 2. Namespace to apply to all resources (optional, but good practice)
+namespace: podverse-alpha
+
+labels:
+  - pairs:
+      app: podverse-keyvaldb
+      environment: alpha
+    # This ensures the labels are also applied to the selectors, 
+    # so the Service correctly finds the Pods.
+    includeSelectors: true
+
+# 3. Image Variables
+# Change the 'newTag' here to update versions across all files.
+images:
+  - name: valkey/valkey         # The placeholder used in 02-deployments.yaml
+    newTag: "9.0.1"             # The actual version to deploy
+  - name: redislabs/redisinsight
+    newTag: "latest"

@@ -1,0 +1,119 @@
+# Version: 9
+# The StatefulSet manages the Database Pod.
+# It defines the storage, the image, the configuration arguments, and the startup scripts.
+# UPDATE: Changed mountPath to /var/lib/postgresql per Postgres 18+ recommendations for easier upgrades.
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: podverse-db
+spec:
+  serviceName: "podverse-db"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: podverse-db
+  template:
+    spec:
+      # Pin the database to a specific node using its hostname.
+      # Run 'kubectl get nodes' to see your node names.
+      # REMOVED: We are commenting this out to let K8s pick the node.
+      # This fixes the "0/3 nodes available" scheduling error.
+      # nodeSelector:
+      #   kubernetes.io/hostname: "k3s-server-1"
+
+      containers:
+      - name: postgres
+        # The image below is a placeholder. 
+        # Kustomize will override this based on the kustomization.yaml file.
+        image: postgres:latest
+        ports:
+        - containerPort: 5432
+          name: postgres
+        
+        # We inject the sensitive variables from the Secret we created in Step 2
+        envFrom:
+        - secretRef:
+            name: podverse-db-opaque
+        
+        # We translate the 'command' flags from docker-compose into 'args'.
+        # Note: We do not set 'max_worker_processes' or 'max_parallel_workers' too high
+        # as this is a shared home lab environment, but we kept your values here.
+        args:
+          - "-c"
+          - "max_connections=100"
+          - "-c"
+          - "superuser_reserved_connections=5"
+          - "-c"
+          - "shared_buffers=256MB"
+          - "-c"
+          - "effective_cache_size=2GB"
+          - "-c"
+          - "maintenance_work_mem=256MB"
+          - "-c"
+          - "checkpoint_completion_target=0.7"
+          - "-c"
+          - "wal_buffers=8MB"
+          - "-c"
+          - "default_statistics_target=100"
+          - "-c"
+          - "random_page_cost=1.1"
+          - "-c"
+          - "effective_io_concurrency=200"
+          - "-c"
+          - "work_mem=5242kB"
+          - "-c"
+          - "min_wal_size=256MB"
+          - "-c"
+          - "max_wal_size=1GB"
+          - "-c"
+          - "max_worker_processes=2"
+          - "-c"
+          - "max_parallel_workers_per_gather=2"
+          - "-c"
+          - "max_parallel_workers=2"
+
+        volumeMounts:
+        # The Persistent Storage for the actual DB data
+        # We mount to the parent dir /var/lib/postgresql so the DB creates a 'data' subdir.
+        # This prevents upgrade issues later.
+        - name: db-data
+          mountPath: /var/lib/postgresql
+        
+        # We mount the scripts from the ConfigMap into the special directory
+        # that the official Postgres image checks on startup.
+        # This AUTOMATICALLY runs your create-user script and init-database SQL
+        # when the database is first created.
+        - name: init-scripts
+          mountPath: /docker-entrypoint-initdb.d
+
+        # Scratch space for the Postgres socket/lock files so it works with a read-only root FS
+        - name: run-dir
+          mountPath: /var/run/postgresql
+
+        securityContext:
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          runAsUser: 999
+          runAsGroup: 999
+          runAsNonRoot: true
+      
+      volumes:
+      - name: init-scripts
+        configMap:
+          name: podverse-db-init-scripts
+      - name: run-dir
+        emptyDir: {}
+
+  # This section requests the physical storage from K3s (Local Path Provisioner).
+  volumeClaimTemplates:
+  - metadata:
+      name: db-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      # 'local-path' is the default storage class in K3s on NixOS/Proxmox usually.
+      # If you haven't configured a specific one, this will store data on the node's disk.
+      storageClassName: local-path
+      resources:
+        requests:
+          storage: 10Gi # Adjust size as needed for your home lab

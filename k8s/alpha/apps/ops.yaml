@@ -1,0 +1,24 @@
+# Version: 2
+# Application for Ops (Maintenance Jobs)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: podverse-ops
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  project: podverse
+  source:
+    repoURL: https://github.com/suorcd/podverse-ops.git
+    targetRevision: feature/k3s01
+    path: k8s/alpha/ops
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: podverse-alpha
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

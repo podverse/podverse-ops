@@ -1,0 +1,56 @@
+# Version: 2
+# The StatefulSet for ActiveMQ Artemis.
+# We explicitly set the environment variables for the admin user/password.
+# We verify readiness by checking if the console port is responding.
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: podverse-mq
+spec:
+  serviceName: "podverse-mq"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: podverse-mq
+  template:
+    metadata:
+      labels:
+        app: podverse-mq
+    spec:
+      containers:
+      - name: artemis
+        # PLACEHOLDER: Kustomize will override this based on the kustomization.yaml file.
+        image: apache/activemq-artemis
+        ports:
+        - containerPort: 5672
+          name: amqp
+        - containerPort: 8161
+          name: console
+        - containerPort: 61616
+          name: core
+        
+        envFrom:
+        - secretRef:
+            name: podverse-mq-opaque
+
+        # Basic readiness probe to check if the broker is up
+        readinessProbe:
+          tcpSocket:
+            port: 8161
+          initialDelaySeconds: 10
+          periodSeconds: 5
+
+        volumeMounts:
+        - name: mq-data
+          mountPath: /var/lib/activemq-artemis
+
+        securityContext:
+          runAsUser: 1001
+          runAsGroup: 1001
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+
+      volumes:
+      - name: mq-data
+        emptyDir: {}

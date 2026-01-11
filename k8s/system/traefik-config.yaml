@@ -1,0 +1,20 @@
+# Version: 2
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  failurePolicy: reinstall
+  valuesContent: |-
+    # Enable HTTP/3 on the 'websecure' entrypoint
+    ports:
+      websecure:
+        port: 8443
+        # In Traefik v3 chart, 'expose' is a map, not a boolean
+        expose:
+          default: true
+        exposedPort: 443
+        protocol: TCP
+        http3:
+          enabled: true

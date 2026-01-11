@@ -1,0 +1,59 @@
+# Version: 5
+# This Ingress listens on HTTPS (websecure).
+# It uses Cert-Manager (LetsEncrypt Prod) to automatically provision certificates.
+# UPDATE: Marked TLS Options as TODO for developer review.
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: podverse-ingress
+  namespace: podverse-alpha
+  annotations:
+    # 1. Switch Entrypoint to HTTPS
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    
+    # 2. Enable TLS (This activates HTTP/2 automatically)
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    
+    # 3. Apply our Advanced TLS Options (from tls-options.yaml)
+    # TODO: REVIEW WITH DEVELOPER.
+    # We need to confirm if 'podverse-secure-tls' is the correct name and if the TLSOption CRD is deployed.
+    # Format: <resource-name>@<provider namespace>
+    # traefik.ingress.kubernetes.io/router.tls.options: podverse-secure-tls@kubernetescrd
+    
+    # 4. Cert-Manager: Request a certificate from your ClusterIssuer
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+
+spec:
+  # Cert-Manager will automatically create this Secret for you.
+  # You do NOT need to create it manually.
+  tls:
+  - hosts:
+    - api.example.com
+    - web.example.com
+    secretName: podverse-tls-cert
+
+  rules:
+  # Rule 1: API Subdomain
+  - host: api.example.com  # Override in environment overlay
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: podverse-api
+            port:
+              number: 1234
+
+  # Rule 2: Web (Frontend) Domain
+  - host: web.example.com  # Override in environment overlay
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: podverse-web
+            port:
+              number: 3000

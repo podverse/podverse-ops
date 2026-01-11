@@ -1,0 +1,30 @@
+# Version: 3
+# Child Application: Common Resources
+# This application manages the namespace, ingress, and shared TLS options.
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: podverse-alpha-common
+  namespace: argocd
+spec:
+  project: podverse
+  source:
+    # This matches the repoURL used in your Root Application
+    repoURL: https://github.com/suorcd/podverse-ops.git
+    targetRevision: feature/k3s01
+    
+    # Path to the actual manifests for namespace and ingress
+    path: k8s/alpha/common
+  
+  destination:
+    server: https://kubernetes.default.svc
+    # Resources within this app will be deployed to the podverse-alpha namespace
+    namespace: podverse-alpha
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

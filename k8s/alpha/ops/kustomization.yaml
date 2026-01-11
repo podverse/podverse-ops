@@ -1,0 +1,24 @@
+# Version: 1
+# Filename: kustomization.yaml
+# Description: Bundles the ops CronJobs with shared labels and image tagging control.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base/ops/db-drop-job.yaml
+  - ../../base/ops/db-verify-account-job.yaml
+
+namespace: podverse-alpha
+
+labels:
+  - pairs:
+      app: podverse-ops
+      environment: alpha
+    # This ensures the labels are also applied to the selectors, 
+    # so the Service correctly finds the Pods.
+    includeSelectors: true
+
+images:
+  - name: postgres
+    newTag: "18.1"

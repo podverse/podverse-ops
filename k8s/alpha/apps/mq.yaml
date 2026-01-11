@@ -1,0 +1,29 @@
+# Version: 3
+# Child Application: Message Queue (RabbitMQ)
+# This application manages the MQ broker and the automated queue provisioning.
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: podverse-alpha-mq
+  namespace: argocd
+spec:
+  project: podverse
+  source:
+    # Points to your git repository
+    repoURL: https://github.com/suorcd/podverse-ops.git
+    targetRevision: feature/k3s01
+    
+    # Path to the message queue manifests (StatefulSet, Service, Provisioning Job)
+    path: k8s/alpha/mq
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: podverse-alpha
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

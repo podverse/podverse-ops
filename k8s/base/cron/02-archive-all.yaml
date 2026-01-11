@@ -1,0 +1,57 @@
+# File Version: 4
+# Source: Jenkinsfile.aux_workers_archive_all
+# Schedule: 6 AM and 6 PM daily
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: worker-archive-all
+spec:
+  schedule: "0 6,18 * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: worker
+            image: ghcr.io/podverse/podverse-workers/podverse-workers
+            command: ["npm", "run", "archive_all"]
+            securityContext:
+              runAsUser: 1000
+              runAsGroup: 1000
+              runAsNonRoot: true
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+            resources:
+              requests:
+                memory: "512Mi"
+                cpu: "100m"
+              limits:
+                memory: "1Gi"
+                cpu: "500m"
+            envFrom:
+            - configMapRef:
+                name: podverse-workers-config
+            - secretRef:
+                name: podverse-db-opaque
+            - secretRef:
+                name: podverse-mq-opaque
+            - secretRef:
+                name: podverse-api.podcastindex.org-opaque
+            volumeMounts:
+            - name: logs-volume
+              mountPath: /logs
+            - name: logs-volume
+              mountPath: /opt/logs
+          #   volumeMounts:
+          #   - name: firebase-config
+          #     mountPath: /opt/config/firebase-key.json
+          #     subPath: firebase-key.json
+          #     readOnly: true
+          volumes:
+          - name: logs-volume
+            emptyDir: {}
+          # - name: firebase-config
+          #   secret:
+          #     secretName: podverse-workers-firebase-opaque
+          restartPolicy: OnFailure

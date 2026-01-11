@@ -1,0 +1,35 @@
+# Version: 4
+# Filename: kustomization.yaml
+# Description: Bundles resources and acts as the "Variable" manager for the Database.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# 1. Resources to include
+resources:
+  - ../../base/db/01-configmap.yaml
+  - ../../base/db/03-service.yaml
+  - ../../base/db/04-statefulset.yaml
+
+# 2. Namespace
+namespace: podverse-alpha
+
+# 3. Common Labels (Updated to modern 'labels' syntax)
+# This replaces the deprecated 'commonLabels' field.
+labels:
+  - pairs:
+      app: podverse-db
+      environment: alpha
+    # This ensures the labels are applied to selectors in Services/Deployments too, 
+    # ensuring they connect correctly.
+    includeSelectors: true
+
+# 4. Image Variables
+images:
+  - name: postgres
+    newTag: "18.1"
+
+# This patch applies the Tailscale configuration ONLY for this environment
+patches:
+  # Temporarily disabled to verify core DB deployment first
+  # - path: tailscale-patch.yaml

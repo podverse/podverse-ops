@@ -1,0 +1,29 @@
+# Version: 3
+# Child Application: Workers
+# This application manages the various background worker processes for Podverse.
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: podverse-alpha-workers
+  namespace: argocd
+spec:
+  project: podverse
+  source:
+    # Points to your git repository
+    repoURL: https://github.com/suorcd/podverse-ops.git
+    targetRevision: feature/k3s01
+
+    # Path to the Workers manifests (Deployments, ConfigMap, Kustomization)
+    path: k8s/alpha/workers
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: podverse-alpha
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

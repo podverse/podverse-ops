@@ -1,0 +1,85 @@
+# Source: Jenkinsfile.aux_workers_mq_rss_run_live_item_listener
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-listener-live
+spec:
+  selector:
+    matchLabels:
+      app: worker-listener-live
+  template:
+    metadata:
+      labels:
+        app: worker-listener-live
+    spec:
+      containers:
+      - name: worker
+        image: ghcr.io/podverse/podverse-workers/podverse-workers
+        command: ["npm", "run", "mq_rss_run_live_item_listener"]
+        # TODO: The worker process currently needs to run as root. Address
+        # this in the podverse-worker repo so images can run without root.
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "512Mi"
+          limits:
+            cpu: "1000m"
+            memory: "2Gi"
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - pidof node || exit 1
+          initialDelaySeconds: 30
+          periodSeconds: 20
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - pidof node || exit 1
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        envFrom:
+        - configMapRef:
+            name: podverse-workers-config
+        - secretRef:
+            name: podverse-db-opaque
+        - secretRef:
+            name: podverse-mq-opaque
+        - secretRef:
+            name: podverse-api.podcastindex.org-opaque
+        # TODO: The application creates a local `logs` directory and fails
+        # if it does not exist. Prefer logs to stdout so K3s/journald
+        # pick them up. Short-term workaround: mount an `emptyDir` at
+        # /opt/logs or ensure the image creates the directory at startup.
+        volumeMounts:
+        - name: logs-volume
+          mountPath: /logs
+        - name: logs-volume
+          mountPath: /opt/logs
+      #   volumeMounts:
+      #   - name: firebase-config
+      #     mountPath: /opt/config/firebase-key.json
+      #     subPath: firebase-key.json
+      #     readOnly: true
+      volumes:
+      - name: logs-volume
+        emptyDir: {}
+      # - name: firebase-config
+      #   secret:
+      #     secretName: podverse-workers-firebase-opaque
