@@ -44,3 +44,5 @@ config/segment/segment-key.txt
 logs/
 
 .direnv
+
+secrets
