@@ -18,7 +18,7 @@ fi
 
 # Generate secure random password
 generate_password() {
-    pwgen -s "$PASSWORD_LENGTH" 1
+    uuidgen
 }
 
 echo "Running create_api_secret.sh"

@@ -26,6 +26,7 @@
             sops
             yamllint
             yq
+            libuuid
           ];
 
           shellHook = ''
