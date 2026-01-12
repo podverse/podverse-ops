@@ -39,6 +39,9 @@ data:
   PODCAST_INDEX_BASE_URL: "https://api.podcastindex.org/api/1.0"
   #PODCAST_INDEX_AUTH_KEY: ""   # in secrets
   #PODCAST_INDEX_SECRET_KEY: "" # in secrets
+  # Optional: Delay in milliseconds between Podcast Index API requests in the parser's remote item handling
+  # Default is 200ms if not specified. Set to 0 to disable.
+  PODCAST_INDEX_API_RATE_LIMIT_DELAY: "200"
 
   #####
   ##### Message Queue
