@@ -7,8 +7,15 @@
     sops-nix.url = "github:Mic92/sops-nix";
   };
 
-  outputs = { self, nixpkgs, flake-utils, sops-nix }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+      sops-nix,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
       in
@@ -22,11 +29,12 @@
             kompose
             kubectl
             kubernetes-helm
+            libuuid
             moreutils
+            pwgen
             sops
             yamllint
             yq
-            libuuid
           ];
 
           shellHook = ''
