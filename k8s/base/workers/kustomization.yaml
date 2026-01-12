@@ -4,7 +4,8 @@ kind: Kustomization
 resources:
   - 03-configmap.yaml
   - consumer-dlq.yaml
-  - 04-listener-live.yaml
-  - 05-parser-live.yaml
-  - 06-parser-normal.yaml
-  - 07-parser-ondemand.yaml
+  - listener-live.yaml
+  - parser-live.yaml
+  - parser-normal.yaml
+  - parser-ondemand.yaml
+
