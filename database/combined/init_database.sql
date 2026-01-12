@@ -1443,7 +1443,8 @@ CREATE TABLE account_up_device (
     up_auth_key varchar_long,
     locale varchar_locale NOT NULL,
     created_at server_time_with_default NOT NULL,
-    updated_at server_time_with_default NOT NULL
+    updated_at server_time_with_default NOT NULL,
+    UNIQUE (account_id)
 );
 
 CREATE TRIGGER set_updated_at_account_up_device
@@ -1832,4 +1833,10 @@ CREATE TABLE account_settings_notification_type (
     type notification_channel_type_options NOT NULL,
     CONSTRAINT account_settings_notification_type_notification_id_type_unique UNIQUE (account_settings_notification_id, type)
 );
+
+-- 0013
+
+-- UNIQUE constraint on account_id is now integrated into the CREATE TABLE statement in migration 0007
+-- This migration is kept for historical reference but is no longer needed for new installations
+-- For existing databases, the constraint should be added manually if not already present
 

@@ -25,7 +25,8 @@ CREATE TABLE account_up_device (
     up_auth_key varchar_long,
     locale varchar_locale NOT NULL,
     created_at server_time_with_default NOT NULL,
-    updated_at server_time_with_default NOT NULL
+    updated_at server_time_with_default NOT NULL,
+    UNIQUE (account_id)
 );
 
 CREATE TRIGGER set_updated_at_account_up_device
