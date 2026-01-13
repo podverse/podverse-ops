@@ -105,10 +105,10 @@ data:
     - The `id` column is a SERIAL column that is used as the primary key for every table.
 
     - The `id_text` column is only intended for tables where the data is available as urls.
-    For example, https://podverse.fm/podcast/abc123def456, the `id_text` column would be `abc123def456`.
+      For example, https://podverse.fm/podcast/abc123def456, the `id_text` column would be `abc123def456`.
 
     - The `slug` column is not required, but functions as an alternative for `id_text`.
-    For example, https://podverse.fm/podcast/podcasting-20 would have a `slug` column with the value `podcasting-20`.
+      For example, https://podverse.fm/podcast/podcasting-20 would have a `slug` column with the value `podcasting-20`.
 
     - The `podcast_index_id` ensures that our database only contains feed data that is available in the Podcast Index API.
 
@@ -1495,7 +1495,8 @@ data:
         up_auth_key varchar_long,
         locale varchar_locale NOT NULL,
         created_at server_time_with_default NOT NULL,
-        updated_at server_time_with_default NOT NULL
+        updated_at server_time_with_default NOT NULL,
+        UNIQUE (account_id)
     );
 
     CREATE TRIGGER set_updated_at_account_up_device
@@ -1884,3 +1885,9 @@ data:
         type notification_channel_type_options NOT NULL,
         CONSTRAINT account_settings_notification_type_notification_id_type_unique UNIQUE (account_settings_notification_id, type)
     );
+
+    -- 0013
+
+    -- UNIQUE constraint on account_id is now integrated into the CREATE TABLE statement in migration 0007
+    -- This migration is kept for historical reference but is no longer needed for new installations
+    -- For existing databases, the constraint should be added manually if not already present
