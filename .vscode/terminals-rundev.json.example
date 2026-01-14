@@ -84,6 +84,12 @@
       "open": true
     },
     {
+      "name": "Podverse Management",
+      "description": "podverse-management",
+      "cwd": "~/repos/podverse-management",
+      "open": true
+    },
+    {
       "name": "Podverse SSH",
       "description": "Podverse SSH",
       "cwd": "~/repos/podverse-ops",
