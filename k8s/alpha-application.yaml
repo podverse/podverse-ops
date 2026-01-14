@@ -13,10 +13,8 @@ spec:
   # The project within ArgoCD for grouping apps
   project: podverse
   source:
-    # Change this URL to your local Gitea instance (e.g., http://gitea.ser.ink/suorcd/podverse-ops.git) 
-    # when you migrate the repository.
-    repoURL: https://github.com/suorcd/podverse-ops.git
-    targetRevision: feature/k3s01
+    repoURL: https://github.com/podverse/podverse-ops.git
+    targetRevision: feature/k3s02
     
     # This path points to where the "Child" App manifests are stored
     path: k8s/alpha/apps

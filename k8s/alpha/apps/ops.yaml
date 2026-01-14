@@ -10,8 +10,8 @@ metadata:
 spec:
   project: podverse
   source:
-    repoURL: https://github.com/suorcd/podverse-ops.git
-    targetRevision: feature/k3s01
+    repoURL: https://github.com/podverse/podverse-ops.git
+    targetRevision: feature/k3s02
     path: k8s/alpha/ops
   destination:
     server: https://kubernetes.default.svc

@@ -11,8 +11,8 @@ spec:
   project: podverse
   source:
     # Points to your git repository
-    repoURL: https://github.com/suorcd/podverse-ops.git
-    targetRevision: feature/k3s01
+    repoURL: https://github.com/podverse/podverse-ops.git
+    targetRevision: feature/k3s02
     
     # Path to the message queue manifests (StatefulSet, Service, Provisioning Job)
     path: k8s/alpha/mq

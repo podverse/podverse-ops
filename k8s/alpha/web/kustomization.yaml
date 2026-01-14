@@ -21,7 +21,7 @@ labels:
     includeSelectors: true
 
 images:
-  - name: ghcr.io/suorcd/podverse-web-deploy
+  - name: ghcr.io/podverse/podverse-web-deploy
     newTag: "5.1.23-alpha.0-20"
 
 patches:

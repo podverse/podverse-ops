@@ -11,8 +11,8 @@ spec:
   project: podverse
   source:
     # This matches the repoURL used in your Root Application
-    repoURL: https://github.com/suorcd/podverse-ops.git
-    targetRevision: feature/k3s01
+    repoURL: https://github.com/podverse/podverse-ops.git
+    targetRevision: feature/k3s02
     
     # Path to the actual manifests for namespace and ingress
     path: k8s/alpha/common
