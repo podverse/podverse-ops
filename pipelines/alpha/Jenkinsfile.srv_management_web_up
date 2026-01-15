@@ -1,0 +1,78 @@
+pipeline {
+    // Maps to <assignedNode>pv-alpha-srv</assignedNode>
+    agent {
+        label 'pv-alpha-srv'
+    }
+
+    // Maps to <concurrentBuild>false</concurrentBuild>
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    parameters {
+        string(
+            name: 'IMAGE_VERSION',
+            defaultValue: 'alpha',
+            description: 'Specify the podverse_management alpha docker image version.'
+        )
+
+        choice(
+            name: 'GHCR_IMAGE_PATH',
+            choices: ['podverse/podverse-management/podverse-management-deploy'],
+            description: 'The path to the image hosted in GHCR.'
+        )
+
+        credentials(
+            name: 'GHCR_REGISTRY_TOKEN',
+            defaultValue: 'ghcr_pat_read_only_packages',
+            credentialType: 'SecretText',
+            required: true,
+            description: 'The GHCR PAT'
+        )
+    }
+
+    stages {
+        stage('Prepare Configuration') {
+            steps {
+                script {
+                    // Maps to 'pushd /opt/podverse-ops/docker-compose/alpha/management-web'
+                    dir('/opt/podverse-ops/docker-compose/alpha/management-web') {
+                        // Maps to the templating logic.
+                        // We use triple single quotes (''') so that shell variables (like $WEB_VERSION)
+                        // are evaluated by bash, not Groovy. Parameters (like $IMAGE_VERSION) 
+                        // are automatically injected as environment variables.
+                        def webVersion
+                        if (params.IMAGE_VERSION == 'alpha') {
+                                webVersion = sh(script: '/opt/podverse-ops/scripts/ghcr/getLatestAlphaTag.sh', returnStdout: true).trim()
+                                if (!webVersion) {
+                                        error('ERROR: No alpha tag found from getLatestAlphaTag.sh')
+                                }
+                        } else {
+                                webVersion = params.IMAGE_VERSION
+                        }
+
+                        echo "Using MANAGEMENT_WEB_VERSION=${webVersion}"
+
+                        sh '''#!/bin/bash
+                            set -euo pipefail
+                            sed -e "s|REPLACE_WITH_MANAGEMENT_WEB_VERSION|''' + webVersion + '''|g" docker-compose.yml.template > docker-compose.yml
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Start Alpha Management Web') {
+            steps {
+                script {
+                    // Maps to 'pushd /opt/podverse-ops'
+                    dir('/opt/podverse-ops') {
+                        // Maps to 'make alpha_management_web_up'
+                        sh 'make alpha_management_web_up'
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,22 @@
+pipeline {
+    agent {
+        label 'pv-alpha-srv'
+    }
+
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    stages {
+        stage('Stop Alpha Management API') {
+            steps {
+                script {
+                    dir('/opt/podverse-ops') {
+                        sh 'make alpha_management_api_down'
+                    }
+                }
+            }
+        }
+    }
+}
