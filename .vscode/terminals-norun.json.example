@@ -80,9 +80,9 @@
       "open": true
     },
     {
-      "name": "Podverse Management",
-      "description": "podverse-management",
-      "cwd": "~/repos/podverse-management",
+      "name": "Podverse Management Web",
+      "description": "podverse-management-web",
+      "cwd": "~/repos/podverse-management-web",
       "open": true
     },
     {

@@ -31,7 +31,7 @@ REPO_NAMES=(
   "podverse-workers"
   "podverse-qa"
   "podverse-management-api"
-  "podverse-management"
+  "podverse-management-web"
 )
 
 # Build full repo paths and check which repos exist

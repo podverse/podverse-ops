@@ -185,5 +185,5 @@ alpha_management_web_down:
 		echo "docker-compose.yml not found, stopping container directly..."; \
 		docker stop podverse_alpha_management_web 2>/dev/null || true; \
 		docker rm podverse_alpha_management_web 2>/dev/null || true; \
-		docker rmi $$(docker images --filter=reference='ghcr.io/podverse/podverse-management/*' -q) 2>/dev/null || true; \
+		docker rmi $$(docker images --filter=reference='ghcr.io/podverse/podverse-management-web/*' -q) 2>/dev/null || true; \
 	fi

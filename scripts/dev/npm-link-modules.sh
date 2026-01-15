@@ -35,7 +35,7 @@ REPOS=(
   "podverse-web"
   "podverse-qa"
   "podverse-management-api"
-  "podverse-management"
+  "podverse-management-web"
 )
 
 # List all globally linked packages
@@ -166,8 +166,8 @@ cd "$REPOS_BASE_DIR/podverse-management-api"
 nvm use
 npm link podverse-helpers podverse-orm
 
-echo "Linking podverse-management dependencies..."
-cd "$REPOS_BASE_DIR/podverse-management"
+echo "Linking podverse-management-web dependencies..."
+cd "$REPOS_BASE_DIR/podverse-management-web"
 nvm use
 npm link podverse-helpers
 
@@ -233,7 +233,7 @@ cd "$REPOS_BASE_DIR/podverse-management-api"
 nvm use
 npm run build:dev
 
-echo "Building podverse-management..."
-cd "$REPOS_BASE_DIR/podverse-management"
+echo "Building podverse-management-web..."
+cd "$REPOS_BASE_DIR/podverse-management-web"
 nvm use
 npm run build

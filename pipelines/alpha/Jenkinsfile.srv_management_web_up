@@ -14,12 +14,12 @@ pipeline {
         string(
             name: 'IMAGE_VERSION',
             defaultValue: 'alpha',
-            description: 'Specify the podverse_management alpha docker image version.'
+            description: 'Specify the podverse_management_web alpha docker image version.'
         )
 
         choice(
             name: 'GHCR_IMAGE_PATH',
-            choices: ['podverse/podverse-management/podverse-management-deploy'],
+            choices: ['podverse/podverse-management-web/podverse-management-web-deploy'],
             description: 'The path to the image hosted in GHCR.'
         )
 

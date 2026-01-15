@@ -43,7 +43,7 @@ REPOS=(
   "podverse-web"
   "podverse-workers"
   "podverse-management-api"
-  "podverse-management"
+  "podverse-management-web"
 )
 
 # Version passed as argument or empty
