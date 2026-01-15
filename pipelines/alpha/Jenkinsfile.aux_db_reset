@@ -11,15 +11,13 @@ pipeline {
     }
 
     stages {
-        stage('Reset Alpha DB Schema') {
+        stage('DB Reset (aux db)') {
             steps {
                 script {
                     // Maps to 'pushd /opt/podverse-ops'
                     dir('/opt/podverse-ops') {
-                        // Maps to the docker exec command.
-                        // We use single quotes for the sh step so the double quotes 
-                        // inside the command are preserved for bash.
-                        sh 'docker exec podverse_alpha_db psql -U postgres -d postgres -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"'
+                        // Maps to 'make alpha_db_reset'
+                        sh 'make alpha_db_reset'
                     }
                 }
             }

@@ -44,6 +44,11 @@ alpha_db_up: config/podverse-alpha-db.env
 alpha_db_down:
 	docker compose -f docker-compose/alpha/db/docker-compose.yml down --remove-orphans --rmi all
 
+.PHONY: alpha_db_reset
+alpha_db_reset:
+	@echo "Dropping and recreating public schema..."
+	docker exec -i podverse_alpha_db psql -U postgres -d postgres -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO postgres; GRANT ALL ON SCHEMA public TO public;"
+
 .PHONY: alpha_db_init
 alpha_db_init: config/podverse-alpha-db.env
 	@echo "Creating read/read_write roles (idempotent)..."
@@ -138,6 +143,11 @@ alpha_management_db_up: config/podverse-alpha-management-db.env
 .PHONY: alpha_management_db_down
 alpha_management_db_down:
 	docker compose -f docker-compose/alpha/management-db/docker-compose.yml down --remove-orphans --rmi all
+
+.PHONY: alpha_management_db_reset
+alpha_management_db_reset:
+	@echo "Dropping and recreating public schema..."
+	docker exec -i podverse_alpha_management_db psql -U postgres -d postgres -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO postgres; GRANT ALL ON SCHEMA public TO public;"
 
 .PHONY: alpha_management_db_init
 alpha_management_db_init: config/podverse-alpha-management-db.env

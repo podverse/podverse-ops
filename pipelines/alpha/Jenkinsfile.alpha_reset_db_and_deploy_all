@@ -24,9 +24,15 @@ pipeline {
 
     stages {
         // Database reset steps
-        stage('1. Drop Everything (aux db)') {
+        stage('1. DB Reset (aux db)') {
             steps {
-                build job: 'pipelines/alpha/aux_db_drop_everything', wait: true, propagate: true
+                build job: 'pipelines/alpha/aux_db_reset', wait: true, propagate: true
+            }
+        }
+
+        stage('1a. DB Reset (management db)') {
+            steps {
+                build job: 'pipelines/alpha/aux_management_db_reset', wait: true, propagate: true
             }
         }
 
