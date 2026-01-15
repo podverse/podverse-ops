@@ -1,0 +1,45 @@
+networks:
+  podverse_alpha_network:
+    external: true
+
+volumes:
+  podverse_alpha_management_db_data:
+
+services:
+  podverse_alpha_management_db:
+    image: postgres:18.1
+    container_name: podverse_alpha_management_db
+    env_file:
+      - ../../../config/podverse-alpha-management-db.env
+    ports:
+      - '5999:5432'
+    networks:
+      - podverse_alpha_network
+    volumes:
+      - podverse_alpha_management_db_data:/var/lib/postgresql/data
+      - ../../../database/management/combined/init_management_database.sql:/opt/database/management/init_management_database.sql
+      - ../../../database/management/init-scripts/01-create-users.sh:/opt/database/management/init-scripts/01-create-users.sh
+      - ../../../database/management/seed-scripts:/opt/database/management/seed-scripts
+    command: >
+      postgres -c max_connections=50
+               -c shared_buffers=128MB
+               -c effective_cache_size=512MB
+               -c maintenance_work_mem=128MB
+               -c checkpoint_completion_target=0.7
+               -c wal_buffers=4MB
+               -c default_statistics_target=100
+               -c random_page_cost=1.1
+               -c effective_io_concurrency=200
+               -c work_mem=2621kB
+               -c min_wal_size=256MB
+               -c max_wal_size=512MB
+               -c max_worker_processes=2
+               -c max_parallel_workers_per_gather=1
+               -c max_parallel_workers=2
+    restart: unless-stopped
+    shm_size: 256mb
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'

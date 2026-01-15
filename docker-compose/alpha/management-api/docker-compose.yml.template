@@ -1,0 +1,22 @@
+networks:
+  podverse_alpha_network:
+    external: true
+
+services:
+
+  podverse_alpha_management_api:
+    image: ghcr.io/podverse/podverse-management-api/podverse-management-api:REPLACE_WITH_MANAGEMENT_API_VERSION
+    container_name: podverse_alpha_management_api
+    env_file:
+      - ../../../config/podverse-alpha-management-api.env
+    networks:
+      - podverse_alpha_network
+    ports:
+      - 127.0.0.1:1999:1999
+    command: npm start
+    restart: unless-stopped
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'
