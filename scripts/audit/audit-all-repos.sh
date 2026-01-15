@@ -29,8 +29,8 @@ REPO_NAMES=(
   "podverse-api"
   "podverse-web"
   "podverse-workers"
-  "podverse-qa",
-  "podverse-management-api",
+  "podverse-qa"
+  "podverse-management-api"
   "podverse-management"
 )
 

@@ -41,8 +41,8 @@ REPOS=(
   "podverse-mq"
   "podverse-api"
   "podverse-web"
-  "podverse-workers",
-  "podverse-management-api",
+  "podverse-workers"
+  "podverse-management-api"
   "podverse-management"
 )
 
