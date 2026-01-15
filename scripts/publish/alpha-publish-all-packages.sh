@@ -34,7 +34,9 @@ REPOS=(
   "podverse-mq"
   "podverse-api"
   "podverse-web"
-  "podverse-workers"
+  "podverse-workers",
+  "podverse-management-api",
+  "podverse-management"
 )
 
 # GitHub org
