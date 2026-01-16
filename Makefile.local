@@ -132,19 +132,25 @@ local_management_db_reset:
 
 .PHONY: local_management_db_init
 local_management_db_init: config/podverse-local-management-db.env
+	@echo "Validating required environment variables..."
+	@set -a; . config/podverse-local-management-db.env; set +a; \
+	: "$${SUPERUSER_EMAIL:?Missing SUPERUSER_EMAIL}" \
+	: "$${SUPERUSER_PASSWORD:?Missing SUPERUSER_PASSWORD}"
 	@echo "Creating read/read_write roles (idempotent)..."
 	@set -a; . config/podverse-local-management-db.env; set +a; \
 	docker compose -f docker-compose/local/management-db/docker-compose.yml exec podverse_local_management_db bash -c "POSTGRES_READ_PASSWORD=$$POSTGRES_READ_PASSWORD POSTGRES_READ_WRITE_PASSWORD=$$POSTGRES_READ_WRITE_PASSWORD /opt/database/management/init-scripts/01-create-users.sh"
 	docker exec -i podverse_local_management_db psql -U postgres -d postgres -f /opt/database/management/init_management_database.sql
+	@echo "Creating superuser account..."
+	@set -a; . config/podverse-local-management-db.env; set +a; \
+	./scripts/management/create-superuser.sh
 
 .PHONY: local_management_db_seed_dev
 local_management_db_seed_dev:
-	@echo "Seeding local dev admin account (admin@podverse.fm / Test!1Aa)..."
-	docker exec -i podverse_local_management_db psql -U postgres -d postgres -f /opt/database/management/seed-scripts/local-dev-admin-account.sql
+	@echo "Note: Seed script removed - superuser is created during init"
 
 .PHONY: local_management_db_reinit
-local_management_db_reinit: local_management_db_reset local_management_db_init local_management_db_seed_dev
-	@echo "Management database re-initialized with local dev admin account"
+local_management_db_reinit: local_management_db_reset local_management_db_init
+	@echo "Management database re-initialized with superuser account"
 
 # Management API
 .PHONY: local_management_api_up

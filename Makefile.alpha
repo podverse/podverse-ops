@@ -151,10 +151,17 @@ alpha_management_db_reset:
 
 .PHONY: alpha_management_db_init
 alpha_management_db_init: config/podverse-alpha-management-db.env
+	@echo "Validating required environment variables..."
+	@set -a; . config/podverse-alpha-management-db.env; set +a; \
+	: "$${SUPERUSER_EMAIL:?Missing SUPERUSER_EMAIL}" \
+	: "$${SUPERUSER_PASSWORD:?Missing SUPERUSER_PASSWORD}"
 	@echo "Creating read/read_write roles (idempotent)..."
 	@set -a; . config/podverse-alpha-management-db.env; set +a; \
 	docker compose -f docker-compose/alpha/management-db/docker-compose.yml exec podverse_alpha_management_db bash -c "POSTGRES_READ_PASSWORD=$$POSTGRES_READ_PASSWORD POSTGRES_READ_WRITE_PASSWORD=$$POSTGRES_READ_WRITE_PASSWORD /opt/database/management/init-scripts/01-create-users.sh"
 	docker exec -i podverse_alpha_management_db psql -U postgres -d postgres -f /opt/database/management/init_management_database.sql
+	@echo "Creating superuser account..."
+	@set -a; . config/podverse-alpha-management-db.env; set +a; \
+	./scripts/management/create-superuser.sh
 
 # Management API
 .PHONY: alpha_management_api_up
