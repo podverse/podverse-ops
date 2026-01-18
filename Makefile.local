@@ -169,3 +169,60 @@ local_management_web_up:
 .PHONY: local_management_web_down
 local_management_web_down:
 	docker compose -f docker-compose/local/management-web/docker-compose.yml down --remove-orphans --rmi all
+
+# ==========================================
+# DEV SETUP - Destroy and rebuild all containers for local development
+# ==========================================
+
+.PHONY: local_destroy_and_rebuild_all
+local_destroy_and_rebuild_all:
+	@echo "========================================="
+	@echo "Destroying all local containers, images, and volumes..."
+	@echo "========================================="
+	@echo ""
+	@echo "Stopping and removing containers with volumes..."
+	-docker compose -f docker-compose/local/keyvaldb/docker-compose.yml down --volumes --rmi all --remove-orphans
+	-docker compose -f docker-compose/local/db/docker-compose.yml down --volumes --rmi all --remove-orphans
+	-docker compose -f docker-compose/local/management-db/docker-compose.yml down --volumes --rmi all --remove-orphans
+	-docker compose -f docker-compose/local/mq/docker-compose.yml down --volumes --rmi all --remove-orphans
+	@echo ""
+	@echo "Removing volumes explicitly (if they exist)..."
+	-docker volume rm podverse_local_keyvaldb_data 2>/dev/null || true
+	-docker volume rm podverse_local_db_data 2>/dev/null || true
+	-docker volume rm podverse_local_management_db_data 2>/dev/null || true
+	-docker volume rm artemis_data 2>/dev/null || true
+	@echo ""
+	@echo "========================================="
+	@echo "Starting all containers..."
+	@echo "========================================="
+	@echo ""
+	@echo "Starting keyvaldb..."
+	$(MAKE) local_keyvaldb_up
+	@echo ""
+	@echo "Starting main database..."
+	$(MAKE) local_db_up
+	@echo ""
+	@echo "Starting management database..."
+	$(MAKE) local_management_db_up
+	@echo ""
+	@echo "Starting message queue..."
+	$(MAKE) local_mq_up
+	@echo ""
+	@echo "========================================="
+	@echo "Initializing services..."
+	@echo "========================================="
+	@echo ""
+	@echo "Waiting for containers to be ready..."
+	@sleep 3
+	@echo ""
+	@echo "Initializing main database..."
+	$(MAKE) local_db_init
+	@echo "Seeding main database for dev purposes..."
+	$(MAKE) local_db_seed_dev
+	@echo ""
+	@echo "Initializing management database..."
+	$(MAKE) local_management_db_init
+	@echo ""
+	@echo "========================================="
+	@echo "SUCCESS: All containers destroyed, rebuilt, and initialized"
+	@echo "========================================="
