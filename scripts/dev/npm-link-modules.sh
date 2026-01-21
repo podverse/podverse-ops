@@ -72,6 +72,29 @@ for repo in "${REPOS[@]}"; do
   npm install
 done
 
+# Install QA package dependencies
+echo "Installing podverse-web/qa/lighthouse dependencies..."
+cd "$REPOS_BASE_DIR/podverse-web/qa/lighthouse"
+if [ -d "$REPOS_BASE_DIR/podverse-web/qa/lighthouse" ]; then
+  nvm use
+  rm -rf node_modules
+  rm -f package-lock.json
+  npm install
+else
+  echo "Skipping qa/lighthouse (directory not found)"
+fi
+
+echo "Installing podverse-web/qa/bundle-analyzer dependencies..."
+cd "$REPOS_BASE_DIR/podverse-web/qa/bundle-analyzer"
+if [ -d "$REPOS_BASE_DIR/podverse-web/qa/bundle-analyzer" ]; then
+  nvm use
+  rm -rf node_modules
+  rm -f package-lock.json
+  npm install
+else
+  echo "Skipping qa/bundle-analyzer (directory not found)"
+fi
+
 # Link dependencies to npm
 
 echo "Linking podverse-partytime dependency..."
