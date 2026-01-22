@@ -10,72 +10,72 @@
     {
       "name": "Podverse Partytime",
       "description": "podverse-partytime",
-      "cwd": "~/repos/podverse-partytime",
+      "cwd": "~/repos/partytime",
       "open": true,
-      "command": "npm run build:watch"
+      "command": "sleep 2 && npm run build:watch"
     },
     {
       "name": "Podverse Helpers",
       "description": "podverse-helpers",
       "cwd": "~/repos/podverse-helpers",
       "open": true,
-      "command": "npm run build:watch"
+      "command": "sleep 4 && npm run build:watch"
     },
     {
       "name": "Podverse External Services",
       "description": "podverse-external-services",
       "cwd": "~/repos/podverse-external-services",
       "open": true,
-      "command": "npm run build:watch"
+      "command": "sleep 6 && npm run build:watch"
     },
     {
       "name": "Podverse Notifications",
       "description": "podverse-notifications",
       "cwd": "~/repos/podverse-notifications",
       "open": true,
-      "command": "npm run build:watch"
+      "command": "sleep 8 && npm run build:watch"
     },
     {
       "name": "Podverse ORM",
       "description": "podverse-orm",
       "cwd": "~/repos/podverse-orm",
       "open": true,
-      "command": "npm run build:watch"
+      "command": "sleep 10 && npm run build:watch"
     },
     {
       "name": "Podverse Parser",
       "description": "podverse-parser",
       "cwd": "~/repos/podverse-parser",
       "open": true,
-      "command": "npm run build:watch"
+      "command": "sleep 12 && npm run build:watch"
     },
     {
       "name": "Podverse MQ",
       "description": "podverse-mq",
       "cwd": "~/repos/podverse-mq",
       "open": true,
-      "command": "npm run build:watch"
+      "command": "sleep 14 && npm run build:watch"
     },
     {
       "name": "Podverse API",
       "description": "podverse-api",
       "cwd": "~/repos/podverse-api",
       "open": true,
-      "command": "npm run dev:watch"
+      "command": "sleep 16 && npm run dev:watch"
     },
     {
       "name": "Podverse Web",
       "description": "podverse-web",
       "cwd": "~/repos/podverse-web",
       "open": true,
-      "command": "npm run dev:watch"
+      "command": "sleep 18 && npm run dev:watch"
     },
     {
       "name": "Podverse Workers",
       "description": "podverse-workers",
       "cwd": "~/repos/podverse-workers",
       "open": true,
-      "command": "npm run build"
+      "command": "sleep 20 && npm run build"
     },
     {
       "name": "Podverse QA",
