@@ -2,7 +2,7 @@
 
 # Script to commit and push package-lock.json changes across all repos
 # This script will only proceed if:
-# 1. Each repo is on the v5-develop branch
+# 1. Each repo is on the specified target branch (default: v5-develop)
 # 2. The only changes are to package-lock.json files
 # Otherwise, it will fail and display the errors
 
@@ -60,11 +60,19 @@ echo ""
 echo -e "${BLUE}Base directory: $REPOS_BASE_DIR${NC}"
 echo ""
 
+# Prompt for branch name
+echo -e "${YELLOW}Enter branch name to push changes to (default: v5-develop):${NC}"
+read -r TARGET_BRANCH
+TARGET_BRANCH=${TARGET_BRANCH:-v5-develop}
+echo -e "${BLUE}Using branch: $TARGET_BRANCH${NC}"
+echo ""
+
 # Function to check if repo has only package-lock.json changes
 # Returns 0 if valid, 1 if invalid, and outputs errors to stdout
 check_repo_changes() {
   local repo_path="$1"
   local repo_name="$2"
+  local target_branch="$3"
   local has_error=false
   
   # Check if directory exists
@@ -91,8 +99,8 @@ check_repo_changes() {
     return 1
   fi
   
-  if [ "$current_branch" != "v5-develop" ]; then
-    echo "Not on v5-develop branch (currently on: $current_branch)"
+  if [ "$current_branch" != "$target_branch" ]; then
+    echo "Not on $target_branch branch (currently on: $current_branch)"
     return 1
   fi
   
@@ -145,6 +153,7 @@ check_repo_changes() {
 commit_and_push_package_lock() {
   local repo_path="$1"
   local repo_name="$2"
+  local target_branch="$3"
   
   cd "$repo_path" || {
     echo -e "${RED}  ✗ Failed to change to directory: $repo_path${NC}"
@@ -187,8 +196,8 @@ commit_and_push_package_lock() {
     return 1
   fi
   
-  # Push to v5-develop
-  if ! git push origin v5-develop > /dev/null 2>&1; then
+  # Push to target branch
+  if ! git push origin "$target_branch" > /dev/null 2>&1; then
     echo -e "${RED}  ✗ Failed to push package-lock.json files for $repo_name${NC}"
     return 1
   fi
@@ -218,7 +227,7 @@ for repo in "${REPOS[@]}"; do
   
   echo -n "Checking $repo... "
   
-  error_output=$(check_repo_changes "$repo_path" "$repo" 2>&1)
+  error_output=$(check_repo_changes "$repo_path" "$repo" "$TARGET_BRANCH" 2>&1)
   check_exit_code=$?
   
   if [ $check_exit_code -eq 0 ]; then
@@ -287,7 +296,7 @@ echo ""
 push_errors=false
 for repo in "${repos_with_changes[@]}"; do
   repo_path="$REPOS_BASE_DIR/$repo"
-  if ! commit_and_push_package_lock "$repo_path" "$repo"; then
+  if ! commit_and_push_package_lock "$repo_path" "$repo" "$TARGET_BRANCH"; then
     push_errors=true
   fi
 done
