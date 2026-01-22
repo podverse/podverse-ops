@@ -31,10 +31,10 @@ data:
 
   ##AUTH_JWT_SECRET: "your-secret-whatever" # in secrets
 
-  USER_AGENT: "Podverse/Ser/2/API/Ser" # TODO:Customize your user agent for outbound requests
+  USER_AGENT: "Podverse/Alpha/2/API" # TODO:Customize your user agent for outbound requests
 
   # Use the public facing domain, not the internal docker network ip address.
-  COOKIE_DOMAIN: ".example.com" # Override in environment kustomization.yaml
+  COOKIE_DOMAIN: ".podvers.fm" # Override in environment kustomization.yaml
 
   # Web App TODO: Update these to your actual web app domain and protocol
   WEB_PROTOCOL: "http"
