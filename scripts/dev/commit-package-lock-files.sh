@@ -112,10 +112,18 @@ check_repo_changes() {
     return 0
   fi
   
-  # Check if all changed files are package-lock.json
+  # Check if all changed files are package-lock.json (root or qa subdirectories)
   non_lock_files=""
   for file in $all_changed_files; do
-    if [ "$file" != "package-lock.json" ]; then
+    # Check if file is root package-lock.json or qa/**/package-lock.json
+    is_valid_lock_file=false
+    if [ "$file" = "package-lock.json" ]; then
+      is_valid_lock_file=true
+    elif [[ "$file" =~ ^qa/.*/package-lock\.json$ ]]; then
+      is_valid_lock_file=true
+    fi
+    
+    if [ "$is_valid_lock_file" = false ]; then
       if [ -z "$non_lock_files" ]; then
         non_lock_files="$file"
       else
@@ -129,7 +137,7 @@ check_repo_changes() {
     return 1
   fi
   
-  # If we get here, only package-lock.json has changes
+  # If we get here, only package-lock.json files have changes
   return 0
 }
 
@@ -143,31 +151,53 @@ commit_and_push_package_lock() {
     return 1
   }
   
-  # Check if package-lock.json actually has changes
-  if git diff --quiet package-lock.json 2>/dev/null && git diff --cached --quiet package-lock.json 2>/dev/null; then
-    echo -e "${YELLOW}  No changes to package-lock.json in $repo_name${NC}"
+  # Find all package-lock.json files with changes (root and qa subdirectories)
+  changed_files=$(git diff --name-only 2>/dev/null | grep -E '^(package-lock\.json|qa/.*/package-lock\.json)$' || true)
+  staged_files=$(git diff --cached --name-only 2>/dev/null | grep -E '^(package-lock\.json|qa/.*/package-lock\.json)$' || true)
+  all_lock_files=$(echo -e "$changed_files\n$staged_files" | grep -v '^$' | sort -u)
+  
+  # Check if any package-lock.json files have changes
+  if [ -z "$all_lock_files" ]; then
+    echo -e "${YELLOW}  No changes to package-lock.json files in $repo_name${NC}"
     return 0
   fi
   
-  # Stage package-lock.json
-  if ! git add package-lock.json; then
-    echo -e "${RED}  ✗ Failed to stage package-lock.json for $repo_name${NC}"
-    return 1
+  # Stage all package-lock.json files with changes
+  staged_count=0
+  for file in $all_lock_files; do
+    if git add "$file" 2>/dev/null; then
+      staged_count=$((staged_count + 1))
+    fi
+  done
+  
+  if [ $staged_count -eq 0 ]; then
+    echo -e "${YELLOW}  No changes to package-lock.json files in $repo_name${NC}"
+    return 0
   fi
   
   # Commit with generic message
-  if ! git commit -m "chore: update package-lock.json" > /dev/null 2>&1; then
-    echo -e "${RED}  ✗ Failed to commit package-lock.json for $repo_name${NC}"
+  if [ $staged_count -eq 1 ]; then
+    commit_msg="chore: update package-lock.json"
+  else
+    commit_msg="chore: update package-lock.json files"
+  fi
+  
+  if ! git commit -m "$commit_msg" > /dev/null 2>&1; then
+    echo -e "${RED}  ✗ Failed to commit package-lock.json files for $repo_name${NC}"
     return 1
   fi
   
   # Push to v5-develop
   if ! git push origin v5-develop > /dev/null 2>&1; then
-    echo -e "${RED}  ✗ Failed to push package-lock.json for $repo_name${NC}"
+    echo -e "${RED}  ✗ Failed to push package-lock.json files for $repo_name${NC}"
     return 1
   fi
   
-  echo -e "${GREEN}  ✓ Committed and pushed package-lock.json for $repo_name${NC}"
+  if [ $staged_count -eq 1 ]; then
+    echo -e "${GREEN}  ✓ Committed and pushed package-lock.json for $repo_name${NC}"
+  else
+    echo -e "${GREEN}  ✓ Committed and pushed $staged_count package-lock.json files for $repo_name${NC}"
+  fi
   return 0
 }
 
@@ -192,9 +222,27 @@ for repo in "${REPOS[@]}"; do
   check_exit_code=$?
   
   if [ $check_exit_code -eq 0 ]; then
-    # Check if there are actually changes to commit
+    # Check if there are actually changes to commit (root or qa subdirectories)
     cd "$repo_path"
+    has_lock_changes=false
+    # Check root package-lock.json
     if ! git diff --quiet package-lock.json 2>/dev/null || ! git diff --cached --quiet package-lock.json 2>/dev/null; then
+      has_lock_changes=true
+    fi
+    # Check qa subdirectory package-lock.json files
+    if [ -d "qa" ]; then
+      for qa_lock_file in qa/*/package-lock.json; do
+        # Check if glob matched any files (not literal "qa/*/package-lock.json")
+        if [ -f "$qa_lock_file" ]; then
+          if ! git diff --quiet "$qa_lock_file" 2>/dev/null || ! git diff --cached --quiet "$qa_lock_file" 2>/dev/null; then
+            has_lock_changes=true
+            break
+          fi
+        fi
+      done
+    fi
+    
+    if [ "$has_lock_changes" = true ]; then
       echo -e "${GREEN}✓ ready (has package-lock.json changes)${NC}"
       repos_with_changes+=("$repo")
     else
