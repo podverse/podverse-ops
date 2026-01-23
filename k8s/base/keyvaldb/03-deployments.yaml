@@ -23,7 +23,8 @@ spec:
         - name: valkey
           # PLACEHOLDER: Kustomize will find this name and append the tag (e.g., :9.0.1)
           image: valkey/valkey
-          command: ["/bin/sh", "/opt/keyvaldb/valkey-entrypoint.sh"]
+          command: ["sh", "-c"]
+          args: ["valkey-server --requirepass \"$KEYVALDB_PASSWORD\" --save 900 1 --appendonly yes"]
           ports:
             - containerPort: 6379
           envFrom:
@@ -32,8 +33,6 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /var/lib/valkey
-            - name: scripts
-              mountPath: /opt/keyvaldb
           securityContext:
             runAsUser: 999
             runAsGroup: 999
@@ -53,10 +52,6 @@ spec:
         # EPHEMERAL STORAGE: Data is lost when pod restarts
         - name: data
           emptyDir: {}
-        - name: scripts
-          configMap:
-            name: podverse-keyvaldb-config
-            defaultMode: 0755
 
 ---
 apiVersion: apps/v1
