@@ -117,10 +117,11 @@ data:
   ##### Message Queue
   #####
 
+  MESSAGE_QUEUE_PROTOCOL: "amqp"
   MESSAGE_QUEUE_HOST: "podverse-mq"
-  MESSAGE_QUEUE_PORT: "5672"
   #MESSAGE_QUEUE_USERNAME: "user"         # in secrets
   #MESSAGE_QUEUE_PASSWORD: "mysecretpw"   # in secrets
+  MESSAGE_QUEUE_PORT: "5672"
 
   #####
   ##### Key-value (Valkey / Redis)
