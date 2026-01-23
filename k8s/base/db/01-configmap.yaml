@@ -1249,7 +1249,8 @@ data:
         id SERIAL PRIMARY KEY,
         account_id integer NOT NULL REFERENCES account(id) ON DELETE CASCADE UNIQUE,
         account_membership_id INTEGER NOT NULL REFERENCES account_membership(id),
-        membership_expires_at TIMESTAMP
+        membership_expires_at TIMESTAMP,
+        auto_renew BOOLEAN DEFAULT FALSE
     );
 
     CREATE INDEX idx_account_membership_status_account_id ON account_membership_status(account_id);
