@@ -21,6 +21,7 @@ data:
   ##### App / General
   #####
   NODE_ENV: "production"
+  SERVER_ENV: "alpha" # prod, beta, alpha, local
   LOG_LEVEL: "info"
 
   API_PORT: "1234"

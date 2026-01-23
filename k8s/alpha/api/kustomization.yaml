@@ -40,4 +40,4 @@ patches:
 # We define the specific version here.
 images:
   - name: ghcr.io/podverse/podverse-api/podverse-api
-    newTag: "5.1.23-alpha.0"
+    newTag: "5.1.28-alpha.0"
