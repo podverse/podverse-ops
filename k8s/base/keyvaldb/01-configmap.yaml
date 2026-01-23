@@ -16,3 +16,31 @@ data:
   APPENDONLY: "no"     # set to no in production
   VALKEY_OPTS: "--maxmemory 1gb --maxclients 10000"
   GUI_ALLOW_ANONYMOUS_LOGIN: "false" # set to false in production
+  valkey-entrypoint.sh: |
+    #!/bin/sh
+    set -e
+    
+    # Check if KEYVALDB_PASSWORD is set (required)
+    if [ -z "$KEYVALDB_PASSWORD" ]; then
+      echo "ERROR: KEYVALDB_PASSWORD environment variable is required but not set"
+      exit 1
+    fi
+    
+    # Build valkey-server command with password and existing arguments
+    exec valkey-server \
+      --requirepass "${KEYVALDB_PASSWORD}" \
+      --save 900 1 \
+      --appendonly yes
+  valkey-healthcheck.sh: |
+    #!/bin/sh
+    set -e
+    
+    # Check if KEYVALDB_PASSWORD is set
+    if [ -n "$KEYVALDB_PASSWORD" ]; then
+      # Use password for healthcheck
+      valkey-cli -a "${KEYVALDB_PASSWORD}" ping
+    else
+      # Backward compatibility: no password
+      valkey-cli ping
+    fi
+    
