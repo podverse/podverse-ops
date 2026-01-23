@@ -1,0 +1,22 @@
+pipeline {
+    agent {
+        label 'pv-alpha-aux'
+    }
+
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    stages {
+        stage('DB Reset (management db)') {
+            steps {
+                script {
+                    dir('/opt/podverse-ops') {
+                        sh 'make alpha_management_db_reset'
+                    }
+                }
+            }
+        }
+    }
+}

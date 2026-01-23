@@ -1,5 +1,5 @@
 .PHONY: alpha_validate_init
-alpha_validate_init: config/podverse-alpha-db.env config/podverse-alpha-mq.env config/podverse-alpha-workers.env config/podverse-alpha-api.env config/podverse-alpha-web.env
+alpha_validate_init: config/podverse-alpha-db.env config/podverse-alpha-mq.env config/podverse-alpha-workers.env config/podverse-alpha-api.env config/podverse-alpha-web.env config/podverse-alpha-management-db.env config/podverse-alpha-management-api.env
 
 config/podverse-alpha-db.env:
 	@echo "Missing: $@"
@@ -26,6 +26,16 @@ config/podverse-alpha-web.env:
 	@echo "Copying from example file"
 	cp ./$@.example ./$@
 
+config/podverse-alpha-management-db.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
+config/podverse-alpha-management-api.env:
+	@echo "Missing: $@"
+	@echo "Copying from example file"
+	cp ./$@.example ./$@
+
 .PHONY: alpha_db_up
 alpha_db_up: config/podverse-alpha-db.env
 	docker compose -f docker-compose/alpha/db/docker-compose.yml up podverse_alpha_db -d
@@ -33,6 +43,11 @@ alpha_db_up: config/podverse-alpha-db.env
 .PHONY: alpha_db_down
 alpha_db_down:
 	docker compose -f docker-compose/alpha/db/docker-compose.yml down --remove-orphans --rmi all
+
+.PHONY: alpha_db_reset
+alpha_db_reset:
+	@echo "Dropping and recreating public schema..."
+	docker exec -i podverse_alpha_db psql -U postgres -d postgres -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO postgres; GRANT ALL ON SCHEMA public TO public;"
 
 .PHONY: alpha_db_init
 alpha_db_init: config/podverse-alpha-db.env
@@ -112,3 +127,70 @@ alpha_all_down:
 	-$(MAKE) alpha_workers_down
 	-$(MAKE) alpha_mq_down
 	-$(MAKE) alpha_db_down
+	-$(MAKE) alpha_management_web_down
+	-$(MAKE) alpha_management_api_down
+	-$(MAKE) alpha_management_db_down
+
+# ==========================================
+# Management System (Alpha)
+# ==========================================
+
+# Management Database
+.PHONY: alpha_management_db_up
+alpha_management_db_up: config/podverse-alpha-management-db.env
+	docker compose -f docker-compose/alpha/management-db/docker-compose.yml up podverse_alpha_management_db -d
+
+.PHONY: alpha_management_db_down
+alpha_management_db_down:
+	docker compose -f docker-compose/alpha/management-db/docker-compose.yml down --remove-orphans --rmi all
+
+.PHONY: alpha_management_db_reset
+alpha_management_db_reset:
+	@echo "Dropping and recreating public schema..."
+	docker exec -i podverse_alpha_management_db psql -U postgres -d postgres -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO postgres; GRANT ALL ON SCHEMA public TO public;"
+
+.PHONY: alpha_management_db_init
+alpha_management_db_init: config/podverse-alpha-management-db.env
+	@echo "Validating required environment variables..."
+	@set -a; . config/podverse-alpha-management-db.env; set +a; \
+	: "$${SUPERUSER_EMAIL:?Missing SUPERUSER_EMAIL}" \
+	: "$${SUPERUSER_PASSWORD:?Missing SUPERUSER_PASSWORD}"
+	@echo "Creating read/read_write roles (idempotent)..."
+	@set -a; . config/podverse-alpha-management-db.env; set +a; \
+	docker compose -f docker-compose/alpha/management-db/docker-compose.yml exec podverse_alpha_management_db bash -c "POSTGRES_READ_PASSWORD=$$POSTGRES_READ_PASSWORD POSTGRES_READ_WRITE_PASSWORD=$$POSTGRES_READ_WRITE_PASSWORD /opt/database/management/init-scripts/01-create-users.sh"
+	docker exec -i podverse_alpha_management_db psql -U postgres -d postgres -f /opt/database/management/init_management_database.sql
+	@echo "Creating superuser account..."
+	@set -a; . config/podverse-alpha-management-db.env; set +a; \
+	./scripts/management/create-superuser.sh
+
+# Management API
+.PHONY: alpha_management_api_up
+alpha_management_api_up: config/podverse-alpha-management-api.env
+	docker compose -f docker-compose/alpha/management-api/docker-compose.yml up podverse_alpha_management_api -d
+
+.PHONY: alpha_management_api_down
+alpha_management_api_down:
+	@if [ -f docker-compose/alpha/management-api/docker-compose.yml ]; then \
+		docker compose -f docker-compose/alpha/management-api/docker-compose.yml down --remove-orphans --rmi all; \
+	else \
+		echo "docker-compose.yml not found, stopping container directly..."; \
+		docker stop podverse_alpha_management_api 2>/dev/null || true; \
+		docker rm podverse_alpha_management_api 2>/dev/null || true; \
+		docker rmi $$(docker images --filter=reference='ghcr.io/podverse/podverse-management-api/*' -q) 2>/dev/null || true; \
+	fi
+
+# Management Web
+.PHONY: alpha_management_web_up
+alpha_management_web_up:
+	docker compose -f docker-compose/alpha/management-web/docker-compose.yml up podverse_alpha_management_web -d
+
+.PHONY: alpha_management_web_down
+alpha_management_web_down:
+	@if [ -f docker-compose/alpha/management-web/docker-compose.yml ]; then \
+		docker compose -f docker-compose/alpha/management-web/docker-compose.yml down --remove-orphans --rmi all; \
+	else \
+		echo "docker-compose.yml not found, stopping container directly..."; \
+		docker stop podverse_alpha_management_web 2>/dev/null || true; \
+		docker rm podverse_alpha_management_web 2>/dev/null || true; \
+		docker rmi $$(docker images --filter=reference='ghcr.io/podverse/podverse-management-web/*' -q) 2>/dev/null || true; \
+	fi

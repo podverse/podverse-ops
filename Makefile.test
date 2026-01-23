@@ -13,9 +13,23 @@ test_db_down:
 	docker compose -f docker-compose/test/db/docker-compose.yml rm -f podverse_test_db
 	docker images "postgres" --format "{{.Repository}}:{{.Tag}}" | xargs -r docker image rm -f || true
 
+.PHONY: test_db_reset
+test_db_reset:
+	@echo "Dropping and recreating public schema..."
+	docker exec -i podverse_test_db psql -U postgres -d postgres -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO postgres; GRANT ALL ON SCHEMA public TO public;"
+
 .PHONY: test_db_init
 test_db_init: config/podverse-test-db.env
 	@echo "Creating read/read_write roles (idempotent)..."
 	@set -a; . config/podverse-test-db.env; set +a; \
 	docker compose -f docker-compose/test/db/docker-compose.yml exec podverse_test_db bash -c "POSTGRES_READ_PASSWORD=$$POSTGRES_READ_PASSWORD POSTGRES_READ_WRITE_PASSWORD=$$POSTGRES_READ_WRITE_PASSWORD /opt/database/init-scripts/01-create-users.sh"
 	docker exec -i podverse_test_db psql -U postgres -d postgres -f /opt/database/combined/init_database.sql
+
+.PHONY: test_db_seed_lighthouse
+test_db_seed_lighthouse:
+	@echo "Seeding Lighthouse test fixtures..."
+	docker exec -i podverse_test_db psql -U postgres -d postgres -f /opt/database/seed-scripts/local-lighthouse-test-fixtures.sql
+
+.PHONY: test_db_reinit
+test_db_reinit: test_db_reset test_db_init test_db_seed_lighthouse
+	@echo "Test database re-initialized with Lighthouse test fixtures"

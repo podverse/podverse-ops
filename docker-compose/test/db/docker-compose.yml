@@ -7,15 +7,17 @@ services:
     image: postgres:18.1
     container_name: podverse_test_db
     env_file:
-      - ../../config/podverse-test-db.env
+      - ../../../config/podverse-test-db.env
     ports:
       - '5111:5432' # Use port 5111 for the test database so it doesn't conflict with the dev database
     networks:
-      - podverse_network
+      - podverse_test_network
     # to initialize the database with the schema, you can run:
     # docker exec -i podverse_db psql -U postgres -d postgres -f /opt/database/combined/init_database.sql
     volumes:
       - ../../../database/combined/init_database.sql:/opt/database/combined/init_database.sql
+      - ../../../database/seed-scripts:/opt/database/seed-scripts
+      - ../../../database/init-scripts:/opt/database/init-scripts
     command: >
       postgres -c max_connections=200
                -c superuser_reserved_connections=20

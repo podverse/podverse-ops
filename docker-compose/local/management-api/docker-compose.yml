@@ -1,0 +1,21 @@
+networks:
+  podverse_local_network:
+    external: true
+
+services:
+
+  podverse_local_management_api:
+    image: podverse-management-api:latest
+    container_name: podverse_local_management_api
+    env_file:
+      - ../../../config/podverse-local-management-api.env
+    networks:
+      - podverse_local_network
+    ports:
+      - 127.0.0.1:1999:1999
+    command: npm start
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'

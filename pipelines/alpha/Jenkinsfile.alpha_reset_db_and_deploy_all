@@ -24,9 +24,15 @@ pipeline {
 
     stages {
         // Database reset steps
-        stage('1. Drop Everything (aux db)') {
+        stage('1. DB Reset (aux db)') {
             steps {
-                build job: 'pipelines/alpha/aux_db_drop_everything', wait: true, propagate: true
+                build job: 'pipelines/alpha/aux_db_reset', wait: true, propagate: true
+            }
+        }
+
+        stage('1a. DB Reset (management db)') {
+            steps {
+                build job: 'pipelines/alpha/aux_management_db_reset', wait: true, propagate: true
             }
         }
 
@@ -61,25 +67,37 @@ pipeline {
             }
         }
 
-        stage('7. Stop Web (srv)') {
+        stage('7. Stop Management Web (srv)') {
+            steps {
+                build job: 'pipelines/alpha/srv_management_web_down', wait: true, propagate: true
+            }
+        }
+
+        stage('8. Stop Management API (srv)') {
+            steps {
+                build job: 'pipelines/alpha/srv_management_api_down', wait: true, propagate: true
+            }
+        }
+
+        stage('9. Stop Web (srv)') {
             steps {
                 build job: 'pipelines/alpha/srv_web_down', wait: true, propagate: true
             }
         }
 
-        stage('8. Stop API (srv)') {
+        stage('10. Stop API (srv)') {
             steps {
                 build job: 'pipelines/alpha/srv_api_down', wait: true, propagate: true
             }
         }
 
-        stage('9. Prune Images (srv)') {
+        stage('11. Prune Images (srv)') {
             steps {
                 build job: 'pipelines/alpha/srv_docker_prune_images', wait: true, propagate: true
             }
         }
 
-        stage('10. Git Pull (srv)') {
+        stage('12. Git Pull (srv)') {
             steps {
                 build job: 'pipelines/alpha/srv_ops_git_pull',
                       wait: true,
@@ -90,7 +108,7 @@ pipeline {
             }
         }
 
-        stage('11. Git Pull (aux)') {
+        stage('13. Git Pull (aux)') {
             steps {
                 build job: 'pipelines/alpha/aux_ops_git_pull',
                       wait: true,
@@ -101,31 +119,31 @@ pipeline {
             }
         }
 
-        stage('12. Pull Workers (aux)') {
+        stage('14. Pull Workers (aux)') {
             steps {
                 build job: 'pipelines/alpha/aux_workers_pull', wait: true, propagate: true
             }
         }
 
-        stage('13. Start Parsers (aux)') {
+        stage('15. Start Parsers (aux)') {
             steps {
                 build job: 'pipelines/alpha/aux_workers_mq_rss_run_parsers_all', wait: true, propagate: true
             }
         }
 
-        stage('14. Start Live Item Listener (aux)') {
+        stage('16. Start Live Item Listener (aux)') {
             steps {
                 build job: 'pipelines/alpha/aux_workers_mq_rss_run_live_item_listener', wait: true, propagate: true
             }
         }
 
-        stage('15. Start DLQ Consumer (aux)') {
+        stage('17. Start DLQ Consumer (aux)') {
             steps {
                 build job: 'pipelines/alpha/aux_workers_mq_rss_run_dlq_consumer', wait: true, propagate: true
             }
         }
 
-        stage('16. Start API (srv)') {
+        stage('18. Start API (srv)') {
             steps {
                 build job: 'pipelines/alpha/srv_api_up',
                       wait: true,
@@ -136,9 +154,31 @@ pipeline {
             }
         }
 
-        stage('17. Start Web (srv)') {
+        stage('19. Start Management API (srv)') {
+            steps {
+                build job: 'pipelines/alpha/srv_management_api_up',
+                      wait: true,
+                      propagate: true,
+                      parameters: [
+                          string(name: 'IMAGE_VERSION', value: params.IMAGE_VERSION)
+                      ]
+            }
+        }
+
+        stage('20. Start Web (srv)') {
             steps {
                 build job: 'pipelines/alpha/srv_web_up',
+                      wait: true,
+                      propagate: true,
+                      parameters: [
+                          string(name: 'IMAGE_VERSION', value: params.IMAGE_VERSION)
+                      ]
+            }
+        }
+
+        stage('21. Start Management Web (srv)') {
+            steps {
+                build job: 'pipelines/alpha/srv_management_web_up',
                       wait: true,
                       propagate: true,
                       parameters: [

@@ -1,0 +1,20 @@
+networks:
+  podverse_alpha_network:
+    external: true
+
+services:
+
+  podverse_alpha_management_web:
+    image: ghcr.io/podverse/podverse-management-web/podverse-management-web-deploy:REPLACE_WITH_MANAGEMENT_WEB_VERSION
+    container_name: podverse_alpha_management_web
+    networks:
+      - podverse_alpha_network
+    ports:
+      - 127.0.0.1:3999:3000
+    command: sh -c "node server.js"
+    restart: unless-stopped
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'

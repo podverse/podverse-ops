@@ -74,6 +74,18 @@
       "open": true
     },
     {
+      "name": "Podverse Management API",
+      "description": "podverse-management-api",
+      "cwd": "~/repos/podverse-management-api",
+      "open": true
+    },
+    {
+      "name": "Podverse Management Web",
+      "description": "podverse-management-web",
+      "cwd": "~/repos/podverse-management-web",
+      "open": true
+    },
+    {
       "name": "Podverse SSH",
       "description": "Podverse SSH",
       "cwd": "~/repos/podverse-ops",

@@ -15,12 +15,18 @@ config/podverse-local-mq.env
 config/podverse-local-web.env
 config/podverse-local-workers.env
 
+config/podverse-local-management-db.env
+config/podverse-local-management-api.env
+
 config/podverse-alpha-api.env
 config/podverse-alpha-db.env
 config/podverse-alpha-keyvaldb.env
 config/podverse-alpha-mq.env
 config/podverse-alpha-web.env
 config/podverse-alpha-workers.env
+
+config/podverse-alpha-management-db.env
+config/podverse-alpha-management-api.env
 
 config/podverse-sandbox-api.env
 config/podverse-sandbox-db.env

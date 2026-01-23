@@ -1,0 +1,19 @@
+networks:
+  podverse_local_network:
+    external: true
+
+services:
+
+  podverse_local_management_web:
+    image: podverse-management-web:latest
+    container_name: podverse_local_management_web
+    networks:
+      - podverse_local_network
+    ports:
+      - 127.0.0.1:3999:3000
+    command: sh -c "node server.js"
+    logging:
+      driver: 'json-file'
+      options:
+        max-file: '1'
+        max-size: '50m'

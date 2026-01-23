@@ -34,6 +34,8 @@ REPOS=(
   "podverse-api"
   "podverse-web"
   "podverse-qa"
+  "podverse-management-api"
+  "podverse-management-web"
 )
 
 # List all globally linked packages
@@ -69,6 +71,29 @@ for repo in "${REPOS[@]}"; do
   rm package-lock.json
   npm install
 done
+
+# Install QA package dependencies
+echo "Installing podverse-web/qa/lighthouse dependencies..."
+cd "$REPOS_BASE_DIR/podverse-web/qa/lighthouse"
+if [ -d "$REPOS_BASE_DIR/podverse-web/qa/lighthouse" ]; then
+  nvm use
+  rm -rf node_modules
+  rm -f package-lock.json
+  npm install
+else
+  echo "Skipping qa/lighthouse (directory not found)"
+fi
+
+echo "Installing podverse-web/qa/bundle-analyzer dependencies..."
+cd "$REPOS_BASE_DIR/podverse-web/qa/bundle-analyzer"
+if [ -d "$REPOS_BASE_DIR/podverse-web/qa/bundle-analyzer" ]; then
+  nvm use
+  rm -rf node_modules
+  rm -f package-lock.json
+  npm install
+else
+  echo "Skipping qa/bundle-analyzer (directory not found)"
+fi
 
 # Link dependencies to npm
 
@@ -142,12 +167,12 @@ npm link podverse-external-services podverse-helpers podverse-orm podverse-parse
 echo "Linking podverse-workers dependencies..."
 cd "$REPOS_BASE_DIR/podverse-workers"
 nvm use
-npm link podverse-external-services podverse-helpers podverse-orm podverse-parser podverse-mq
+npm link podverse-external-services podverse-helpers podverse-notifications podverse-orm podverse-parser podverse-mq
 
 echo "Linking podverse-api dependencies..."
 cd "$REPOS_BASE_DIR/podverse-api"
 nvm use
-npm link podverse-external-services podverse-helpers podverse-orm podverse-parser podverse-mq
+npm link podverse-external-services podverse-helpers podverse-notifications podverse-orm podverse-parser podverse-mq
 
 echo "Linking podverse-web dependencies..."
 cd "$REPOS_BASE_DIR/podverse-web"
@@ -158,6 +183,16 @@ echo "Linking podverse-qa dependencies..."
 cd "$REPOS_BASE_DIR/podverse-qa"
 nvm use
 npm link podverse-helpers podverse-external-services podverse-orm podverse-parser
+
+echo "Linking podverse-management-api dependencies..."
+cd "$REPOS_BASE_DIR/podverse-management-api"
+nvm use
+npm link podverse-helpers podverse-orm
+
+echo "Linking podverse-management-web dependencies..."
+cd "$REPOS_BASE_DIR/podverse-management-web"
+nvm use
+npm link podverse-helpers
 
 # Build all projects
 
@@ -213,5 +248,15 @@ npm run build
 
 echo "Building podverse-qa..."
 cd "$REPOS_BASE_DIR/podverse-qa"
+nvm use
+npm run build
+
+echo "Building podverse-management-api..."
+cd "$REPOS_BASE_DIR/podverse-management-api"
+nvm use
+npm run build:dev
+
+echo "Building podverse-management-web..."
+cd "$REPOS_BASE_DIR/podverse-management-web"
 nvm use
 npm run build

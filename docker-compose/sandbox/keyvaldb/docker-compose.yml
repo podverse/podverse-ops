@@ -17,9 +17,10 @@ services:
       - '127.0.0.1:6379:6379'
     volumes:
       - podverse_sandbox_keyvaldb_data:/var/lib/valkey
-    command: ["valkey-server", "--save", "900 1", "--appendonly", "yes"]
+      - ../../../scripts/keyvaldb:/opt/keyvaldb
+    command: ["/opt/keyvaldb/valkey-entrypoint.sh"]
     healthcheck:
-      test: ["CMD", "valkey-cli", "ping"]
+      test: ["CMD", "/opt/keyvaldb/valkey-healthcheck.sh"]
       interval: 10s
       timeout: 5s
       retries: 5
