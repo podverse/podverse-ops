@@ -167,12 +167,12 @@ npm link podverse-external-services podverse-helpers podverse-orm podverse-parse
 echo "Linking podverse-workers dependencies..."
 cd "$REPOS_BASE_DIR/podverse-workers"
 nvm use
-npm link podverse-external-services podverse-helpers podverse-orm podverse-parser podverse-mq
+npm link podverse-external-services podverse-helpers podverse-notifications podverse-orm podverse-parser podverse-mq
 
 echo "Linking podverse-api dependencies..."
 cd "$REPOS_BASE_DIR/podverse-api"
 nvm use
-npm link podverse-external-services podverse-helpers podverse-orm podverse-parser podverse-mq
+npm link podverse-external-services podverse-helpers podverse-notifications podverse-orm podverse-parser podverse-mq
 
 echo "Linking podverse-web dependencies..."
 cd "$REPOS_BASE_DIR/podverse-web"
