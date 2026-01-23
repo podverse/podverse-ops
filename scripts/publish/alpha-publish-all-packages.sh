@@ -149,6 +149,45 @@ check_unpushed_commits() {
   return 0
 }
 
+# Function to get the build command for a repo
+get_build_command() {
+  local repo_name="$1"
+  
+  case "$repo_name" in
+    "podverse-api"|"podverse-management-api")
+      echo "build:prod"
+      ;;
+    *)
+      echo "build"
+      ;;
+  esac
+}
+
+# Function to verify a repo builds successfully
+verify_repo_build() {
+  local repo_name="$1"
+  local repo_path="$2"
+  local build_cmd=$(get_build_command "$repo_name")
+  
+  echo -n "Building $repo_name (npm run $build_cmd)... "
+  
+  cd "$repo_path"
+  
+  # Run the build command
+  if npm run "$build_cmd" > /dev/null 2>&1; then
+    echo -e "${GREEN}✓${NC}"
+    return 0
+  else
+    echo -e "${RED}✗${NC}"
+    echo -e "${RED}Error: Build failed for $repo_name${NC}"
+    echo -e "${RED}Command: npm run $build_cmd${NC}"
+    echo ""
+    echo "To see the full error, run:"
+    echo "  cd $repo_path && npm run $build_cmd"
+    return 1
+  fi
+}
+
 # Function to get the latest workflow run for a repo triggered by push to v5-alpha
 # Returns: run_id
 get_latest_workflow_run_id() {
@@ -390,6 +429,37 @@ echo -e "${GREEN}  All repos are clean!${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
 
+echo -e "${YELLOW}Step 2: Verifying all repos build successfully...${NC}"
+echo ""
+
+all_builds_pass=true
+for repo in "${REPOS[@]}"; do
+  repo_path="$REPOS_DIR/$repo"
+  
+  if [[ ! -d "$repo_path" ]]; then
+    echo -e "${RED}Error: Repo directory not found: $repo_path${NC}"
+    exit 1
+  fi
+  
+  if ! verify_repo_build "$repo" "$repo_path"; then
+    all_builds_pass=false
+  fi
+done
+
+echo ""
+
+if [[ "$all_builds_pass" != "true" ]]; then
+  echo -e "${RED}========================================${NC}"
+  echo -e "${RED}  Some repos failed to build. Fix build errors before publishing.${NC}"
+  echo -e "${RED}========================================${NC}"
+  exit 1
+fi
+
+echo -e "${GREEN}========================================${NC}"
+echo -e "${GREEN}  All repos build successfully!${NC}"
+echo -e "${GREEN}========================================${NC}"
+echo ""
+
 # Confirm before proceeding
 if ! confirm_prompt "Ready to publish all packages to alpha. Continue?"; then
   echo "Aborted."
@@ -397,7 +467,7 @@ if ! confirm_prompt "Ready to publish all packages to alpha. Continue?"; then
 fi
 
 echo ""
-echo -e "${YELLOW}Step 2: Publishing packages in order...${NC}"
+echo -e "${YELLOW}Step 3: Publishing packages in order...${NC}"
 echo ""
 
 # Publish each repo in order
