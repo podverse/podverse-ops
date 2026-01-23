@@ -63,7 +63,7 @@ data:
   # "sign-up" for paid premium memberships
   # "sign-up" plus set costs to 0 for free sign ups
   # "contact-only" for contact-only signup mode
-  ACCOUNT_SIGNUP_MODE: "sign-up"
+  ACCOUNT_SIGNUP_MODE: "contact-only"
   VERIFY_EMAIL_TOKEN_EXPIRATION: "604800" # 7 days
   VERIFY_EMAIL_PAGE_PATH: "/verify-email?token="
   EMAIL_CHANGE_VERIFICATION_TOKEN_EXPIRATION: "604800" # 7 days
