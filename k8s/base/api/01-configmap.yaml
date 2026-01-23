@@ -37,8 +37,10 @@ data:
   COOKIE_DOMAIN: ".podvers.fm" # Override in environment kustomization.yaml
 
   # Web App TODO: Update these to your actual web app domain and protocol
+  BRAND_NAME: "Podverse"
   WEB_PROTOCOL: "http"
   WEB_DOMAIN: "podverse-web:3000"
+  WEB_ICON_IMAGE_PATH: "/favicon/web-app-manifest-192x192.png"
 
   #####
   ##### Postgres
