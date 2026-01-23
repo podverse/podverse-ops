@@ -5,4 +5,3 @@ resources:
   - 01-configmap.yaml
   - 02-services.yaml
   - 03-deployments.yaml
-  - 04-job-provision.yaml
