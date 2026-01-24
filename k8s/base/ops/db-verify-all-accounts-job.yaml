@@ -1,0 +1,45 @@
+# Version: 3
+# Pattern: Suspended CronJob (Manual Trigger Only)
+# UPDATE: Added PGPASSWORD env var to fix 'no password supplied' error.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ops-db-verify-account
+spec:
+  schedule: "* * * * *"
+  suspend: true
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 60
+      template:
+        spec:
+          containers:
+            - name: psql
+              image: postgres
+              command:
+                - "psql"
+                - "-h"
+                - "podverse-db"
+                - "-U"
+                - "postgres"
+                - "-d"
+                - "postgres"
+                - "-c"
+                - "UPDATE account SET verified = true;"
+
+              # Load all vars (optional, but good for debugging)
+              envFrom:
+                - secretRef:
+                    name: podverse-db-opaque
+
+              # CRITICAL FIX: Map the secret key to PGPASSWORD for psql
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: podverse-db-opaque
+                      key: POSTGRES_PASSWORD
+
+          restartPolicy: Never
+

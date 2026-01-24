@@ -3,5 +3,5 @@ kind: Kustomization
 
 resources:
   - db-drop-job.yaml
-  - db-verify-account-job.yaml
-
+  - db-verify-account_1-job.yaml
+  - db-verify-all-accounts-job.yaml
